@@ -5,6 +5,9 @@ CREATE TABLE IF NOT EXISTS contacts_types
 (
     id bigserial,
     name text  NOT NULL,
+    marked boolean,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     CONSTRAINT contacts_types_pkey PRIMARY KEY (id)
 );
 INSERT INTO contacts_types (name)
