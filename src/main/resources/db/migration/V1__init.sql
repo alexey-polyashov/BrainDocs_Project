@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS users
     fullname text,
     shortname text NOT NULL,
     organisation bigint,
-    male character varying(7),
+    male character varying(6),
     birthday date,
     password   character varying(80) NOT NULL,
     marked boolean,
@@ -97,6 +97,7 @@ CREATE TABLE  IF NOT EXISTS roles
 (
     id         bigserial,
     name       varchar(50) not null,
+    marked     boolean,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     CONSTRAINT roles_pkey PRIMARY KEY (id)
@@ -128,6 +129,8 @@ CREATE TABLE IF NOT EXISTS documents_types
     id bigserial,
     name text NOT NULL,
     marked boolean,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
     CONSTRAINT documents_types_pkey PRIMARY KEY (id)
 );
 INSERT INTO documents_types (name)
@@ -142,7 +145,7 @@ CREATE TABLE IF NOT EXISTS documents
     type bigint NOT NULL,
     number character varying(50),
     document_date date,
-    name text,
+    heading text,
     content text,
     author bigint,
     responsible bigint,
