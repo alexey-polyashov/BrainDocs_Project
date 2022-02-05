@@ -11,13 +11,18 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @Entity
-@Table(name = "documents_storage")
+@Table(name = "documents_view")
 @Data
 @NoArgsConstructor
-public class DocumentStorageModel {
+public class DocumentViewModel {
 
+    public DocumentViewModel(String name, String documentData) {
+        this.name = name;
+        this.documentData = documentData;
+    }
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "type")
+
 //    private DocumentTypeModel documentType;
 
     @Id
@@ -25,13 +30,16 @@ public class DocumentStorageModel {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "name")
+    private String name;
+
     @Column(name = "data")
     private String documentData;
 
-    @CreationTimestamp
-    @Column(name="created_at")
-    private LocalDateTime createTime;
-    @UpdateTimestamp
-    @Column(name="updated_at")
-    private LocalDateTime updateTime;
+//    @CreationTimestamp
+//    @Column(name="created_at")
+//    private LocalDateTime createTime;
+//    @UpdateTimestamp
+//    @Column(name="updated_at")
+//    private LocalDateTime updateTime;
 }
