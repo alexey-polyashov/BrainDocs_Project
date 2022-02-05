@@ -1,15 +1,20 @@
 package com.braindocs.braindocs.models.documents;
 
+import com.braindocs.braindocs.models.files.FilesModel;
 import com.braindocs.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.braindocs.models.users.UserModel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name="documents")
@@ -45,10 +50,16 @@ public class DocumentModel {
     @JoinColumn(name="organisation")
     private OrganisationModel organisation;
 
+    @ManyToMany
+    @JoinTable(name ="documents_files",
+            joinColumns = @JoinColumn(name = "ownerid", referencedColumnName = "id"),
+            inverseJoinColumns =  @JoinColumn(name="fileid"))
+    private Set<FilesModel> files;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
+
     @Column(name = "marked")
     private Boolean marked;
     @CreationTimestamp
