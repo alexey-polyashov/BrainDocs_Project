@@ -1,11 +1,14 @@
 package com.braindocs.braindocs.DTO.documents;
 
 import com.braindocs.braindocs.DTO.files.FileDTO;
+import com.braindocs.braindocs.DTO.organization.OrganisationNameDTO;
+import com.braindocs.braindocs.DTO.users.UserNameDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.sql.Date;
 import java.util.List;
 
@@ -14,8 +17,7 @@ import java.util.List;
 public class DocumentDTO {
 
     @NotEmpty(message = "Не указан вид документа")
-    private Long documentTypeId;
-    private Long documentTypeName;
+    private DocumentTypeNameDTO documentType;
     @NotEmpty(message = "Не указан номер документа")
     private String number;
     @NotEmpty(message = "Не указана дата документа")
@@ -23,14 +25,11 @@ public class DocumentDTO {
     @NotEmpty(message = "Не указан заголовок документа")
     private String heading;
     private String content;
-    @NotEmpty(message = "Не указан автор документа")
-    private Long authorId;
-    private String authorName;
-    private Long responsibleId;
-    private String responsibleName;
-    @NotEmpty(message = "Не указана организация")
-    private Long organisationId;
-    private String organisationName;
+    @NotNull(message = "Не указан автор документа")
+    private UserNameDTO author;
+    private UserNameDTO responsible;
+    @NotNull(message = "Не указана организация")
+    private OrganisationNameDTO organisation;
     private Long id;
     private Boolean marked;
 

@@ -4,14 +4,11 @@ import com.braindocs.braindocs.models.files.FilesModel;
 import com.braindocs.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.braindocs.models.users.UserModel;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.Set;

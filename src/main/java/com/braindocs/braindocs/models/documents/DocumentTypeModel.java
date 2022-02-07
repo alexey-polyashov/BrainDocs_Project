@@ -29,4 +29,5 @@ public class DocumentTypeModel {
     @UpdateTimestamp
     @Column(name="updated_at")
     private LocalDateTime updateTime;
+
 }
