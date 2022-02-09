@@ -13,6 +13,7 @@ VALUES (1, 'В базе'),
 --OPTIONS
 CREATE TABLE IF NOT EXISTS options
 (
+    id int,
     file_storage_type int  NOT NULL
 );
 
@@ -60,5 +61,6 @@ CREATE TABLE IF NOT EXISTS documents_files
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
+
 
 

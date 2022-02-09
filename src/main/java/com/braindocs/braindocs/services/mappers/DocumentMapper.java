@@ -2,19 +2,23 @@ package com.braindocs.braindocs.services.mappers;
 
 import com.braindocs.braindocs.DTO.documents.DocumentDTO;
 import com.braindocs.braindocs.DTO.documents.DocumentTypeNameDTO;
-import com.braindocs.braindocs.DTO.files.FileDTO;
 import com.braindocs.braindocs.DTO.organization.OrganisationNameDTO;
 import com.braindocs.braindocs.DTO.users.UserNameDTO;
 import com.braindocs.braindocs.models.documents.DocumentModel;
 import com.braindocs.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.braindocs.models.users.UserModel;
-import com.braindocs.braindocs.services.DocumentTypeService;
-import com.braindocs.braindocs.services.DocumentsService;
-import com.braindocs.braindocs.services.OrganisationService;
-import com.braindocs.braindocs.services.UserService;
+import com.braindocs.braindocs.services.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
+import java.sql.Date;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +31,7 @@ public class DocumentMapper {
     private final OrganisationService organisationService;
     private final UserService userService;
     private final FileMapper fileMapper;
+    private final OptionService optionService;
 
     public DocumentDTO toDTO(DocumentModel docModel) {
 
@@ -34,7 +39,8 @@ public class DocumentMapper {
         dto.setId(docModel.getId());
         dto.setDocumentType(new DocumentTypeNameDTO(docModel.getDocumentType()));
         dto.setNumber(docModel.getNumber());
-        dto.setDocumentDate(docModel.getDocumentDate());
+        DateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
+        dto.setDocumentDate(dateFormat.format(docModel.getDocumentDate()));
         dto.setHeading(docModel.getHeading());
         dto.setContent(docModel.getContent());
         dto.setAuthor(new UserNameDTO(docModel.getAuthor()));
@@ -48,26 +54,28 @@ public class DocumentMapper {
 
     }
 
-    public DocumentModel toModel(DocumentDTO docDTO) {
+    public DocumentModel toModel(DocumentDTO docDTO) throws ParseException {
 
         DocumentModel docModel = new DocumentModel();
 
-        docModel.setId(docDTO.getId());
-        docModel.setDocumentType(documentTypeService.findById(docDTO.getId()));
+        if(docDTO.getId() != null) {
+            docModel.setId(docDTO.getId());
+        }
+        docModel.setDocumentType(documentTypeService.findById(docDTO.getDocumentType().getId()));
         docModel.setNumber(docDTO.getNumber());
-        docModel.setDocumentDate(docDTO.getDocumentDate());
+        SimpleDateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
+        docModel.setDocumentDate(new Date(dateFormat.parse(docDTO.getDocumentDate()).getTime()));
         docModel.setHeading(docDTO.getHeading());
         docModel.setContent(docDTO.getContent());
-        OrganisationModel orgModel = organisationService.findById(docModel.getOrganisation().getId());
+        OrganisationModel orgModel = organisationService.findById(docDTO.getOrganisation().getId());
         docModel.setOrganisation(orgModel);
-        UserModel userModel = userService.findById(docModel.getAuthor().getId());
+        UserModel userModel = userService.findById(docDTO.getAuthor().getId());
         docModel.setAuthor(userModel);
-        userModel = userService.findById(docModel.getResponsible().getId());
+        userModel = userService.findById(docDTO.getResponsible().getId());
         docModel.setResponsible(userModel);
         docModel.setMarked(docDTO.getMarked());
 
-        docModel.setFiles(docDTO.getFiles().stream().map(fileMapper::toModel).collect(Collectors.toSet()));
-        docModel.setDocumentType(documentTypeService.findById(docDTO.getId()));
+        //docModel.setFiles(docDTO.getFiles().stream().map(fileMapper::toModel).collect(Collectors.toSet()));
 
         return docModel;
     }

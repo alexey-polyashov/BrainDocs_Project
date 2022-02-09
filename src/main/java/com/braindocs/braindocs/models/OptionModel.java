@@ -15,6 +15,7 @@ import javax.persistence.Table;
 public class OptionModel {
 
     @Id
+    @Column(name = "id")
     private final Integer id = 1;
 
     @Column(name="file_storage_type")

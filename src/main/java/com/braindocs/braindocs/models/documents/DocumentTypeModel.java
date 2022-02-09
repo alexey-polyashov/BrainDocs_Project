@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="organisations")
+@Table(name="documents_types")
 @Data
 @NoArgsConstructor
 public class DocumentTypeModel {

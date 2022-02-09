@@ -18,11 +18,12 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.text.ParseException;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value="/api/21/documents/")
+@RequestMapping(value="/api/v1/documents/")
 @Slf4j
 public class DocumentController {
 
@@ -32,7 +33,7 @@ public class DocumentController {
     private final DocumentMapper documentMapper;
 
     @PostMapping(value="/add")
-    public Long addDocument(@Valid DocumentDTO documentDTO){
+    public Long addDocument(@Valid @RequestBody DocumentDTO documentDTO) throws ParseException {
         log.info("DocumentController: add");
         DocumentModel docModel = documentMapper.toModel(documentDTO);
         Long docId = documentsService.addDocument(docModel);
@@ -41,7 +42,7 @@ public class DocumentController {
     }
 
     @PostMapping(value="/save")
-    public Long saveDocument(@Valid DocumentDTO documentDTO){
+    public Long saveDocument(@Valid @RequestBody DocumentDTO documentDTO) throws ParseException {
         log.info("DocumentController: saveDocument");
         DocumentModel docModel = documentMapper.toModel(documentDTO);
         Long docId = documentsService.saveDocument(docModel);
@@ -51,17 +52,17 @@ public class DocumentController {
 
     @DeleteMapping(value="{id}")
     public void deleteDocument(@PathVariable Long id){
-        log.info("DocumentController: deleteDocument");
+        log.info("DocumentController: deleteDocument, id-{}", id);
         documentsService.deleteDocument(id);
         log.info("DocumentController: deleteDocument - ok");
     }
 
     @GetMapping(value="/")
-    public Page<DocumentDTO> getDocuments(int pageNamber, int pageSize){
-        log.info("DocumentController: getDocuments");
-        Page<DocumentModel> documents = documentsService.getDocuments(pageNamber, pageSize);
+    public Page<DocumentDTO> getDocuments(@RequestParam( name = "pagenumber", defaultValue = "0") int pageNumber, @RequestParam(name = "pagesize", defaultValue = "10") int pageSize){
+        log.info("DocumentController: getDocuments, pagenumber-{}, pagesize-{}", pageNumber, pageSize);
+        Page<DocumentModel> documents = documentsService.getDocuments(pageNumber, pageSize);
         Page<DocumentDTO> docDtoPage = documents.map(documentMapper::toDTO);
-        log.info("DocumentController: getDocuments return {} elements", docDtoPage.getSize());
+        log.info("DocumentController: getDocuments return {} elements", docDtoPage.getNumberOfElements());
         return docDtoPage;
     }
 

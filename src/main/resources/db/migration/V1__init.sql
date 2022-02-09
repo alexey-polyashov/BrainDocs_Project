@@ -165,6 +165,13 @@ CREATE TABLE IF NOT EXISTS documents
     CONSTRAINT fk_responsible_document FOREIGN KEY (responsible)
         REFERENCES users (id)
         ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_organisation_document FOREIGN KEY (organisation)
+        REFERENCES organisations (id)
+        ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
-
+INSERT INTO documents (type, number, document_date, heading, content, author, responsible, organisation)
+VALUES (1,'777',  '2021-12-12', 'Приказ о приеме на работу водителя', 'Приказываю принять на должность водителя автобуса Петрова А.В. с окладом согласно штатного расписания', 1, 1, 1),
+       (2,'1/2',  '2021-12-10', 'Договор на покупку автотранспорта', 'Содержание договора', 2, 1, 1),
+       (3, '321', '2021-12-05', 'Рац. предложение о покупке служебного автобуса', 'Предлагаю купить служебный автобус для экономии бюджета компании', 3, 1, 1);
