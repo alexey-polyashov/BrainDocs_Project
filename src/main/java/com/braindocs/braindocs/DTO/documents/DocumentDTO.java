@@ -18,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class DocumentDTO {
 
+    @NotNull(message = "Не указан вид документа")
     private DocumentTypeNameDTO documentType;
     @NotEmpty(message = "Не указан номер документа")
     private String number;
@@ -26,8 +27,10 @@ public class DocumentDTO {
     @NotBlank(message = "Не указан заголовок документа")
     private String heading;
     private String content;
+    @NotNull(message = "Не указан автор документа")
     private UserNameDTO author;
     private UserNameDTO responsible;
+    @NotNull(message = "Не указана организация")
     private OrganisationNameDTO organisation;
     private Long id;
     private Boolean marked;
