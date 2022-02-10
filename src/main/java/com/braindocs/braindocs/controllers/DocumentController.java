@@ -1,5 +1,6 @@
 package com.braindocs.braindocs.controllers;
 
+import com.braindocs.braindocs.DTO.FieldsListDTO;
 import com.braindocs.braindocs.DTO.SearchCriteriaDTO;
 import com.braindocs.braindocs.DTO.SearchCriteriaListDTO;
 import com.braindocs.braindocs.DTO.documents.DocumentDTO;
@@ -19,7 +20,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,6 +35,25 @@ public class DocumentController {
     private final DocumentTypeService documentTypeService;
     private final UserService userService;
     private final DocumentMapper documentMapper;
+
+    @GetMapping(value="/get_fileds")
+    //возвращает список доступных полей и операций с ними
+    //операции: ">" (больше или равно), "<" (меньше или равно), ":" (для строковых полей модели - содержит, для других = )
+    //типы полей могут быть любыми - это просто описание типа для правильного построения интерфейса
+    public Set<FieldsListDTO> getFields(){
+        log.info("DocumentController: getFields");
+        Set<FieldsListDTO> fieldsSet = new HashSet<>();
+        fieldsSet.add(new FieldsListDTO("Вид документа", "documentType", "DocumentTypeModel", new HashSet<String>(Arrays.asList(":")), "Long"));
+        fieldsSet.add(new FieldsListDTO("Номер докуемнта","number", "", new HashSet<String>(Arrays.asList(":")), "String"));
+        fieldsSet.add(new FieldsListDTO("Дата докуемнта","documentDate","", new HashSet<String>(Arrays.asList("<",">")), "Date"));
+        fieldsSet.add(new FieldsListDTO("Заголовок документа", "heading","", new HashSet<String>(Arrays.asList(":")), "String"));
+        fieldsSet.add(new FieldsListDTO("Содержание", "content","", new HashSet<String>(Arrays.asList(":")), "String"));
+        fieldsSet.add(new FieldsListDTO("Автор документа", "author","UserModel", new HashSet<String>(Arrays.asList(":")), "Long"));
+        fieldsSet.add(new FieldsListDTO("Ответственный за документ", "responsible","UserModel", new HashSet<String>(Arrays.asList(":")), "Long"));
+        fieldsSet.add(new FieldsListDTO("Организация", "organisation","OrganisationModel", new HashSet<String>(Arrays.asList(":")), "Long"));
+        log.info("DocumentController: getFields return {} elements", fieldsSet.size());
+        return fieldsSet;
+    }
 
     @PostMapping(value="/add")
     public Long addDocument(@Valid @RequestBody DocumentDTO documentDTO) throws ParseException {
@@ -74,7 +97,7 @@ public class DocumentController {
         return documentMapper.toDTO(doc);
     }
 
-    @GetMapping(value="/getlist")
+    @PostMapping(value="/get_list")
     public Page<DocumentDTO>  getDocumentsByFilter(@RequestBody SearchCriteriaListDTO requestDTO){
         log.info("DocumentController: getDocumentsByFilter");
         List<SearchCriteriaDTO> filter = requestDTO.getFilter();
@@ -92,25 +115,25 @@ public class DocumentController {
         return docDtoPage;
     }
 
-    @PostMapping(value="/uploadfiles/{docid}")
+    @PostMapping(value="/upload_files/{docid}")
     public Long uploadFiles(@PathVariable Long docid, @RequestBody List<FileDTOwithData> files){
         log.info("DocumentController: uploadfiles");
         return null;
     }
 
-    @PostMapping(value="/uploadfile/{docid}")
+    @PostMapping(value="/upload_file/{docid}")
     public Long uploadFile(@PathVariable Long docid, @RequestBody FileDTOwithData file){
         log.info("DocumentController: uploadfiles");
         return null;
     }
 
-    @GetMapping(value="/getfiles/{docid}")
+    @GetMapping(value="/get_files/{docid}")
     public List<FileDTO> getFiles(@PathVariable Long docid){
         log.info("DocumentController: getfileslist");
         return null;
     }
 
-    @GetMapping(value="/getfiledata/{docid}/{fileid}")
+    @GetMapping(value="/getfile_data/{docid}/{fileid}")
     public List<FileDTO> getFileData(@PathVariable Long docid, Long fileid){
         log.info("DocumentController: getfileslist");
         return null;
