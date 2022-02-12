@@ -28,9 +28,9 @@ CREATE TABLE IF NOT EXISTS files
     filesize bigint,
     filetype character varying(15),
     author bigint,
-    content text,
-    sourcepath text,
-    storagepath text,
+    parsedtext text,
+    originalfilename text,
+    contenttype text,
     filedata oid not null,
 
     marked boolean,
@@ -55,11 +55,11 @@ CREATE TABLE IF NOT EXISTS documents_files
     CONSTRAINT fk_documents_files_ownerid FOREIGN KEY (ownerid)
         REFERENCES documents (id)
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON DELETE CASCADE,
     CONSTRAINT fk_documents_files_fileid FOREIGN KEY (fileid)
         REFERENCES files (id)
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON DELETE CASCADE
 );
 
 

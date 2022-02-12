@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Table(name="files")
 @Data
 @NoArgsConstructor
-public class FilesModel {
+public class FileModel {
 
     @Column(name="storagetype")
     private Integer storageType;
@@ -27,18 +27,21 @@ public class FilesModel {
     @Column(name="filesize")
     private Long fileSize;
 
-    @Column(name="filetype")
-    private String fileType;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="author")
     private UserModel author;
 
-    @Column(name="content")
-    private String content;
+    @Column(name="parsedtext")
+    private String parsedText;
 
-    @Column(name="sourcepath")
-    private String sourcePath;
+    @Column(name="originalfilename")
+    private String originalFilename;
+
+    @Column(name="filetype")
+    private String fileType;
+
+    @Column(name="contenttype")
+    private String contentType;
 
     @Column(name="storagepath")
     private String storagePath;

@@ -5,20 +5,25 @@ import com.braindocs.braindocs.DTO.SearchCriteriaDTO;
 import com.braindocs.braindocs.DTO.SearchCriteriaListDTO;
 import com.braindocs.braindocs.DTO.documents.DocumentDTO;
 import com.braindocs.braindocs.DTO.files.FileDTO;
-import com.braindocs.braindocs.DTO.files.FileDTOwithData;
+import com.braindocs.braindocs.DTO.files.NewFileDTOwithData;
 import com.braindocs.braindocs.models.documents.DocumentModel;
+import com.braindocs.braindocs.models.files.FileModel;
 import com.braindocs.braindocs.repositories.specifications.DocumentSpecificationBuilder;
 import com.braindocs.braindocs.services.DocumentTypeService;
 import com.braindocs.braindocs.services.DocumentsService;
+import com.braindocs.braindocs.services.FilesService;
 import com.braindocs.braindocs.services.UserService;
 import com.braindocs.braindocs.services.mappers.DocumentMapper;
+import com.braindocs.braindocs.services.mappers.FileMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,6 +40,7 @@ public class DocumentController {
     private final DocumentTypeService documentTypeService;
     private final UserService userService;
     private final DocumentMapper documentMapper;
+    private final FileMapper fileMapper;
 
     @GetMapping(value="/get_fileds")
     //возвращает список доступных полей и операций с ними
@@ -45,7 +51,7 @@ public class DocumentController {
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
         fieldsSet.add(new FieldsListDTO("Вид документа", "documentType", "DocumentTypeModel", new HashSet<String>(Arrays.asList(":")), "Long"));
         fieldsSet.add(new FieldsListDTO("Номер докуемнта","number", "", new HashSet<String>(Arrays.asList(":")), "String"));
-        fieldsSet.add(new FieldsListDTO("Дата докуемнта","documentDate","", new HashSet<String>(Arrays.asList("<",">")), "Date"));
+        fieldsSet.add(new FieldsListDTO("Дата документа","documentDate","", new HashSet<String>(Arrays.asList("<",">")), "Date"));
         fieldsSet.add(new FieldsListDTO("Заголовок документа", "heading","", new HashSet<String>(Arrays.asList(":")), "String"));
         fieldsSet.add(new FieldsListDTO("Содержание", "content","", new HashSet<String>(Arrays.asList(":")), "String"));
         fieldsSet.add(new FieldsListDTO("Автор документа", "author","UserModel", new HashSet<String>(Arrays.asList(":")), "Long"));
@@ -116,14 +122,27 @@ public class DocumentController {
     }
 
     @PostMapping(value="/upload_files/{docid}")
-    public Long uploadFiles(@PathVariable Long docid, @RequestBody List<FileDTOwithData> files){
+    public Long uploadFiles(@PathVariable Long docid, @RequestBody List<NewFileDTOwithData> files){
         log.info("DocumentController: uploadfiles");
         return null;
     }
 
     @PostMapping(value="/upload_file/{docid}")
-    public Long uploadFile(@PathVariable Long docid, @RequestBody FileDTOwithData file){
-        log.info("DocumentController: uploadfiles");
+    public Long uploadFile(@PathVariable Long docId, @RequestBody NewFileDTOwithData file){
+        log.info("DocumentController: uploadfile");
+        MultipartFile fileData = file.getFileData();
+        if(fileData.isEmpty()){
+            log.info("file is empty");
+            throw new RuntimeException("file is empty");
+        }
+        FileModel fileModel;
+        try {
+            fileModel = fileMapper.toModel(file);
+        } catch (IOException e) {
+            log.error("get file data error\n" + e.getMessage() + "\n" + e.getCause());
+            throw new RuntimeException("get file data error");
+        }
+        documentsService.addFile(docId, fileModel);
         return null;
     }
 

@@ -16,12 +16,12 @@ public class FileDTO {
     private Integer storageType;
     private String describtion;
     @NotEmpty(message = "Не указан размер файла")
-    private Long filesize;
-    @NotEmpty(message = "Не указан тип файла")
-    private String filetype;
+    private Long fileSize;
     @NotEmpty(message = "Не указан автор файла")
     private UserNameDTO author;
-    private String content;
-    private String sourcePath;
+    private String contentType;
+    private String originalFilename;
+    @NotEmpty(message = "Не указан тип файла")
+    private String fileType;
 
 }

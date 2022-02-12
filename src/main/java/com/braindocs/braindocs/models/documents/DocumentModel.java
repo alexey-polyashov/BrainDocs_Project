@@ -1,6 +1,6 @@
 package com.braindocs.braindocs.models.documents;
 
-import com.braindocs.braindocs.models.files.FilesModel;
+import com.braindocs.braindocs.models.files.FileModel;
 import com.braindocs.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.braindocs.models.users.UserModel;
 import lombok.Data;
@@ -51,7 +51,7 @@ public class DocumentModel {
     @JoinTable(name ="documents_files",
             joinColumns = @JoinColumn(name = "ownerid", referencedColumnName = "id"),
             inverseJoinColumns =  @JoinColumn(name="fileid"))
-    private Set<FilesModel> files;
+    private Set<FileModel> files;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

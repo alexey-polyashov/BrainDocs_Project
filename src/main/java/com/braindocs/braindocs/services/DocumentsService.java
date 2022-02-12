@@ -2,19 +2,23 @@ package com.braindocs.braindocs.services;
 
 import com.braindocs.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.braindocs.models.documents.DocumentModel;
-import com.braindocs.braindocs.models.files.FilesModel;
+import com.braindocs.braindocs.models.files.FileModel;
 import com.braindocs.braindocs.repositories.DocumentsRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DocumentsService {
 
     private final DocumentsRepository documentsRepository;
@@ -56,23 +60,99 @@ public class DocumentsService {
     }
 
     //добавление файлов в документ списком
-    public Long addFiles(Long docId, Set<FilesModel> files){
-        return null;
-    }
-
-    //получение списка файлов
-    public FilesModel getFilesList(Long docId, Long fileId){
-        return null;
+    @Transactional
+    public Set<Long> addFiles(Long docId, Set<FileModel> files){
+        DocumentModel documentModel = documentsRepository.findById(docId)
+                .orElseThrow(()->new ResourceNotFoundException("Документ с id-'" + docId + "' не найден"));
+        Set<Long> results = new HashSet<>();
+        for (FileModel file: files) {
+            if(file.getId()!=0){
+                log.error("file id is not empty");
+                throw new RuntimeException("file id is not empty");
+            }
+            FileModel fileModel = filesService.add(file);
+            documentModel.getFiles().add(fileModel);
+            documentsRepository.save(documentModel);
+            results.add(fileModel.getId());
+        }
+        return results;
     }
 
     //добавление одного файла
-    public Long addFile(Long docId, FilesModel file){
-        return null;
+    @Transactional
+    public Long addFile(Long docId, FileModel file){
+        if(file.getId()!=0){
+            log.error("file id is not empty");
+            throw new RuntimeException("file id is not empty");
+        }
+        DocumentModel documentModel = documentsRepository.findById(docId)
+                .orElseThrow(()->new ResourceNotFoundException("Документ с id-'" + docId + "' не найден"));
+        FileModel fileModel = filesService.add(file);
+        documentModel.getFiles().add(fileModel);
+        documentsRepository.save(documentModel);
+        return fileModel.getId();
+    }
+
+    //добавление одного файла
+    public Long changeFile(Long docId, FileModel file){
+        if(file.getId()==0){
+            log.error("file id is empty");
+            throw new RuntimeException("file id is empty");
+        }
+        DocumentModel documentModel = documentsRepository.findById(docId)
+                .orElseThrow(()->new ResourceNotFoundException("Документ с id-'" + docId + "' не найден"));
+        FileModel fileModel = filesService.findById(file.getId());
+        if(fileModel.getFileData().length==0) {
+            filesService.saveOnlyDescribtion(fileModel);
+        }else{
+            filesService.saveWithAllData(fileModel);
+        }
+        return fileModel.getId();
     }
 
     //получение данных файла по id
-    public FilesModel getFile(Long docId, Long fileId){
-        return null;
+    public FileModel getFileData(Long docId, Long fileId){
+        DocumentModel documentModel = documentsRepository.findById(docId)
+                .orElseThrow(()->new ResourceNotFoundException("Документ с id-'" + docId + "' не найден"));
+        if(documentModel
+                .getFiles()
+                .stream()
+                .anyMatch(p->p.getId()==fileId) == false){
+            throw new ResourceNotFoundException("Файл с id-'" + fileId + "' не принадлежит документу с id-'" + docId + "'");
+        }
+        return filesService.findById(fileId);
+    }
+
+    //удаление файла по id
+    @Transactional
+    public void deleteFile(Long docId, Long fileId){
+        DocumentModel documentModel = documentsRepository.findById(docId)
+                .orElseThrow(()->new ResourceNotFoundException("Документ с id-'" + docId + "' не найден"));
+        FileModel fileModel = null;
+        for (FileModel file: documentModel.getFiles()) {
+            if(file.getId()==fileId){
+                fileModel = file;
+                break;
+            }
+        }
+        if(fileModel==null){
+            throw new ResourceNotFoundException("Файл с id-'" + fileId + "' не принадлежит документу с id-'" + docId + "'");
+        }
+        filesService.delete(fileId);
+        documentModel.getFiles().remove(fileModel);
+        documentsRepository.save(documentModel);
+    }
+
+    //удаление всех файлов
+    @Transactional
+    public void clearFiles(Long docId){
+        DocumentModel documentModel = documentsRepository.findById(docId)
+                .orElseThrow(()->new ResourceNotFoundException("Документ с id-'" + docId + "' не найден"));
+        for (FileModel file: documentModel.getFiles()) {
+            filesService.delete(file.getId());
+        }
+        documentModel.getFiles().clear();
+        documentsRepository.save(documentModel);
     }
 
 }

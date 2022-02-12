@@ -15,6 +15,7 @@ public class Options {
     private final OptionService optionService;
 
     private Integer fileStorageType = 1;
+    private String dateFormat;
 
     @Autowired
     public Options(OptionService optionService) {
@@ -23,6 +24,15 @@ public class Options {
         if(options.isPresent()){
             OptionModel opt = options.get();
             this.fileStorageType = opt.getFileStorageType();
+            this.dateFormat = optionService.getDateFormat();
         }
+    }
+
+    public Integer getFileStorageType() {
+        return fileStorageType;
+    }
+
+    public String getDateFormat() {
+        return dateFormat;
     }
 }
