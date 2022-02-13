@@ -4,6 +4,9 @@ import com.braindocs.braindocs.DTO.files.FileDTO;
 import com.braindocs.braindocs.DTO.organization.OrganisationNameDTO;
 import com.braindocs.braindocs.DTO.users.UserNameDTO;
 import com.braindocs.braindocs.DTO.validators.DateValidator;
+import com.braindocs.braindocs.models.documents.DocumentModel;
+import com.braindocs.braindocs.services.DocumentsService;
+import com.braindocs.braindocs.services.UserService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
