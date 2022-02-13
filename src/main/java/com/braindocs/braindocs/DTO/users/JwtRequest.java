@@ -3,7 +3,7 @@ package com.braindocs.braindocs.DTO.users;
 import lombok.Data;
 
 @Data
-public class SignUpRequestDto {
-    private String email;
+public class JwtRequest {
+    private String username;
     private String password;
 }
