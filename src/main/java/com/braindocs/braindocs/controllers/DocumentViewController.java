@@ -1,8 +1,9 @@
 package com.braindocs.braindocs.controllers;
 
 
-import com.braindocs.braindocs.DTO.documents.DocumentViewDTO;
-import com.braindocs.braindocs.services.documents.DocumentViewService;
+import com.braindocs.braindocs.DTO.documents.DocumentTypeDTO;
+import com.braindocs.braindocs.services.documents.DocumentTypeService;
+import com.braindocs.braindocs.services.mappers.DocumentTypeMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,32 +13,31 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/doc_view")
+@RequestMapping("/api/v1/doc_view")
 public class DocumentViewController {
 
-    private final DocumentViewService documentViewService;
+    private final DocumentTypeService documentTypeService;
+    private final DocumentTypeMapper documentTypeMapper;
 
     @PostMapping
     public String addView(@RequestParam(name = "name_view") String nameView, @RequestParam(name = "add_view") MultipartFile file) {
-        return documentViewService.addView(nameView,file);
+        return documentTypeService.addView(nameView,file);
     }
 
     @GetMapping("/get_doc_view/{id}")
-    public String getView(@PathVariable Long id){
-        return documentViewService.findById(id);
+    public DocumentTypeDTO getView(@PathVariable Long id){
+        return documentTypeMapper.toDTO(documentTypeService.findById(id));
     }
 
     @DeleteMapping("/delete/{id}")
     public String deleteView(@PathVariable Long id){
-        return documentViewService.deleteById(id);
+        return documentTypeService.deleteById(id);
     }
 
     @GetMapping("/findAll")
-    public List<DocumentViewDTO> findAllDocumets() {
-        return documentViewService.findAll().stream()
-                .map(docStorMod -> new DocumentViewDTO(docStorMod.getId(),
-                        docStorMod.getName(),
-                        docStorMod.getDocumentData()))
+    public List<DocumentTypeDTO> findAllDocumets() {
+        return documentTypeService.findAll().stream()
+                .map(documentTypeMapper::toDTO)
                 .collect(Collectors.toList());
     }
 }

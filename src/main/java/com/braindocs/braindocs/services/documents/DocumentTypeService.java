@@ -1,11 +1,9 @@
 package com.braindocs.braindocs.services.documents;
 
-import com.braindocs.braindocs.models.documents.DocumentViewModel;
-import com.braindocs.braindocs.repositories.documents.DocumentViewRepository;
+import com.braindocs.braindocs.models.documents.DocumentTypeModel;
+import com.braindocs.braindocs.repositories.documents.DocumentTypeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,12 +17,12 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class DocumentViewService {
+public class DocumentTypeService {
     //Logger logger = LoggerFactory.getLogger(DocumentViewService.class);
-    private final DocumentViewRepository documentViewRepository;
+    private final DocumentTypeRepository documentTypeRepository;
 
-    public List<DocumentViewModel> findAll() {
-        return documentViewRepository.findAll();
+    public List<DocumentTypeModel> findAll() {
+        return documentTypeRepository.findAll();
     }
 
     public String addView(String nameView, MultipartFile file) {
@@ -63,18 +61,18 @@ public class DocumentViewService {
             sb.append(ch);
         }
         //log.info("---------------" + sb.toString());
-        documentViewRepository.save(new DocumentViewModel(name, sb.toString()));
+        documentTypeRepository.save(new DocumentTypeModel());
 
     }
 
-    public String findById(Long id) {
-        Optional<DocumentViewModel> optionalDocumentViewModel = documentViewRepository.findById(id);
-        DocumentViewModel documentViewModel = optionalDocumentViewModel.get();
-        return documentViewModel.getDocumentData();
+    public DocumentTypeModel findById(Long id) {
+        Optional<DocumentTypeModel> optionalDocumentViewModel = documentTypeRepository.findById(id);
+        DocumentTypeModel documentViewModel = optionalDocumentViewModel.get();
+        return documentViewModel;
     }
 
     public String deleteById(Long id) {
-        documentViewRepository.deleteById(id);
+        documentTypeRepository.deleteById(id);
         return "Deleted";
     }
 }
