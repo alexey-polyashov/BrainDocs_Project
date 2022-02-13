@@ -1,9 +1,10 @@
 package com.braindocs.braindocs.services.mappers;
 
 import com.braindocs.braindocs.DTO.files.FileDTO;
-import com.braindocs.braindocs.DTO.files.FileDTOwithData;
-import com.braindocs.braindocs.DTO.files.NewFileDTOwithData;
+import com.braindocs.braindocs.DTO.files.FileDataDTO;
+import com.braindocs.braindocs.DTO.files.NewFileDTO;
 import com.braindocs.braindocs.DTO.users.UserNameDTO;
+import com.braindocs.braindocs.common.Options;
 import com.braindocs.braindocs.models.files.FileModel;
 import com.braindocs.braindocs.models.users.UserModel;
 import com.braindocs.braindocs.services.FilesService;
@@ -20,12 +21,13 @@ public class FileMapper {
 
     private final UserService userService;
     private final FilesService filesService;
+    private final Options options;
 
     public FileModel toModel(FileDTO fileDTO){
         FileModel file = new FileModel();
         file.setName(fileDTO.getName());
         file.setStorageType(fileDTO.getStorageType());
-        file.setDescribtion(fileDTO.getDescribtion());
+        file.setDescribe(fileDTO.getDescribe());
         file.setFileType(fileDTO.getFileType());
         UserModel userModel = userService.findById(fileDTO.getAuthor().getId());
         file.setAuthor(userModel);
@@ -41,7 +43,7 @@ public class FileMapper {
         dto.setId(fileModel.getId());
         dto.setName(fileModel.getName());
         dto.setStorageType(fileModel.getStorageType());
-        dto.setDescribtion(fileModel.getDescribtion());
+        dto.setDescribe(fileModel.getDescribe());
         dto.setFileSize(fileModel.getFileSize());
         dto.setFileType(fileModel.getFileType());
         dto.setAuthor(new UserNameDTO(fileModel.getAuthor()));
@@ -50,28 +52,25 @@ public class FileMapper {
         return dto;
     }
 
-    public FileDTOwithData toDTOwithData(FileModel fileModel){
-        FileDTOwithData dto = new FileDTOwithData();
+    public FileDataDTO toDTOwithData(FileModel fileModel){
+        FileDataDTO dto = new FileDataDTO();
         dto.setId(fileModel.getId());
         dto.setName(fileModel.getName());
-        dto.setStorageType(fileModel.getStorageType());
-        dto.setDescribtion(fileModel.getDescribtion());
         dto.setFileType(fileModel.getFileType());
-        dto.setAuthor(new UserNameDTO(fileModel.getAuthor()));
-        dto.setParsedText(fileModel.getParsedText());
-        dto.setOriginalFilename(fileModel.getOriginalFilename());
         dto.setContentType(fileModel.getContentType());
+        dto.setFileData(fileModel.getFileData());
         return dto;
     }
 
-    public FileModel toModel(NewFileDTOwithData fileData) throws IOException {
+    public FileModel toModel(NewFileDTO fileData, MultipartFile mpf) throws IOException {
         FileModel file = new FileModel();
+        file.setId(0L);
+        file.setStorageType(options.getFileStorageType());
         file.setName(fileData.getName());
-        file.setDescribtion(fileData.getDescribtion());
+        file.setDescribe(fileData.getDescribe());
         file.setFileType(fileData.getFileType());
         UserModel userModel = userService.findById(fileData.getAuthor().getId());
         file.setAuthor(userModel);
-        MultipartFile mpf = fileData.getFileData();
         file.setFileSize(mpf.getSize());
         file.setFileData(mpf.getBytes());
         file.setContentType(mpf.getContentType());

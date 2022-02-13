@@ -24,14 +24,15 @@ CREATE TABLE IF NOT EXISTS files
     id bigserial,
     storagetype int NOT NULL,
     name character varying(250) not null,
-    describtion character varying(250) not null,
+    filedescribe character varying(250) not null,
     filesize bigint,
     filetype character varying(15),
     author bigint,
     parsedtext text,
     originalfilename text,
     contenttype text,
-    filedata oid not null,
+    filedata oid,
+    storagepath text,
 
     marked boolean,
     created_at timestamp without time zone,
@@ -39,10 +40,6 @@ CREATE TABLE IF NOT EXISTS files
     CONSTRAINT files_pkey PRIMARY KEY (id),
     CONSTRAINT fk_files_author_id FOREIGN KEY (author)
         REFERENCES users (id)
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT fk_files_type FOREIGN KEY (filetype)
-        REFERENCES filestorage_type (id)
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );

@@ -7,12 +7,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.ServletContext;
 import java.util.Optional;
 
 @Component
 public class Options {
 
     private final OptionService optionService;
+
+    @Autowired
+    private ServletContext servletContext;
+    private String contextPath;
 
     private Integer fileStorageType = 1;
     private String dateFormat;
@@ -28,6 +34,11 @@ public class Options {
         }
     }
 
+    @PostConstruct
+    public void showIt() {
+        this.contextPath = servletContext.getContextPath();
+    }
+
     public Integer getFileStorageType() {
         return fileStorageType;
     }
@@ -35,4 +46,6 @@ public class Options {
     public String getDateFormat() {
         return dateFormat;
     }
+
+
 }

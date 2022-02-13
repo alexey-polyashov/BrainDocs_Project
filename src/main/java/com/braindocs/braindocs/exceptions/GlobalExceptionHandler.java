@@ -1,5 +1,6 @@
 package com.braindocs.braindocs.exceptions;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,9 +12,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<?> notFoundException(ResourceNotFoundException e){
+        log.error("Resource not found, {}", e.getMessage());
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
@@ -40,6 +43,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<?> catchOtherException(Exception e){
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        log.error("Exception, {}", e.getMessage() + "\n"+ e.getStackTrace()[0]);
+        return new ResponseEntity<>(e.getMessage() + "\n"+ e.getStackTrace()[0], HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

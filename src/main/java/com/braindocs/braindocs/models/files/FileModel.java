@@ -21,8 +21,8 @@ public class FileModel {
     @Column(name="name")
     private String name;
 
-    @Column(name="describtion")
-    private String describtion;
+    @Column(name="filedescribe")
+    private String describe;
 
     @Column(name="filesize")
     private Long fileSize;

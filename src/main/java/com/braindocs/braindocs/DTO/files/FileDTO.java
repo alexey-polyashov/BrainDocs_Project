@@ -14,7 +14,7 @@ public class FileDTO {
     @NotEmpty(message = "Не указано наименование файла")
     private String name;
     private Integer storageType;
-    private String describtion;
+    private String describe;
     @NotEmpty(message = "Не указан размер файла")
     private Long fileSize;
     @NotEmpty(message = "Не указан автор файла")
@@ -23,5 +23,6 @@ public class FileDTO {
     private String originalFilename;
     @NotEmpty(message = "Не указан тип файла")
     private String fileType;
+    private String link;
 
 }
