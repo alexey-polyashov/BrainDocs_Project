@@ -39,7 +39,6 @@ public class DocumentsService {
     }
 
     //получение файла по id
-    @Transactional
     private FileModel getDocumentFile(Long docId, Long fileId){
         DocumentModel documentModel = getDocument(docId);
         FileModel fileModel = null;
@@ -78,10 +77,12 @@ public class DocumentsService {
         documentsRepository.deleteById(id);
     }
 
+    @Transactional
     public DocumentModel getDocumentById(Long documentId){
         return documentsRepository.findById(documentId).orElseThrow(()->new ResourceNotFoundException("Документ с id '" + documentId + "' не найден"));
     }
 
+    @Transactional
     public Page<DocumentModel> getDocumentsByFields(int page, int recordsOnPage, Specification spec){
         return documentsRepository.findAll(spec, PageRequest.of(page, recordsOnPage));
     }
