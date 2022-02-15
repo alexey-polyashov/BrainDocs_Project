@@ -98,7 +98,6 @@ public class DocumentController {
     }
 
     @GetMapping(value="/")
-    @Transactional
     public Page<DocumentDTO> getDocuments(@RequestParam( name = "pagenumber", defaultValue = "0") int pageNumber, @RequestParam(name = "pagesize", defaultValue = "10") int pageSize){
         log.info("DocumentController: getDocuments, pagenumber-{}, pagesize-{}", pageNumber, pageSize);
         Page<DocumentModel> documents = documentsService.getDocuments(pageNumber, pageSize);

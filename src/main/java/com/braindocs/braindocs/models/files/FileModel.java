@@ -4,6 +4,7 @@ import com.braindocs.braindocs.models.users.UserModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -48,6 +49,7 @@ public class FileModel {
 
     @Lob
     @Column(name="filedata")
+    @Basic(fetch=FetchType.LAZY)
     private byte[] fileData;
 
     @Id
