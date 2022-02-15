@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS files
     id bigserial,
     storagetype int NOT NULL,
     name character varying(250) not null,
-    filedescribe character varying(250) not null,
+    filedescription character varying(250) not null,
     filesize bigint,
     filetype character varying(15),
     author bigint,

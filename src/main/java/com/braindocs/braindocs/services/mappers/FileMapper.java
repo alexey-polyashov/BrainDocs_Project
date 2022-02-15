@@ -27,7 +27,7 @@ public class FileMapper {
         FileModel file = new FileModel();
         file.setName(fileDTO.getName());
         file.setStorageType(fileDTO.getStorageType());
-        file.setDescribe(fileDTO.getDescribe());
+        file.setDescription(fileDTO.getDescription());
         file.setFileType(fileDTO.getFileType());
         UserModel userModel = userService.findById(fileDTO.getAuthor().getId());
         file.setAuthor(userModel);
@@ -43,7 +43,7 @@ public class FileMapper {
         dto.setId(fileModel.getId());
         dto.setName(fileModel.getName());
         dto.setStorageType(fileModel.getStorageType());
-        dto.setDescribe(fileModel.getDescribe());
+        dto.setDescription(fileModel.getDescription());
         dto.setFileSize(fileModel.getFileSize());
         dto.setFileType(fileModel.getFileType());
         dto.setAuthor(new UserNameDTO(fileModel.getAuthor()));
@@ -67,7 +67,7 @@ public class FileMapper {
         file.setId(0L);
         file.setStorageType(options.getFileStorageType());
         file.setName(fileData.getName());
-        file.setDescribe(fileData.getDescription());
+        file.setDescription(fileData.getDescription());
         file.setFileType(fileData.getFileType());
         UserModel userModel = userService.findById(fileData.getAuthor().getId());
         file.setAuthor(userModel);

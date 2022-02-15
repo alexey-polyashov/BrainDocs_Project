@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 @Data
 @NoArgsConstructor
 public class UserNameDTO {
-    @NotEmpty(message = "Не указан идентификатор пользователя")
+   // @NotEmpty(message = "Не указан идентификатор пользователя")
     private Long id;
     private String shortname;
 

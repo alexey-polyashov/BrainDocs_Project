@@ -24,8 +24,7 @@ public class FilesService {
         int storageType= options.getFileStorageType();
         if(storageType==1) {
             file.setFileData(fileData.getBytes());
-            FileModel savedFile = filesRepository.save(file);
-            return savedFile;
+            return filesRepository.save(file);
         }
         else{
             //1.сохранить сначала на диск
@@ -57,7 +56,7 @@ public class FilesService {
     public Long saveOnlyDescribe(FileModel file){
         Optional<FileModel> oldFile = filesRepository.findById(file.getId());
         FileModel fileModel = oldFile.orElseThrow(()->new ResourceNotFoundException("Файл с id - '" + file.getId() + "' не найден"));
-        fileModel.setDescribe(file.getDescribe());
+        fileModel.setDescription(file.getDescription());
         fileModel.setAuthor(file.getAuthor());
         fileModel.setName(file.getName());
         filesRepository.save(fileModel);
