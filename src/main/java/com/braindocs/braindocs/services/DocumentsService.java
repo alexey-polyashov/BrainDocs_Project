@@ -86,6 +86,7 @@ public class DocumentsService {
         return documentsRepository.findAll(spec, PageRequest.of(page, recordsOnPage));
     }
 
+    @Transactional
     public Page<DocumentModel> getDocuments(int pageNumber, int pageSize){
         return documentsRepository.findAll(PageRequest.of(pageNumber, pageSize));
     }
