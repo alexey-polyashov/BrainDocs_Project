@@ -39,6 +39,7 @@ public class DocumentsService {
     }
 
     //получение файла по id
+    @Transactional
     private FileModel getDocumentFile(Long docId, Long fileId){
         DocumentModel documentModel = getDocument(docId);
         FileModel fileModel = null;
@@ -103,18 +104,21 @@ public class DocumentsService {
         return fileModel;
     }
 
+    @Transactional
     public Set<FileModel> getFilesList(Long docId){
         DocumentModel documentModel = getDocument(docId);
         return documentModel.getFiles();
     }
 
     //получение описания файла по id
+    @Transactional
     public FileModel getFileDescribe(Long docId, Long fileId){
         getDocumentFile(docId, fileId);
         return filesService.findById(fileId);
     }
 
     //получение данных файла по id
+    @Transactional
     public FileDataDTO getFileData(Long docId, Long fileId){
         getDocumentFile(docId, fileId);
         return fileMapper.toDTOwithData(
