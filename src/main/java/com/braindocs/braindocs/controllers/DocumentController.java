@@ -98,6 +98,7 @@ public class DocumentController {
     }
 
     @GetMapping(value="/")
+    @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public Page<DocumentDTO> getDocuments(@RequestParam( name = "pagenumber", defaultValue = "0") int pageNumber, @RequestParam(name = "pagesize", defaultValue = "10") int pageSize){
         log.info("DocumentController: getDocuments, pagenumber-{}, pagesize-{}", pageNumber, pageSize);
         Page<DocumentModel> documents = documentsService.getDocuments(pageNumber, pageSize);
@@ -107,6 +108,7 @@ public class DocumentController {
     }
 
     @GetMapping(value="{id}")
+    @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public DocumentDTO getDocumentById(@PathVariable("id") Long id){
         log.info("DocumentController: getDocumentById");
         DocumentModel doc = documentsService.getDocumentById(id);
@@ -163,6 +165,7 @@ public class DocumentController {
     }
 
     @GetMapping(value="/get_files_list/{docid}")
+    @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public Set<FileDTO> getFiles(@PathVariable("docid") Long docid){
         log.info("DocumentController: getFileslist");
         Set<FileModel> filesList = documentsService.getFilesList(docid);
@@ -177,6 +180,7 @@ public class DocumentController {
     }
 
     @GetMapping(value="/get_file_describe/{docid}/{fileId}")
+    @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public FileDTO getFileDescribe(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
         log.info("DocumentController: getFileDescribe, docid-{}, fileid{}", docid, fileid);
         FileDTO fDTO = fileMapper.toDTO(documentsService.getFileDescribe(docid, fileid));
@@ -186,6 +190,7 @@ public class DocumentController {
 
     @GetMapping(value="/get_file_data/{docid}/{fileid}")
     @ResponseBody
+    @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public ResponseEntity<byte[]> getFileData(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
         log.info("DocumentController: getFileData");
         FileDataDTO fileData = documentsService.getFileData(docid, fileid);
