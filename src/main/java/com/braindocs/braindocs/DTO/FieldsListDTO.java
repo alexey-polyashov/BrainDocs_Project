@@ -14,4 +14,5 @@ public class FieldsListDTO {
     private String source;
     private Set<String> validOperations;
     private String type;
+    private Boolean defaultOn;
 }

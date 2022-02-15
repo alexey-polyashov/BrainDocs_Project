@@ -67,7 +67,7 @@ public class FileMapper {
         file.setId(0L);
         file.setStorageType(options.getFileStorageType());
         file.setName(fileData.getName());
-        file.setDescribe(fileData.getDescribe());
+        file.setDescribe(fileData.getDescription());
         file.setFileType(fileData.getFileType());
         UserModel userModel = userService.findById(fileData.getAuthor().getId());
         file.setAuthor(userModel);

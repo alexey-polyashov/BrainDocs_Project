@@ -13,10 +13,11 @@ public class NewFileDTO {
 
     @NotEmpty(message = "Не указано наименование файла")
     private String name;
-    private String describe;
-    private String originalFilename;
-    private String fileType;
+    private String description;
     @NotEmpty(message = "Не указан автор файла")
     private UserNameDTO author;
+    private String originalFilename;
+    private String fileType;
+
 
 }

@@ -21,10 +21,12 @@ CREATE TABLE IF NOT EXISTS organisations
     name text,
     inn character varying(12) NOT NULL,
     kpp character varying(9),
+    manager bigint,
     marked boolean,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     CONSTRAINT organisations_pkey PRIMARY KEY (id)
+
 );
 --CONTACTS
 CREATE TABLE IF NOT EXISTS organisation_contacts
@@ -35,10 +37,14 @@ CREATE TABLE IF NOT EXISTS organisation_contacts
     present text NOT NULL,
     marked boolean,
     CONSTRAINT organisation_contacts_pkey PRIMARY KEY (id),
-    CONSTRAINT type_id FOREIGN KEY (type)
-        REFERENCES contacts_types (id)
+    CONSTRAINT fk_organisation_id FOREIGN KEY (organisation)
+        REFERENCES organisations (id)
         ON UPDATE NO ACTION
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT type_id FOREIGN KEY (type)
+         REFERENCES contacts_types (id)
+         ON UPDATE NO ACTION
+         ON DELETE CASCADE
 );
 INSERT INTO organisations (name, inn, kpp)
 VALUES ('ООО "Ромашка"', '1234567890', '098765432'),

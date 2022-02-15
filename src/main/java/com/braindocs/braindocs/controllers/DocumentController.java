@@ -59,14 +59,14 @@ public class DocumentController {
     public Set<FieldsListDTO> getFields(){
         log.info("DocumentController: getFields");
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
-        fieldsSet.add(new FieldsListDTO("Вид документа", "documentType", "DocumentTypeModel", new HashSet<String>(Arrays.asList(":")), "Long"));
-        fieldsSet.add(new FieldsListDTO("Номер докуемнта","number", "", new HashSet<String>(Arrays.asList(":")), "String"));
-        fieldsSet.add(new FieldsListDTO("Дата документа","documentDate","", new HashSet<String>(Arrays.asList("<",">")), "Date"));
-        fieldsSet.add(new FieldsListDTO("Заголовок документа", "heading","", new HashSet<String>(Arrays.asList(":")), "String"));
-        fieldsSet.add(new FieldsListDTO("Содержание", "content","", new HashSet<String>(Arrays.asList(":")), "String"));
-        fieldsSet.add(new FieldsListDTO("Автор документа", "author","UserModel", new HashSet<String>(Arrays.asList(":")), "Long"));
-        fieldsSet.add(new FieldsListDTO("Ответственный за документ", "responsible","UserModel", new HashSet<String>(Arrays.asList(":")), "Long"));
-        fieldsSet.add(new FieldsListDTO("Организация", "organisation","OrganisationModel", new HashSet<String>(Arrays.asList(":")), "Long"));
+        fieldsSet.add(new FieldsListDTO("Вид документа", "documentType", "DocumentTypeModel", new HashSet<String>(Arrays.asList(":")), "Long", false));
+        fieldsSet.add(new FieldsListDTO("Номер докуемнта","number", "", new HashSet<String>(Arrays.asList(":")), "String", false));
+        fieldsSet.add(new FieldsListDTO("Дата документа","documentDate","", new HashSet<String>(Arrays.asList("<",">")), "Date", true));
+        fieldsSet.add(new FieldsListDTO("Заголовок документа", "heading","", new HashSet<String>(Arrays.asList(":")), "String", false));
+        fieldsSet.add(new FieldsListDTO("Содержание", "content","", new HashSet<String>(Arrays.asList(":")), "String", true));
+        fieldsSet.add(new FieldsListDTO("Автор документа", "author","UserModel", new HashSet<String>(Arrays.asList(":")), "Long", true));
+        fieldsSet.add(new FieldsListDTO("Ответственный за документ", "responsible","UserModel", new HashSet<String>(Arrays.asList(":")), "Long", false));
+        fieldsSet.add(new FieldsListDTO("Организация", "organisation","OrganisationModel", new HashSet<String>(Arrays.asList(":")), "Long", true));
         log.info("DocumentController: getFields return {} elements", fieldsSet.size());
         return fieldsSet;
     }
