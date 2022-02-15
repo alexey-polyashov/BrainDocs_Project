@@ -17,7 +17,7 @@ console.log(event);
 
         let fileDescribe = {
             name: $scope.upload.file[fileId].name,
-            describe: $scope.upload.file[fileId].description,
+            description: $scope.upload.file[fileId].description,
             originalFilename: fileData.name,
             fileType: fileType,
             author: {id: $scope.upload.authorId}
@@ -69,7 +69,7 @@ console.log(response);
 
             let fileDescribe = {
                 name: $scope.upload.file[fileId].name,
-                describe: $scope.upload.file[fileId].description,
+                description: $scope.upload.file[fileId].description,
                 author: {id: $scope.upload.authorId}
             };
 
