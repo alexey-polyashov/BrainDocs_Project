@@ -1,5 +1,7 @@
 package com.braindocs.braindocs;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
@@ -8,6 +10,8 @@ import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 
 import javax.servlet.MultipartConfigElement;
+
+import static org.modelmapper.config.Configuration.AccessLevel.PRIVATE;
 
 @SpringBootApplication
 public class BraindocsApplication {
@@ -31,8 +35,8 @@ public class BraindocsApplication {
 	@Bean
 	public MultipartConfigElement multipartConfigElement() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
-		factory.setMaxFileSize(DataSize.of(128, DataUnit.KILOBYTES));
-		factory.setMaxRequestSize(DataSize.of(128, DataUnit.KILOBYTES));
+		factory.setMaxFileSize(DataSize.of(16, DataUnit.MEGABYTES));
+		factory.setMaxRequestSize(DataSize.of(512, DataUnit.KILOBYTES));
 		return factory.createMultipartConfig();
 	}
 

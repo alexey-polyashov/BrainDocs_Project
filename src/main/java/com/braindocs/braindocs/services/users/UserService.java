@@ -49,7 +49,7 @@ public class UserService  implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public UserModel changePassword(Integer userId, String oldPassword, String newPassword) {
+    public UserModel changePassword(Long userId, String oldPassword, String newPassword) {
         UserModel user = userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("Пользователь с id '" + userId + "'"));
         if (user.getPassword().equals(passwordEncoder.encode(oldPassword)))
             user.setPassword(passwordEncoder.encode(newPassword));
