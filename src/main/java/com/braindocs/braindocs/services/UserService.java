@@ -2,12 +2,9 @@ package com.braindocs.braindocs.services;
 
 import com.braindocs.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.braindocs.models.users.UserModel;
-import com.braindocs.braindocs.repositories.UserRepository;
+import com.braindocs.braindocs.repositories.users.UserRepository;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.dynamic.DynamicType;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

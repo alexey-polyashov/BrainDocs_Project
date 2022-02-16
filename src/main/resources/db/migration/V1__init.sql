@@ -59,7 +59,7 @@ VALUES (1, 2,'Москва, Пушкино, дом 7, офис 11'),
 CREATE TABLE IF NOT EXISTS users
 (
     id bigserial,
-    login text NULL,
+    login text NOT NULL,
     email text NOT NULL,
     fullname text,
     shortname text NOT NULL,
