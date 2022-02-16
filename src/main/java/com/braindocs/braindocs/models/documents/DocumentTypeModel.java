@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="organisations")
+@Table(name="documents_types")
 @Data
 @NoArgsConstructor
 public class DocumentTypeModel {
@@ -29,4 +29,5 @@ public class DocumentTypeModel {
     @UpdateTimestamp
     @Column(name="updated_at")
     private LocalDateTime updateTime;
+
 }

@@ -1,26 +1,39 @@
 package com.braindocs.braindocs.DTO.documents;
 
+import com.braindocs.braindocs.DTO.files.FileDTO;
+import com.braindocs.braindocs.DTO.organization.OrganisationNameDTO;
+import com.braindocs.braindocs.DTO.users.UserNameDTO;
+import com.braindocs.braindocs.DTO.validators.DateValidator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.sql.Date;
+
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 public class DocumentDTO {
 
-    private Long documentTypeId;
-    private Long documentTypeName;
+    @NotNull(message = "Не указан вид документа")
+    private DocumentTypeNameDTO documentType;
+    @NotEmpty(message = "Не указан номер документа")
     private String number;
-    private Date documentDate;
+    @DateValidator(message = "Не верно указана дата документа")
+    private String documentDate;
+    @NotBlank(message = "Не указан заголовок документа")
     private String heading;
     private String content;
-    private Long authorId;
-    private String authorName;
-    private Long responsibleId;
-    private String responsibleName;
-    private Long organisationId;
-    private String organisationName;
+    @NotNull(message = "Не указан автор документа")
+    private UserNameDTO author;
+    private UserNameDTO responsible;
+    @NotNull(message = "Не указана организация")
+    private OrganisationNameDTO organisation;
     private Long id;
     private Boolean marked;
+
+    private List<FileDTO> files;
 
 }

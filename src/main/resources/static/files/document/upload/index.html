@@ -1,0 +1,47 @@
+
+<main style = "flex-grow: 1; flex-shrink: 0;flex-basis: auto;">
+
+    <div class="container">
+        <div id = "headLine">
+            <div style="flex-grow: 1">
+                <h2 class="page-header">Тест загрузки файлов</h2>
+            </div>
+        </div>
+        <div>
+        </div>
+
+        <form  ng-submit="saveFiles()" class="js-form-tasks">
+
+            <div class="col-sm-5">
+                <h3 class = "text-muted">Файлы к документу</h3>
+                <div>
+                    <label for="docId">Id документа</label>
+                    <input class="form-control" type="text" ng-model="upload.docId" id="docId" required>
+                    <label for="fileAuthor">Автор файлов</label>
+                    <input class="form-control" type="text" ng-model="upload.authorId" id="fileAuthor" required>
+                    <div style ="margin:30px 0px 0px 0px"><h4>Файл №1</h4>
+                        </br>
+                        <div style="margin:0px 0px 0px 20px">
+                            <input style="display:none" type="text" ng-model="upload.file[0].id" id="fileId0" required>
+                            <label for="fileName0">Имя файла №1</label>
+                            <input class="form-control" type="text" ng-model="upload.file[0].name" id="fileName0" required>
+                            <label for="fileDesc0">Описание файла №1</label>
+                            <input class="form-control" type="text" ng-model="upload.file[0].description" id="fileDesc0" required>
+                            </br>
+                            <input class="form-control" type="file" ng-model="upload.file[0].data" id="fileData0"
+                                   onchange="angular.element(this).scope().fileUpload(event)">
+                        </div>
+                    </div>
+                </div>
+                <div style ="margin:20px 0px 0px 0px">
+                    <span id = "message_block" ></span>
+                    <button class="btn btn-primary" type="submit">Сохранить</button>
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</main>
