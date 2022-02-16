@@ -144,6 +144,7 @@ public class DocumentController {
     //@PostMapping(value="/upload_file/{docid}")
     @RequestMapping(value = "/upload_file/{docid}", method = RequestMethod.POST,
             consumes = {"multipart/form-data"})
+    @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public FileDTO uploadFile(@PathVariable("docid") Long docid, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart("file") MultipartFile fileData) throws IOException {
         log.info("DocumentController: uploadfile");
         NewFileDTO fileDescribe = new ObjectMapper().readValue(jsonDescribe, NewFileDTO.class);
