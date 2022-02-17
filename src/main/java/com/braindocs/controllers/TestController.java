@@ -22,7 +22,9 @@ public class TestController {
     @GetMapping("/organisations")
     public OrganisationNameDTO[] getOrganisationsList(){
         OrganisationNameDTO[] orgs = new OrganisationNameDTO[10];
-        for (int i = 0; i < orgs.length; i++) {
+        orgs[0] = OrganisationNameDTO.builder().name("'ООО \"Ромашка\"'").id(1L).build();
+        orgs[1] = OrganisationNameDTO.builder().name("'ИП Иванов'").id(2L).build();
+        for (int i = 2; i < orgs.length; i++) {
             orgs[i] = new OrganisationNameDTO();
             orgs[i].setId((long) i);
             orgs[i].setName("Organisation " + i);
@@ -33,7 +35,10 @@ public class TestController {
     @GetMapping("/users")
     public UserNameDTO[] getUsersList(){
         UserNameDTO[] users = new UserNameDTO[15];
-        for (int i = 0; i < users.length; i++) {
+        users[0] = UserNameDTO.builder().shortname("Сильвер С.").id(1L).build();
+        users[1] = UserNameDTO.builder().shortname("Ханс Ц.").id(2L).build();
+        users[2] = UserNameDTO.builder().shortname("Шварцнегер А.").id(2L).build();
+        for (int i = 3; i < users.length; i++) {
             users[i] = new UserNameDTO();
             users[i].setId((long) i);
             users[i].setShortname("User " + i);
@@ -44,7 +49,10 @@ public class TestController {
     @GetMapping("/doc_types")
     public DocumentTypeNameDTO[] getDocumentTypesList(){
         DocumentTypeNameDTO[] docTypes = new DocumentTypeNameDTO[10];
-        for (int i = 0; i < docTypes.length; i++) {
+        docTypes[0] = DocumentTypeNameDTO.builder().name("Приказы").id(1L).build();
+        docTypes[1] = DocumentTypeNameDTO.builder().name("Договора").id(1L).build();
+        docTypes[2] = DocumentTypeNameDTO.builder().name("Прочие").id(1L).build();
+        for (int i = 3; i < docTypes.length; i++) {
             docTypes[i] = new DocumentTypeNameDTO();
             docTypes[i].setId((long) i);
             docTypes[i].setName("Doc type " + i);
