@@ -1,12 +1,13 @@
 package com.braindocs.controllers;
 
-import com.braindocs.DTO.FieldsListDTO;
-import com.braindocs.DTO.SearchCriteriaDTO;
-import com.braindocs.DTO.SearchCriteriaListDTO;
-import com.braindocs.DTO.documents.DocumentDTO;
-import com.braindocs.DTO.files.FileDTO;
-import com.braindocs.DTO.files.FileDataDTO;
-import com.braindocs.DTO.files.NewFileDTO;
+import com.braindocs.dto.FieldsListDTO;
+import com.braindocs.dto.SearchCriteriaDTO;
+import com.braindocs.dto.SearchCriteriaListDTO;
+import com.braindocs.dto.documents.DocumentDTO;
+import com.braindocs.dto.files.FileDTO;
+import com.braindocs.dto.files.FileDataDTO;
+import com.braindocs.dto.files.NewFileDTO;
+import com.braindocs.exceptions.AnyOtherException;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.files.FileModel;
 import com.braindocs.repositories.specifications.DocumentSpecificationBuilder;
@@ -30,10 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -48,6 +46,10 @@ public class DocumentController {
     private final DocumentMapper documentMapper;
     private final FileMapper fileMapper;
 
+    private static final String STRING_TYPE = "String";
+    private static final String LONG_TYPE = "Long";
+    private static final String DATE_TYPE = "Date";
+
     private void setLinkToFile(FileDTO fileDTO, Long docId){
         fileDTO.setLink("/api/v1/documents/get_file_data/" + docId + "/" + fileDTO.getId());
     }
@@ -59,14 +61,14 @@ public class DocumentController {
     public Set<FieldsListDTO> getFields(){
         log.info("DocumentController: getFields");
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
-        fieldsSet.add(new FieldsListDTO("Вид документа", "documentType", "DocumentTypeModel", new HashSet<String>(Arrays.asList(":")), "Long", false));
-        fieldsSet.add(new FieldsListDTO("Номер докуемнта","number", "", new HashSet<String>(Arrays.asList(":")), "String", false));
-        fieldsSet.add(new FieldsListDTO("Дата документа","documentDate","", new HashSet<String>(Arrays.asList("<",">")), "Date", true));
-        fieldsSet.add(new FieldsListDTO("Заголовок документа", "heading","", new HashSet<String>(Arrays.asList(":")), "String", false));
-        fieldsSet.add(new FieldsListDTO("Содержание", "content","", new HashSet<String>(Arrays.asList(":")), "String", true));
-        fieldsSet.add(new FieldsListDTO("Автор документа", "author","UserModel", new HashSet<String>(Arrays.asList(":")), "Long", true));
-        fieldsSet.add(new FieldsListDTO("Ответственный за документ", "responsible","UserModel", new HashSet<String>(Arrays.asList(":")), "Long", false));
-        fieldsSet.add(new FieldsListDTO("Организация", "organisation","OrganisationModel", new HashSet<String>(Arrays.asList(":")), "Long", true));
+        fieldsSet.add(new FieldsListDTO("Вид документа", "documentType", "DocumentTypeModel", Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Номер докуемнта","number", "", Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Дата документа","documentDate","", Arrays.asList("<",">"), DATE_TYPE, true));
+        fieldsSet.add(new FieldsListDTO("Заголовок документа", "heading","", Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Содержание", "content","", Arrays.asList(":"), STRING_TYPE, true));
+        fieldsSet.add(new FieldsListDTO("Автор документа", "author","UserModel", Arrays.asList(":"), LONG_TYPE, true));
+        fieldsSet.add(new FieldsListDTO("Ответственный за документ", "responsible","UserModel", Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Организация", "organisation","OrganisationModel", Arrays.asList(":"), LONG_TYPE, true));
         log.info("DocumentController: getFields return {} elements", fieldsSet.size());
         return fieldsSet;
     }
@@ -122,6 +124,7 @@ public class DocumentController {
     }
 
     @PostMapping(value="/get_list")
+    @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public Page<DocumentDTO>  getDocumentsByFilter(@RequestBody SearchCriteriaListDTO requestDTO){
         log.info("DocumentController: getDocumentsByFilter");
         List<SearchCriteriaDTO> filter = requestDTO.getFilter();
@@ -141,7 +144,7 @@ public class DocumentController {
 
 
     //@PostMapping(value="/upload_file/{docid}")
-    @RequestMapping(value = "/upload_file/{docid}", method = RequestMethod.POST,
+    @PostMapping(value = "/upload_file/{docid}",
             consumes = {"multipart/form-data"})
     @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public FileDTO uploadFile(@PathVariable("docid") Long docid, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart("file") MultipartFile fileData) throws IOException {
@@ -149,14 +152,14 @@ public class DocumentController {
         NewFileDTO fileDescribe = new ObjectMapper().readValue(jsonDescribe, NewFileDTO.class);
         if(fileData.isEmpty()){
             log.info("file is empty");
-            throw new RuntimeException("file is empty");
+            throw new AnyOtherException("file is empty");
         }
         FileModel fileModel;
         try {
             fileModel = fileMapper.toModel(fileDescribe, fileData);
         } catch (IOException e) {
             log.error("get file data error\n" + e.getMessage() + "\n" + e.getCause());
-            throw new RuntimeException("get file data error");
+            throw new AnyOtherException("get file data error");
         }
         fileModel = documentsService.addFile(docid, fileModel, fileData);
         FileDTO fileDTO = fileMapper.toDTO(fileModel);
@@ -169,14 +172,13 @@ public class DocumentController {
     public Set<FileDTO> getFiles(@PathVariable("docid") Long docid){
         log.info("DocumentController: getFileslist");
         Set<FileModel> filesList = documentsService.getFilesList(docid);
-        Set<FileDTO> fileDTOs = filesList.stream().map(
-                (p)->{
+        return filesList.stream().map(
+                p->{
                     FileDTO res = fileMapper.toDTO(p);
                     setLinkToFile(res, docid);
                     return res;
                 }
             ).collect(Collectors.toSet());
-        return fileDTOs;
     }
 
     @GetMapping(value="/get_file_describe/{docid}/{fileId}")
@@ -198,7 +200,7 @@ public class DocumentController {
         return ResponseEntity.ok().contentType(mt).body(fileData.getFileData());
     }
 
-    @RequestMapping(value = "/change_file/{docid}", method = RequestMethod.POST,
+    @PostMapping(value = "/change_file/{docid}",
             consumes = {"multipart/form-data"})
     public FileDTO changeFile(@PathVariable("docid") Long docid, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart("file") MultipartFile fileData) throws JsonProcessingException {
         log.info("DocumentController: changeFile, docid-{}, fileDescribe{}", docid, jsonDescribe);
@@ -208,7 +210,7 @@ public class DocumentController {
             fileModel = fileMapper.toModel(fileDescribe, fileData);
         } catch (IOException e) {
             log.error("get file data error\n{}\n{}", e.getMessage(), e.getCause());
-            throw new RuntimeException("get file data error");
+            throw new AnyOtherException("get file data error");
         }
         fileModel = documentsService.changeFile(docid, fileModel, fileData);
         FileDTO fileDTO = fileMapper.toDTO(fileModel);

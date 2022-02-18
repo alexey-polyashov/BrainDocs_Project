@@ -1,17 +1,17 @@
-package com.braindocs.DTO;
+package com.braindocs.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 public class FieldsListDTO {
     private String name;
     private String key;
-    private String source;
-    private Set<String> validOperations;
+    private String endPoint;
+    private List<String> validOperations;
     private String type;
     private Boolean defaultOn;
 }

@@ -22,20 +22,20 @@
         <nav class="navbar navbar-expand-lg navbar-light" style="background-color:aliceblue">
             <a href = "#" class="btn navbar-brand d-inline-block align-top" style="background-color:#c4a3ec; color:white; padding:7px">BD</a>
             <div id = "head_menu">
-                <list id = "menu_items" class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="#!/files/document/upload">Загрузка файлов в документ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#!/newdocument">Новый документ</a></li>
-                </list>
+
             </div>
         </nav>
+
+        <p>
+            Test request: <span>{{testresult}}</span>
+        </p>
 
         <br>
         <ng-view></ng-view>
         <br>
 
         <script src="index.js"></script>
-        <script src="files/document/upload/index.js"></script>
-        <script src="documents/newdocument/index.js"></script>
+
 
         <div style="padding-top:50px">
             © 2021 BrainDocs

@@ -6,8 +6,7 @@ if(baseURL.indexOf('localhost')>-1){
 
 const baseURL_documentsAPI = baseUrL_application + '/api/v1/documents/';
 const baseURL_filesAPI = baseUrL_application + '/api/v1/files/';
-
-
+const baseURL_testAPI = baseUrL_application + '/api/v1/test/';
 
 
 (function ($localStorage) {
@@ -20,18 +19,18 @@ const baseURL_filesAPI = baseUrL_application + '/api/v1/files/';
 
     function config($routeProvider) {
         $routeProvider
-            .when('/documents/newdocument', {
-                  templateUrl: 'documents/newdocument/index.html',
-                  controller: 'newDocumentController'
-            })
-            .when('/files/document/upload', {
-                    templateUrl: 'files/document/upload/index.html',
-                    controller: 'filesUploadController'
-              })
-            .when('/files/document/list', {
-                    templateUrl: 'files/document/list/index.html',
-                    controller: 'filesListController'
-              })
+//            .when('/documents/newdocument', {
+//                  templateUrl: 'documents/newdocument/index.html',
+//                  controller: 'newDocumentController'
+//            })
+//            .when('/files/document/upload', {
+//                    templateUrl: 'files/document/upload/index.html',
+//                    controller: 'filesUploadController'
+//              })
+//            .when('/files/document/list', {
+//                    templateUrl: 'files/document/list/index.html',
+//                    controller: 'filesListController'
+//              })
             .otherwise({
                 redirectTo: '/'
             })
@@ -45,7 +44,21 @@ const baseURL_filesAPI = baseUrL_application + '/api/v1/files/';
 
 })();
 
+
 angular.module('app').controller('indexController', function ($rootScope, $location, $scope, $http, $localStorage) {
 
+    $scope.testcheck = function(){
+        $http({
+                url: baseURL_testAPI,
+                method: 'GET',
+                params:{}
+           })
+           .then(function success(result){
+           console.log(result);
+                $scope.testresult = result.data;
+            });
+    };
+
+    $scope.testcheck();
 
 })
