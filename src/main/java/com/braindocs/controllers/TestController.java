@@ -4,9 +4,15 @@ import com.braindocs.dto.documents.DocumentTypeNameDTO;
 import com.braindocs.dto.organization.OrganisationNameDTO;
 import com.braindocs.dto.users.UserNameDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1/")
@@ -14,9 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
     @GetMapping("/test")
-    public String testMethod(){
+    public List<String> testMethod(){
         log.info("Test controller: it works");
-        return "It works";
+        return Arrays.asList("It works");
     }
 
     @GetMapping("/organisations")

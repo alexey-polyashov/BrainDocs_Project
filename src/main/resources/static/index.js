@@ -49,15 +49,14 @@ angular.module('app').controller('indexController', function ($rootScope, $locat
 
     $scope.testcheck = function(){
         $http({
-                url: baseURL_testAPI,
-                method: 'GET',
-                params:{}
+              method: 'GET',
+              url: baseURL_testAPI
            })
            .then(function success(result){
-           console.log(result);
-                $scope.testresult = result.data;
-            });
-    };
+                $scope.testresult = result.data[0];
+            })
+            ;
+    }
 
     $scope.testcheck();
 
