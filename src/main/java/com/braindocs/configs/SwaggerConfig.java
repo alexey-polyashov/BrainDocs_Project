@@ -32,7 +32,8 @@ public class SwaggerConfig {
                 "Document managment system",
                 "v1",
                 "",
-                new Contact("Алексей Поляшов","https://alexey-polyashov.github.io/brain-docs/", "polyashofff@yandex.ru"),
+        "",
+//                new Contact("Алексей Поляшов","https://alexey-polyashov.github.io/brain-docs/", "polyashofff@yandex.ru"),
                 "",
                 "");
     }
