@@ -1,16 +1,16 @@
-package com.braindocs.DTO.validators;
+package com.braindocs.dto.validators;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = DateValidatorClass.class)
+@Constraint(validatedBy = UniqueUniqUserValidator.class)
 @Target( { ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface DateValidator {
+public @interface UniqUserName {
 
-    String message() default "Дата не соответствует шаблону YY-MM-DD";
+    String message() default "Логин не уникален";
 
     Class<?>[] groups() default {};
 

@@ -1,9 +1,9 @@
 package com.braindocs.services.mappers;
 
-import com.braindocs.DTO.documents.DocumentDTO;
-import com.braindocs.DTO.documents.DocumentTypeNameDTO;
-import com.braindocs.DTO.organization.OrganisationNameDTO;
-import com.braindocs.DTO.users.UserNameDTO;
+import com.braindocs.dto.documents.DocumentDTO;
+import com.braindocs.dto.documents.DocumentTypeNameDTO;
+import com.braindocs.dto.organization.OrganisationNameDTO;
+import com.braindocs.dto.users.UserNameDTO;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.models.users.UserModel;
@@ -71,8 +71,6 @@ public class DocumentMapper {
         userModel = userService.findById(docDTO.getResponsible().getId());
         docModel.setResponsible(userModel);
         docModel.setMarked(docDTO.getMarked());
-
-        //docModel.setFiles(docDTO.getFiles().stream().map(fileMapper::toModel).collect(Collectors.toSet()));
 
         return docModel;
     }

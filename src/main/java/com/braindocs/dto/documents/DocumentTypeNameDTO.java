@@ -1,4 +1,4 @@
-package com.braindocs.DTO.documents;
+package com.braindocs.dto.documents;
 
 import com.braindocs.models.documents.DocumentTypeModel;
 import lombok.AllArgsConstructor;

@@ -1,14 +1,14 @@
-package com.braindocs.DTO;
+package com.braindocs.dto.documents;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ContactTypeDTO {
+public class DocumentTypeDTO {
 
-    private Long id;
     private String name;
+    private Long id;
     private Boolean marked;
 
 }

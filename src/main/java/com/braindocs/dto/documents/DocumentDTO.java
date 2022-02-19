@@ -1,9 +1,9 @@
-package com.braindocs.DTO.documents;
+package com.braindocs.dto.documents;
 
-import com.braindocs.DTO.files.FileDTO;
-import com.braindocs.DTO.organization.OrganisationNameDTO;
-import com.braindocs.DTO.users.UserNameDTO;
-import com.braindocs.DTO.validators.DateValidator;
+import com.braindocs.dto.files.FileDTO;
+import com.braindocs.dto.organization.OrganisationNameDTO;
+import com.braindocs.dto.users.UserNameDTO;
+import com.braindocs.dto.validators.DateValidator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

@@ -1,6 +1,6 @@
-package com.braindocs.DTO.users;
+package com.braindocs.dto.users;
 
-import com.braindocs.DTO.organization.OrganisationDTO;
+import com.braindocs.dto.organization.OrganisationDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;

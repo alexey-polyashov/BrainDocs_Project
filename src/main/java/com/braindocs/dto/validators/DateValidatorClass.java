@@ -1,4 +1,4 @@
-package com.braindocs.DTO.validators;
+package com.braindocs.dto.validators;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

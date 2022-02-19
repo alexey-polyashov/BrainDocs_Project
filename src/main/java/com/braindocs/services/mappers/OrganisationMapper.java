@@ -1,6 +1,6 @@
 package com.braindocs.services.mappers;
 
-import com.braindocs.DTO.organization.OrganisationDTO;
+import com.braindocs.dto.organization.OrganisationDTO;
 import com.braindocs.models.organisations.OrganisationModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

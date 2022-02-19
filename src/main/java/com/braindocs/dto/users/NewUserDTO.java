@@ -1,7 +1,7 @@
-package com.braindocs.DTO.users;
+package com.braindocs.dto.users;
 
-import com.braindocs.DTO.validators.UniqUserEmail;
-import com.braindocs.DTO.validators.UniqUserName;
+import com.braindocs.dto.validators.UniqUserEmail;
+import com.braindocs.dto.validators.UniqUserName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

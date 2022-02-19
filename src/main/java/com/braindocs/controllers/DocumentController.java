@@ -61,14 +61,14 @@ public class DocumentController {
     public Set<FieldsListDTO> getFields(){
         log.info("DocumentController: getFields");
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
-        fieldsSet.add(new FieldsListDTO("Вид документа", "documentType", "DocumentTypeModel", Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Вид документа", "documentType", "/api/v1/doc_types", Arrays.asList(":"), LONG_TYPE, false));
         fieldsSet.add(new FieldsListDTO("Номер докуемнта","number", "", Arrays.asList(":"), STRING_TYPE, false));
         fieldsSet.add(new FieldsListDTO("Дата документа","documentDate","", Arrays.asList("<",">"), DATE_TYPE, true));
         fieldsSet.add(new FieldsListDTO("Заголовок документа", "heading","", Arrays.asList(":"), STRING_TYPE, false));
         fieldsSet.add(new FieldsListDTO("Содержание", "content","", Arrays.asList(":"), STRING_TYPE, true));
         fieldsSet.add(new FieldsListDTO("Автор документа", "author","UserModel", Arrays.asList(":"), LONG_TYPE, true));
         fieldsSet.add(new FieldsListDTO("Ответственный за документ", "responsible","UserModel", Arrays.asList(":"), LONG_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Организация", "organisation","OrganisationModel", Arrays.asList(":"), LONG_TYPE, true));
+        fieldsSet.add(new FieldsListDTO("Организация", "organisation","/api/v1//organisations", Arrays.asList(":"), LONG_TYPE, true));
         log.info("DocumentController: getFields return {} elements", fieldsSet.size());
         return fieldsSet;
     }

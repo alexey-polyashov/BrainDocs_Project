@@ -1,6 +1,6 @@
 package com.braindocs.services.mappers;
 
-import com.braindocs.DTO.users.UserDTO;
+import com.braindocs.dto.users.UserDTO;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.services.UserService;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.braindocs.DTO.organization;
+package com.braindocs.dto.organization;
 
 import com.braindocs.models.organisations.OrganisationModel;
 import lombok.AllArgsConstructor;

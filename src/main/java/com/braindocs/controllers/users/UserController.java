@@ -1,7 +1,7 @@
 package com.braindocs.controllers.users;
 
-import com.braindocs.DTO.users.NewUserDTO;
-import com.braindocs.DTO.users.UserDTO;
+import com.braindocs.dto.users.NewUserDTO;
+import com.braindocs.dto.users.UserDTO;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.services.users.UserService;

@@ -1,6 +1,6 @@
 package com.braindocs.controllers.users;
 
-import com.braindocs.DTO.users.*;
+import com.braindocs.dto.users.*;
 import com.braindocs.configs.JwtTokenUtil;
 import com.braindocs.exceptions.ServiceError;
 import lombok.RequiredArgsConstructor;

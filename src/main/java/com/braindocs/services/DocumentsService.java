@@ -1,6 +1,6 @@
 package com.braindocs.services;
 
-import com.braindocs.DTO.files.FileDataDTO;
+import com.braindocs.dto.files.FileDataDTO;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.files.FileModel;
@@ -41,7 +41,7 @@ public class DocumentsService {
         DocumentModel documentModel = getDocument(docId);
         FileModel fileModel = null;
         for (FileModel file: documentModel.getFiles()) {
-            if(file.getId()==fileId){
+            if(file.getId().equals(fileId)){
                 fileModel = file;
                 break;
             }

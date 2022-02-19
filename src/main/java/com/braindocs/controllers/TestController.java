@@ -1,8 +1,8 @@
 package com.braindocs.controllers;
 
-import com.braindocs.DTO.documents.DocumentTypeNameDTO;
-import com.braindocs.DTO.organization.OrganisationNameDTO;
-import com.braindocs.DTO.users.UserNameDTO;
+import com.braindocs.dto.documents.DocumentTypeNameDTO;
+import com.braindocs.dto.organization.OrganisationNameDTO;
+import com.braindocs.dto.users.UserNameDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

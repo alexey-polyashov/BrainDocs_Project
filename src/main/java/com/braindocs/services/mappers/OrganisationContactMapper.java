@@ -1,6 +1,6 @@
 package com.braindocs.services.mappers;
 
-import com.braindocs.DTO.organization.OrganisationContactsDTO;
+import com.braindocs.dto.organization.OrganisationContactsDTO;
 import com.braindocs.models.organisations.OrganisationContactsModel;
 import com.braindocs.services.ContactTypeService;
 import lombok.RequiredArgsConstructor;

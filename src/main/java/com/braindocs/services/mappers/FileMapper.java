@@ -1,9 +1,9 @@
 package com.braindocs.services.mappers;
 
-import com.braindocs.DTO.files.FileDTO;
-import com.braindocs.DTO.files.FileDataDTO;
-import com.braindocs.DTO.files.NewFileDTO;
-import com.braindocs.DTO.users.UserNameDTO;
+import com.braindocs.dto.files.FileDTO;
+import com.braindocs.dto.files.FileDataDTO;
+import com.braindocs.dto.files.NewFileDTO;
+import com.braindocs.dto.users.UserNameDTO;
 import com.braindocs.common.Options;
 import com.braindocs.models.files.FileModel;
 import com.braindocs.models.users.UserModel;

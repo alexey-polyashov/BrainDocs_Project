@@ -1,4 +1,4 @@
-package com.braindocs.DTO.organization;
+package com.braindocs.dto.organization;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

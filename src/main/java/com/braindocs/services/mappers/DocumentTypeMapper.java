@@ -1,6 +1,6 @@
 package com.braindocs.services.mappers;
 
-import com.braindocs.DTO.documents.DocumentTypeDTO;
+import com.braindocs.dto.documents.DocumentTypeDTO;
 import com.braindocs.models.documents.DocumentTypeModel;
 import com.braindocs.services.DocumentTypeService;
 import lombok.RequiredArgsConstructor;
