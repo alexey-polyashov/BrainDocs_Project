@@ -18,6 +18,7 @@ import com.braindocs.services.mappers.DocumentMapper;
 import com.braindocs.services.mappers.FileMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping(value="/api/v1/documents")
 @Slf4j
+@Api(value = "DocumentController", tags = "Контролер документов")
 public class DocumentController {
 
     private final DocumentsService documentsService;
@@ -66,8 +68,8 @@ public class DocumentController {
         fieldsSet.add(new FieldsListDTO("Дата документа","documentDate","", Arrays.asList("<",">"), DATE_TYPE, true));
         fieldsSet.add(new FieldsListDTO("Заголовок документа", "heading","", Arrays.asList(":"), STRING_TYPE, false));
         fieldsSet.add(new FieldsListDTO("Содержание", "content","", Arrays.asList(":"), STRING_TYPE, true));
-        fieldsSet.add(new FieldsListDTO("Автор документа", "author","UserModel", Arrays.asList(":"), LONG_TYPE, true));
-        fieldsSet.add(new FieldsListDTO("Ответственный за документ", "responsible","UserModel", Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Автор документа", "author","/api/v1/users", Arrays.asList(":"), LONG_TYPE, true));
+        fieldsSet.add(new FieldsListDTO("Ответственный за документ", "responsible","/api/v1/users", Arrays.asList(":"), LONG_TYPE, false));
         fieldsSet.add(new FieldsListDTO("Организация", "organisation","/api/v1//organisations", Arrays.asList(":"), LONG_TYPE, true));
         log.info("DocumentController: getFields return {} elements", fieldsSet.size());
         return fieldsSet;

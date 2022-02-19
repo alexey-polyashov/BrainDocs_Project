@@ -47,6 +47,8 @@ const baseURL_testAPI = baseUrL_application + '/api/v1/test/';
 
 angular.module('app').controller('indexController', function ($rootScope, $location, $scope, $http, $localStorage) {
 
+    $scope.swagger = baseUrL_application + "/swagger-ui.html";
+
     $scope.testcheck = function(){
         $http({
               method: 'GET',
