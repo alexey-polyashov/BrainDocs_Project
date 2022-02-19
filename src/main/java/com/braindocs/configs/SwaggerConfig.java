@@ -32,8 +32,9 @@ public class SwaggerConfig {
                 "Document managment system",
                 "v1",
                 "",
-        "",
-//                new Contact("Алексей Поляшов","https://alexey-polyashov.github.io/brain-docs/", "polyashofff@yandex.ru"),
+                "polyashofff@yandex.ru",
+                //heroku не билдит проект, если используется другой конструктор
+                //new Contact("Алексей Поляшов","https://alexey-polyashov.github.io/brain-docs/", "polyashofff@yandex.ru"),
                 "",
                 "");
     }

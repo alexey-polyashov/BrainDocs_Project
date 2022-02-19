@@ -1,8 +1,13 @@
-var baseURL = window.location.protocol + '//' + window.location.host;
-var baseUrL_application = '/';
+let baseURL = window.location.protocol + '//' + window.location.host;
+
+let baseUrL_application = "";
 if(baseURL.indexOf('localhost')>-1){
-    var baseUrL_application = '/braindocs';
+console.log("1");
+    baseUrL_application = baseURL + '/braindocs';
+}else{
+    baseUrL_application = baseURL;
 }
+
 
 const baseURL_documentsAPI = baseUrL_application + '/api/v1/documents/';
 const baseURL_filesAPI = baseUrL_application + '/api/v1/files/';
