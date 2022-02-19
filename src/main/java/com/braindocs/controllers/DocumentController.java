@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value="/api/v1/documents/")
+@RequestMapping(value="/api/v1/documents")
 @Slf4j
 public class DocumentController {
 
@@ -51,10 +51,10 @@ public class DocumentController {
     private static final String DATE_TYPE = "Date";
 
     private void setLinkToFile(FileDTO fileDTO, Long docId){
-        fileDTO.setLink("/api/v1/documents/get_file_data/" + docId + "/" + fileDTO.getId());
+        fileDTO.setLink("/api/v1/documents/" + docId + "/files/" + fileDTO.getId() + "/data");
     }
 
-    @GetMapping(value="/get_fields")
+    @GetMapping(value="/fields")
     //возвращает список доступных полей и операций с ними
     //операции: ">" (больше или равно), "<" (меньше или равно), ":" (для строковых полей модели - содержит, для других = )
     //типы полей могут быть любыми - это просто описание типа для правильного построения интерфейса
@@ -73,32 +73,39 @@ public class DocumentController {
         return fieldsSet;
     }
 
-    @PostMapping(value="/add")
+    @PostMapping(value="")
     public Long addDocument(@Valid @RequestBody DocumentDTO documentDTO) throws ParseException {
         log.info("DocumentController: add");
+        if(documentDTO.getId()!=null && !documentDTO.getId().equals(0)){
+            throw new AnyOtherException("При добавлении нового объекта id должен быть пустым");
+        }
         DocumentModel docModel = documentMapper.toModel(documentDTO);
         Long docId = documentsService.addDocument(docModel);
         log.info("DocumentController: add (return id {})", docId);
         return docId;
     }
 
-    @PostMapping(value="/save")
-    public Long saveDocument(@Valid @RequestBody DocumentDTO documentDTO) throws ParseException {
+    @PostMapping(value="/{id}")
+    public Long saveDocument(@PathVariable("id") Long id, @Valid @RequestBody DocumentDTO documentDTO) throws ParseException {
         log.info("DocumentController: saveDocument");
+        if(id==0){
+            throw new AnyOtherException("id не должен быть пустым");
+        }
         DocumentModel docModel = documentMapper.toModel(documentDTO);
+        docModel.setId(id);
         Long docId = documentsService.saveDocument(docModel);
         log.info("DocumentController: add (saveDocument id {})", docId);
         return docId;
     }
 
-    @DeleteMapping(value="{id}")
+    @DeleteMapping(value="/{id}")
     public void deleteDocument(@PathVariable("id") Long id){
         log.info("DocumentController: deleteDocument, id-{}", id);
         documentsService.deleteDocument(id);
         log.info("DocumentController: deleteDocument - ok");
     }
 
-    @GetMapping(value="/")
+    @GetMapping(value="")
     @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public Page<DocumentDTO> getDocuments(@RequestParam( name = "pagenumber", defaultValue = "0") int pageNumber, @RequestParam(name = "pagesize", defaultValue = "10") int pageSize){
         log.info("DocumentController: getDocuments, pagenumber-{}, pagesize-{}", pageNumber, pageSize);
@@ -123,7 +130,7 @@ public class DocumentController {
         return docDTO;
     }
 
-    @PostMapping(value="/get_list")
+    @PostMapping(value="/search")
     @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public Page<DocumentDTO>  getDocumentsByFilter(@RequestBody SearchCriteriaListDTO requestDTO){
         log.info("DocumentController: getDocumentsByFilter");
@@ -144,22 +151,22 @@ public class DocumentController {
 
 
     //@PostMapping(value="/upload_file/{docid}")
-    @PostMapping(value = "/upload_file/{docid}",
+    @PostMapping(value = "/{docid}/files/upload",
             consumes = {"multipart/form-data"})
     @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public FileDTO uploadFile(@PathVariable("docid") Long docid, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart("file") MultipartFile fileData) throws IOException {
         log.info("DocumentController: uploadfile");
         NewFileDTO fileDescribe = new ObjectMapper().readValue(jsonDescribe, NewFileDTO.class);
         if(fileData.isEmpty()){
-            log.info("file is empty");
-            throw new AnyOtherException("file is empty");
+            log.info("Нет данных файла");
+            throw new AnyOtherException("Нет данных файла");
         }
         FileModel fileModel;
         try {
             fileModel = fileMapper.toModel(fileDescribe, fileData);
         } catch (IOException e) {
-            log.error("get file data error\n" + e.getMessage() + "\n" + e.getCause());
-            throw new AnyOtherException("get file data error");
+            log.error("Ошибка получения данных файла\n" + e.getMessage() + "\n" + e.getCause());
+            throw new AnyOtherException("Ошибка получения данных файла");
         }
         fileModel = documentsService.addFile(docid, fileModel, fileData);
         FileDTO fileDTO = fileMapper.toDTO(fileModel);
@@ -167,7 +174,7 @@ public class DocumentController {
         return fileDTO;
     }
 
-    @GetMapping(value="/get_files_list/{docid}")
+    @GetMapping(value="/{docid}/files")
     @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public Set<FileDTO> getFiles(@PathVariable("docid") Long docid){
         log.info("DocumentController: getFileslist");
@@ -181,7 +188,7 @@ public class DocumentController {
             ).collect(Collectors.toSet());
     }
 
-    @GetMapping(value="/get_file_describe/{docid}/{fileId}")
+    @GetMapping(value="/{docid}/files/{fileid}")
     @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public FileDTO getFileDescribe(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
         log.info("DocumentController: getFileDescribe, docid-{}, fileid{}", docid, fileid);
@@ -190,7 +197,7 @@ public class DocumentController {
         return fDTO;
     }
 
-    @GetMapping(value="/get_file_data/{docid}/{fileid}")
+    @GetMapping(value="/{docid}/files/{fileid}/data")
     @ResponseBody
     @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public ResponseEntity<byte[]> getFileData(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
@@ -200,18 +207,22 @@ public class DocumentController {
         return ResponseEntity.ok().contentType(mt).body(fileData.getFileData());
     }
 
-    @PostMapping(value = "/change_file/{docid}",
+    @PostMapping(value = "/{docid}/files/{fileid}",
             consumes = {"multipart/form-data"})
-    public FileDTO changeFile(@PathVariable("docid") Long docid, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart("file") MultipartFile fileData) throws JsonProcessingException {
+    public FileDTO changeFile(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileId, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart("file") MultipartFile fileData) throws JsonProcessingException {
         log.info("DocumentController: changeFile, docid-{}, fileDescribe{}", docid, jsonDescribe);
+        if(fileId==0){
+            throw new AnyOtherException("id файла не должен быть пустым");
+        }
         NewFileDTO fileDescribe = new ObjectMapper().readValue(jsonDescribe, NewFileDTO.class);
         FileModel fileModel;
         try {
             fileModel = fileMapper.toModel(fileDescribe, fileData);
         } catch (IOException e) {
-            log.error("get file data error\n{}\n{}", e.getMessage(), e.getCause());
-            throw new AnyOtherException("get file data error");
+            log.error("Ошибка получения данных файла\n{}\n{}", e.getMessage(), e.getCause());
+            throw new AnyOtherException("Ошибка получения данных файла");
         }
+        fileModel.setId(fileId);
         fileModel = documentsService.changeFile(docid, fileModel, fileData);
         FileDTO fileDTO = fileMapper.toDTO(fileModel);
         setLinkToFile(fileDTO, docid);
@@ -219,14 +230,14 @@ public class DocumentController {
         return fileDTO;
     }
 
-    @DeleteMapping(value="/delete_file/{docid}/{fileid}")
+    @DeleteMapping(value="/{docid}/files/{fileid}")
     public void deleteFile(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
         log.info("DocumentController: deleteFile, docid-{}, fileid{}", docid, fileid);
         documentsService.deleteFile(docid, fileid);
         log.info("DocumentController: deleteFile - deleted, docid-{}, fileid{}", docid, fileid);
     }
 
-    @DeleteMapping(value="/clear_file/{docid}")
+    @DeleteMapping(value="/{docid}/files/clear")
     public void clearFiles(@PathVariable("docid") Long docid){
         log.info("DocumentController: clearFiles, docid-{}", docid);
         documentsService.clearFiles(docid);
