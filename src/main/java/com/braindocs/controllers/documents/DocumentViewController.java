@@ -1,4 +1,4 @@
-package com.braindocs.controllers;
+package com.braindocs.controllers.documents;
 
 
 import com.braindocs.dto.documents.DocumentTypeDTO;
