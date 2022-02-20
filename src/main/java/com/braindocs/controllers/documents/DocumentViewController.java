@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/document-types")
+@RequestMapping("/api/v1/documents/types")
 public class DocumentViewController {
 
     private final DocumentTypeService documentTypeService;
