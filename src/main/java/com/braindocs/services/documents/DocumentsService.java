@@ -128,17 +128,17 @@ public class DocumentsService {
     }
 
     //добавление одного файла
-    public FileModel changeFile(Long docId, FileModel file, MultipartFile fileData){
+    public FileModel changeFile(Long docId, FileModel file, MultipartFile fileData) throws IOException {
         if(file.getId()==null || file.getId()==0){
-            log.error("file id is empty");
-            throw new RuntimeException("file id is empty");
+            log.error("file 'id' is empty");
+            throw new RuntimeException("Не определен 'id' изменяемого файла");
         }
-        getDocumentFile(docId, file.getId());
-        FileModel fileModel = filesService.findById(file.getId());
+        getDocumentFile(docId, file.getId()); //проверка существования файла
+        FileModel fileModel=null;
         if(fileData==null) {
-            filesService.saveOnlyDescribe(fileModel);
+            fileModel = filesService.saveOnlyDescribe(file);
         }else{
-            filesService.saveWithAllData(fileModel);
+            fileModel = filesService.saveWithAllData(file, fileData);
         }
         return fileModel;
     }
