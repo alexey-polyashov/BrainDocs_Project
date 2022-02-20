@@ -2,7 +2,9 @@ package com.braindocs.repositories.specifications;
 import com.braindocs.exceptions.NotValidFields;
 import com.braindocs.exceptions.Violation;
 import com.braindocs.models.documents.DocumentModel;
+import com.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.models.users.UserModel;
+import com.braindocs.services.OrganisationService;
 import com.braindocs.services.UserService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +24,12 @@ public class DocumentSpecification implements Specification<DocumentModel> {
 
     private SearchCriteria criteria;
     private UserService userService;
+    private OrganisationService organisationService;
 
-    public DocumentSpecification(SearchCriteria criteria, UserService userService) {
+    public DocumentSpecification(SearchCriteria criteria, UserService userService, OrganisationService organisationService) {
         this.criteria = criteria;
         this.userService = userService;
+        this.organisationService = organisationService;
     }
 
     @Autowired
@@ -48,6 +52,8 @@ public class DocumentSpecification implements Specification<DocumentModel> {
             }
         }else if(valueClass == UserModel.class){
             value = userService.findById(Long.valueOf(value.toString()));
+        }else if(valueClass == OrganisationModel.class){
+            value = organisationService.findById(Long.valueOf(value.toString()));
         }
 
 

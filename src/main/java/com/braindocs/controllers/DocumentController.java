@@ -13,6 +13,7 @@ import com.braindocs.models.files.FileModel;
 import com.braindocs.repositories.specifications.DocumentSpecificationBuilder;
 import com.braindocs.services.DocumentTypeService;
 import com.braindocs.services.DocumentsService;
+import com.braindocs.services.OrganisationService;
 import com.braindocs.services.UserService;
 import com.braindocs.services.mappers.DocumentMapper;
 import com.braindocs.services.mappers.FileMapper;
@@ -45,6 +46,7 @@ public class DocumentController {
     private final DocumentsService documentsService;
     private final DocumentTypeService documentTypeService;
     private final UserService userService;
+    private final OrganisationService organisationService;
     private final DocumentMapper documentMapper;
     private final FileMapper fileMapper;
 
@@ -78,7 +80,7 @@ public class DocumentController {
     @PostMapping(value="")
     public Long addDocument(@Valid @RequestBody DocumentDTO documentDTO) throws ParseException {
         log.info("DocumentController: add");
-        if(documentDTO.getId()!=null && !documentDTO.getId().equals(0)){
+        if(documentDTO.getId()!=null && !(documentDTO.getId()==0)){
             throw new AnyOtherException("При добавлении нового объекта id должен быть пустым");
         }
         DocumentModel docModel = documentMapper.toModel(documentDTO);
@@ -139,7 +141,7 @@ public class DocumentController {
         List<SearchCriteriaDTO> filter = requestDTO.getFilter();
         Integer page = requestDTO.getPage();
         Integer recordsOnPage = requestDTO.getRecordsOnPage();
-        DocumentSpecificationBuilder builder = new DocumentSpecificationBuilder(userService);
+        DocumentSpecificationBuilder builder = new DocumentSpecificationBuilder(userService, organisationService);
         for(SearchCriteriaDTO creteriaDTO: filter) {
             Object value = creteriaDTO.getValue();
             builder.with(creteriaDTO.getKey(), creteriaDTO.getOperation(), value);
