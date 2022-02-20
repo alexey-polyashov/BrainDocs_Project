@@ -11,8 +11,8 @@ import com.braindocs.exceptions.AnyOtherException;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.files.FileModel;
 import com.braindocs.repositories.specifications.DocumentSpecificationBuilder;
-import com.braindocs.services.DocumentTypeService;
-import com.braindocs.services.DocumentsService;
+import com.braindocs.services.documents.DocumentTypeService;
+import com.braindocs.services.documents.DocumentsService;
 import com.braindocs.services.OrganisationService;
 import com.braindocs.services.UserService;
 import com.braindocs.services.mappers.DocumentMapper;
@@ -148,7 +148,7 @@ public class DocumentController {
         List<SearchCriteriaDTO> filter = requestDTO.getFilter();
         Integer page = requestDTO.getPage();
         Integer recordsOnPage = requestDTO.getRecordsOnPage();
-        DocumentSpecificationBuilder builder = new DocumentSpecificationBuilder(userService, organisationService);
+        DocumentSpecificationBuilder builder = new DocumentSpecificationBuilder(userService, organisationService, documentTypeService);
         for(SearchCriteriaDTO creteriaDTO: filter) {
             Object value = creteriaDTO.getValue();
             builder.with(creteriaDTO.getKey(), creteriaDTO.getOperation(), value);
@@ -160,8 +160,6 @@ public class DocumentController {
         return docDtoPage;
     }
 
-
-    //@PostMapping(value="/upload_file/{docid}")
     @PostMapping(value = "/{docid}/files/upload",
             consumes = {"multipart/form-data"})
     @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream

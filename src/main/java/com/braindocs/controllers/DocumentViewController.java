@@ -4,7 +4,7 @@ package com.braindocs.controllers;
 import com.braindocs.dto.documents.DocumentTypeDTO;
 import com.braindocs.dto.documents.NewDocumentTypeDTO;
 import com.braindocs.models.documents.DocumentTypeModel;
-import com.braindocs.services.DocumentTypeService;
+import com.braindocs.services.documents.DocumentTypeService;
 import com.braindocs.services.mappers.DocumentTypeMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

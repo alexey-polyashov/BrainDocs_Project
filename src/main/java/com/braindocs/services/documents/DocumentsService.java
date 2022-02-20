@@ -1,11 +1,11 @@
-package com.braindocs.services;
+package com.braindocs.services.documents;
 
 import com.braindocs.dto.files.FileDataDTO;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.documents.DocumentModel;
-import com.braindocs.models.documents.DocumentTypeModel;
 import com.braindocs.models.files.FileModel;
-import com.braindocs.repositories.DocumentsRepository;
+import com.braindocs.repositories.documents.DocumentsRepository;
+import com.braindocs.services.FilesService;
 import com.braindocs.services.mappers.FileMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -3,7 +3,7 @@ package com.braindocs.services.mappers;
 import com.braindocs.dto.documents.DocumentTypeDTO;
 import com.braindocs.dto.documents.NewDocumentTypeDTO;
 import com.braindocs.models.documents.DocumentTypeModel;
-import com.braindocs.services.DocumentTypeService;
+import com.braindocs.services.documents.DocumentTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

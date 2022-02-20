@@ -1,4 +1,4 @@
-package com.braindocs.repositories;
+package com.braindocs.repositories.documents;
 
 import com.braindocs.models.documents.DocumentTypeModel;
 import org.springframework.data.jpa.repository.JpaRepository;

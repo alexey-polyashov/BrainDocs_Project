@@ -8,6 +8,8 @@ import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.services.*;
+import com.braindocs.services.documents.DocumentTypeService;
+import com.braindocs.services.documents.DocumentsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

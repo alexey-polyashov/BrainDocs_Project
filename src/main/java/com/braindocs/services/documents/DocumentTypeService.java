@@ -1,9 +1,9 @@
-package com.braindocs.services;
+package com.braindocs.services.documents;
 
 import com.braindocs.exceptions.AnyOtherException;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.documents.DocumentTypeModel;
-import com.braindocs.repositories.DocumentTypeRepository;
+import com.braindocs.repositories.documents.DocumentTypeRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

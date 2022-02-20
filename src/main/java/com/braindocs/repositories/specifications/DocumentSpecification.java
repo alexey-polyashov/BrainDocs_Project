@@ -2,8 +2,10 @@ package com.braindocs.repositories.specifications;
 import com.braindocs.exceptions.NotValidFields;
 import com.braindocs.exceptions.Violation;
 import com.braindocs.models.documents.DocumentModel;
+import com.braindocs.models.documents.DocumentTypeModel;
 import com.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.models.users.UserModel;
+import com.braindocs.services.documents.DocumentTypeService;
 import com.braindocs.services.OrganisationService;
 import com.braindocs.services.UserService;
 import lombok.Data;
@@ -25,11 +27,16 @@ public class DocumentSpecification implements Specification<DocumentModel> {
     private SearchCriteria criteria;
     private UserService userService;
     private OrganisationService organisationService;
+    private DocumentTypeService documentTypeService;
 
-    public DocumentSpecification(SearchCriteria criteria, UserService userService, OrganisationService organisationService) {
+    public DocumentSpecification(SearchCriteria criteria,
+                                 UserService userService,
+                                 OrganisationService organisationService,
+                                 DocumentTypeService documentTypeService) {
         this.criteria = criteria;
         this.userService = userService;
         this.organisationService = organisationService;
+        this.documentTypeService = documentTypeService;
     }
 
     @Autowired
@@ -54,8 +61,9 @@ public class DocumentSpecification implements Specification<DocumentModel> {
             value = userService.findById(Long.valueOf(value.toString()));
         }else if(valueClass == OrganisationModel.class){
             value = organisationService.findById(Long.valueOf(value.toString()));
+        }else if(valueClass == DocumentTypeModel.class){
+            value = documentTypeService.findById(Long.valueOf(value.toString()));
         }
-
 
         if (criteria.getOperation().equalsIgnoreCase(">")) {
             if(value instanceof Date) {
@@ -78,7 +86,8 @@ public class DocumentSpecification implements Specification<DocumentModel> {
         else if (criteria.getOperation().equalsIgnoreCase(":")) {
             if (root.get(criteria.getKey()).getJavaType() == String.class) {
                 return builder.like(
-                        root.<String>get(criteria.getKey()), "%" + value + "%");
+                        builder.lower(root.<String>get(criteria.getKey())),
+                        "%" + value + "%");
             } else {
                 return builder.equal(root.get(criteria.getKey()), value);
             }
