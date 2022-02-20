@@ -47,4 +47,10 @@ public class DocumentTypeService {
         documentTypeRepository.save(docType);
     }
 
+    public DocumentTypeModel changeType(Long id, DocumentTypeModel docType) {
+        DocumentTypeModel oldDocType = documentTypeRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Вид документа с id '" + id + "' не найден"));
+        oldDocType.setName(docType.getName());
+        documentTypeRepository.save(oldDocType);
+        return oldDocType;
+    }
 }
