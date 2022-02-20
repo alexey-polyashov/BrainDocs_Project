@@ -1,6 +1,7 @@
 package com.braindocs.services.mappers;
 
 import com.braindocs.dto.documents.DocumentTypeDTO;
+import com.braindocs.dto.documents.NewDocumentTypeDTO;
 import com.braindocs.models.documents.DocumentTypeModel;
 import com.braindocs.services.DocumentTypeService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,13 @@ public class DocumentTypeMapper {
     public DocumentTypeModel toModel(DocumentTypeDTO docTypeDTO){
         DocumentTypeModel docTypeModel = new DocumentTypeModel();
         docTypeModel.setId(docTypeDTO.getId());
+        docTypeModel.setName(docTypeDTO.getName());
+        docTypeModel.setMarked(docTypeDTO.getMarked());
+        return docTypeModel;
+    }
+
+    public DocumentTypeModel toModel(NewDocumentTypeDTO docTypeDTO){
+        DocumentTypeModel docTypeModel = new DocumentTypeModel();
         docTypeModel.setName(docTypeDTO.getName());
         docTypeModel.setMarked(docTypeDTO.getMarked());
         return docTypeModel;

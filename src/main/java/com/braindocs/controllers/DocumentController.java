@@ -80,7 +80,7 @@ public class DocumentController {
     @PostMapping(value="")
     public Long addDocument(@Valid @RequestBody DocumentDTO documentDTO) throws ParseException {
         log.info("DocumentController: add");
-        if(documentDTO.getId()!=null && !(documentDTO.getId()==0)){
+        if(documentDTO.getId()!=null && (documentDTO.getId()!=0)){
             throw new AnyOtherException("При добавлении нового объекта id должен быть пустым");
         }
         DocumentModel docModel = documentMapper.toModel(documentDTO);
@@ -102,11 +102,18 @@ public class DocumentController {
         return docId;
     }
 
-    @DeleteMapping(value="/{id}")
+    @DeleteMapping(value="/finally/{id}")
     public void deleteDocument(@PathVariable("id") Long id){
         log.info("DocumentController: deleteDocument, id-{}", id);
         documentsService.deleteDocument(id);
         log.info("DocumentController: deleteDocument - ok");
+    }
+
+    @DeleteMapping(value="/{id}")
+    public void markDocument(@PathVariable("id") Long id){
+        log.info("DocumentController: markDocument, id-{}", id);
+        documentsService.markDocument(id);
+        log.info("DocumentController: markDocument - ok");
     }
 
     @GetMapping(value="")

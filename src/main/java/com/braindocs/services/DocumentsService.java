@@ -3,6 +3,7 @@ package com.braindocs.services;
 import com.braindocs.dto.files.FileDataDTO;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.documents.DocumentModel;
+import com.braindocs.models.documents.DocumentTypeModel;
 import com.braindocs.models.files.FileModel;
 import com.braindocs.repositories.DocumentsRepository;
 import com.braindocs.services.mappers.FileMapper;
@@ -163,4 +164,10 @@ public class DocumentsService {
         documentsRepository.save(documentModel);
     }
 
+    public void markDocument(Long id) {
+        DocumentModel doc = documentsRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Документ с id '" + id + "' не найден"));
+        doc.setMarked(true);
+        documentsRepository.save(doc);
+    }
 }
