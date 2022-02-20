@@ -21,10 +21,12 @@ CREATE TABLE IF NOT EXISTS organisations
     name text,
     inn character varying(12) NOT NULL,
     kpp character varying(9),
+    manager bigint,
     marked boolean,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     CONSTRAINT organisations_pkey PRIMARY KEY (id)
+
 );
 --CONTACTS
 CREATE TABLE IF NOT EXISTS organisation_contacts
@@ -35,10 +37,14 @@ CREATE TABLE IF NOT EXISTS organisation_contacts
     present text NOT NULL,
     marked boolean,
     CONSTRAINT organisation_contacts_pkey PRIMARY KEY (id),
-    CONSTRAINT type_id FOREIGN KEY (type)
-        REFERENCES contacts_types (id)
+    CONSTRAINT fk_organisation_id FOREIGN KEY (organisation)
+        REFERENCES organisations (id)
         ON UPDATE NO ACTION
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT type_id FOREIGN KEY (type)
+         REFERENCES contacts_types (id)
+         ON UPDATE NO ACTION
+         ON DELETE CASCADE
 );
 INSERT INTO organisations (name, inn, kpp)
 VALUES ('ООО "Ромашка"', '1234567890', '098765432'),
@@ -53,7 +59,7 @@ VALUES (1, 2,'Москва, Пушкино, дом 7, офис 11'),
 CREATE TABLE IF NOT EXISTS users
 (
     id bigserial,
-    login text NULL,
+    login text NOT NULL,
     email text NOT NULL,
     fullname text,
     shortname text NOT NULL,
@@ -165,8 +171,14 @@ CREATE TABLE IF NOT EXISTS documents
     CONSTRAINT fk_responsible_document FOREIGN KEY (responsible)
         REFERENCES users (id)
         ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT fk_organisation_document FOREIGN KEY (organisation)
+        REFERENCES organisations (id)
+        ON UPDATE NO ACTION
         ON DELETE NO ACTION
 );
-
-
-
+INSERT INTO documents (type, number, document_date, heading, content, author, responsible, organisation)
+VALUES (1,'7',  '2021-12-20', 'Приказ о премировании', 'Примировать сотрудника Ханса Цимера за рац.предложение', 1, 1, 1),
+       (1,'5',  '2021-12-12', 'Приказ о приеме на работу водителя', 'Приказываю принять на должность водителя автобуса Петрова А.В. с окладом согласно штатного расписания', 1, 1, 1),
+       (2,'1/7',  '2021-12-10', 'Договор на покупку автотранспорта', 'Содержание договора', 2, 1, 1),
+       (3, '321', '2021-12-05', 'Рац. предложение о покупке служебного автобуса', 'Предлагаю купить служебный автобус для экономии бюджета компании', 2, 1, 1);
