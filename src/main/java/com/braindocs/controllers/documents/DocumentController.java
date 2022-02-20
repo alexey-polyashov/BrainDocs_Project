@@ -185,7 +185,7 @@ public class DocumentController {
 
     @PostMapping(value = "/{docid}/files/{fileid}",
             consumes = {"multipart/form-data"})
-    public FileDTO changeFile(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileId, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart("file") MultipartFile fileData) throws JsonProcessingException {
+    public FileDTO changeFile(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileId, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart("file") MultipartFile fileData) throws IOException {
         log.info("DocumentController: changeFile, docid-{}, fileDescribe{}", docid, jsonDescribe);
         if(fileId==0){
             throw new AnyOtherException("id файла не должен быть пустым");
