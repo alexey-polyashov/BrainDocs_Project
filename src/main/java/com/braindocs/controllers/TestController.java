@@ -32,7 +32,7 @@ public class TestController {
         orgs[1] = OrganisationNameDTO.builder().name("'ИП Иванов'").id(2L).build();
         for (int i = 2; i < orgs.length; i++) {
             orgs[i] = new OrganisationNameDTO();
-            orgs[i].setId(new Long(i+1));
+            orgs[i].setId(Long.valueOf(i+1L));
             orgs[i].setName("Organisation " + i);
         }
         return orgs;
@@ -46,7 +46,7 @@ public class TestController {
         users[2] = UserNameDTO.builder().shortname("Шварцнегер А.").id(3L).build();
         for (int i = 3; i < users.length; i++) {
             users[i] = new UserNameDTO();
-            users[i].setId((new Long(i+1));
+            users[i].setId(Long.valueOf(i+1L));
             users[i].setShortname("User " + i);
         }
         return users;
@@ -60,7 +60,7 @@ public class TestController {
         docTypes[2] = DocumentTypeNameDTO.builder().name("Прочие").id(3L).build();
         for (int i = 3; i < docTypes.length; i++) {
             docTypes[i] = new DocumentTypeNameDTO();
-            docTypes[i].setId(new Long(i+1));
+            docTypes[i].setId(Long.valueOf(i+1L));
             docTypes[i].setName("Doc type " + i);
         }
         return docTypes;
