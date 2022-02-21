@@ -3,21 +3,25 @@ package com.braindocs.services.mappers;
 import com.braindocs.dto.documents.DocumentTypeDTO;
 import com.braindocs.dto.documents.NewDocumentTypeDTO;
 import com.braindocs.models.documents.DocumentTypeModel;
-import com.braindocs.services.documents.DocumentTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class DocumentTypeMapper {
 
-    private final DocumentTypeService documentTypeService;
+    private final FileMapper fileMapper;
 
     public DocumentTypeDTO toDTO(DocumentTypeModel docTypeModel){
         DocumentTypeDTO dto = new DocumentTypeDTO();
         dto.setId(docTypeModel.getId());
         dto.setName(docTypeModel.getName());
         dto.setMarked(docTypeModel.getMarked());
+
+        dto.setFiles(docTypeModel.getFiles().stream().map(fileMapper::toDTO).collect(Collectors.toList()));
+
         return dto;
     }
 
