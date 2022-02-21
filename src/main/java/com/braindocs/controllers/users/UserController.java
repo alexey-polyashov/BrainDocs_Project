@@ -21,7 +21,6 @@ import java.security.Principal;
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
-
     private final UserService usersService;
     private final ModelMapper modelMapper;
 

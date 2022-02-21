@@ -23,9 +23,6 @@ import com.braindocs.services.users.UserService;
 @Slf4j
 public class AuthController {
     private final UserService userService;
-//    private final RedisRepository redisRepository;
-//    private final JdbcRepository jdbcRepository;
-
     private final JwtTokenUtil jwtTokenUtil;
     private final AuthenticationManager authenticationManager;
 
@@ -43,34 +40,6 @@ public class AuthController {
         log.info("createAuthToken, succes - {}", authRequest.getUsername());
         return ResponseEntity.ok(new JwtResponseDTO(token));
     }
-
-//    @GetMapping("/jdbc")
-//    public UserModel registerUser(@RequestParam String email) {
-//        return jdbcRepository.getByEmail(email).get();
-//    }
-//
-//    @PostMapping("/signup")
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public void registerUser(@RequestBody SignUpRequestDto signUpRequest) {
-//        UserModel user = new UserModel();
-//        user.setPassword(signUpRequest.getPassword());
-//        user.setEmail(signUpRequest.getEmail());
-//        userService.saveUser(user);
-//    }
-
-//    @PostMapping("/login")
-//    public AuthResponseDto login(@RequestBody AuthRequestDto request) {
-//        UserModel user = userService.findByLoginAndPassword(request.getEmail(), request.getPassword());
-//        List<String> roles = new ArrayList<>();
-//        user.getRoles().forEach(role -> roles.add(role.getName()));
-//        UserInfo userInfo = UserInfo.builder()
-//                .userId(user.getId())
-//                .userEmail(user.getEmail())
-//                .role(roles)
-//                .build();
-//        String token = iTokenService.generateToken(userInfo);
-//        return new AuthResponseDto(token);
-//    }
 
 //    @GetMapping("/logout")
 //    public Boolean logout(@RequestHeader("Authorization") String token){

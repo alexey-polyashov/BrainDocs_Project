@@ -16,7 +16,7 @@ public class NewUserDTO {
 
     @NotBlank(message = "Не указан логин")
     @UniqUserName
-    private String username;
+    private String login;
 
     @NotBlank(message = "Не указан email")
     @Pattern(
@@ -34,9 +34,8 @@ public class NewUserDTO {
     private String phone;
 
     @NotBlank(message = "Не указано имя")
-    private String firstname;
+    private String fullname;
 
-    private String lastname;
     @Past(message = "Дата рождения не может быть позже текущей даты")
     private LocalDate birthday;
 
