@@ -32,7 +32,7 @@ public class NewUserDTO {
 
     private String fullname;
 
-    private OrganisationModel organisation;
+    private Long organisationId;
 
     @NotBlank(message = "Не указано имя")
     private String shortname;

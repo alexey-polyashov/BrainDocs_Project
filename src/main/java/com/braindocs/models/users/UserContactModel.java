@@ -11,7 +11,6 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 public class UserContactModel {
-
     @Column(name="user_id")
     private Long userId;
 

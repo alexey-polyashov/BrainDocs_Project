@@ -46,6 +46,9 @@ public class UserModel {
     @JoinColumn(name="user_id")
     private List<UserContactModel> contacts;
 
+    @Column(name="confirmed")
+    Boolean confirmed;
+
     @ManyToMany
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),

@@ -2,6 +2,7 @@ package com.braindocs.controllers.users;
 
 import com.braindocs.dto.users.NewUserDTO;
 import com.braindocs.models.users.UserModel;
+import com.braindocs.services.mappers.UserMapper;
 import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,19 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class SingUpController {
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @ResponseStatus(HttpStatus.CREATED)
     public void registerUser(@RequestBody NewUserDTO signUpRequest) {
-        UserModel user = new UserModel();
-        user.setLogin(signUpRequest.getLogin());
-        user.setPassword(signUpRequest.getPassword());
-        user.setEmail(signUpRequest.getEmail());
-        user.setFullname(signUpRequest.getFullname());
-        user.setOrganisation(signUpRequest.getOrganisation());
-        user.setShortname(signUpRequest.getShortname());
-        user.setMale(signUpRequest.getMale());
-        user.setBirthday(signUpRequest.getBirthday());
-        userService.saveUser(user);
+        UserModel user = userMapper.toModel(signUpRequest);
+        userService.saveNewUser(user);
     }
 
 }
