@@ -25,6 +25,10 @@ public class SingUpController {
         user.setPassword(signUpRequest.getPassword());
         user.setEmail(signUpRequest.getEmail());
         user.setFullname(signUpRequest.getFullname());
+        user.setOrganisation(signUpRequest.getOrganisation());
+        user.setShortname(signUpRequest.getShortname());
+        user.setMale(signUpRequest.getMale());
+        user.setBirthday(signUpRequest.getBirthday());
         userService.saveUser(user);
     }
 

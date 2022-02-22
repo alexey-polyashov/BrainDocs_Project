@@ -2,6 +2,7 @@ package com.braindocs.dto.users;
 
 import com.braindocs.dto.validators.UniqUserEmail;
 import com.braindocs.dto.validators.UniqUserName;
+import com.braindocs.models.organisations.OrganisationModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,6 +19,9 @@ public class NewUserDTO {
     @UniqUserName
     private String login;
 
+    @NotBlank(message = "Не указан пароль")
+    private String password;
+
     @NotBlank(message = "Не указан email")
     @Pattern(
             regexp = "^([a-z0-9_-]+\\.)*[a-z0-9_-]+@[a-z0-9_-]+(\\.[a-z0-9_-]+)*\\.[a-z]{2,6}$",
@@ -26,20 +30,27 @@ public class NewUserDTO {
     @UniqUserEmail
     private String email;
 
-    private String address;
-    @Pattern(
-            regexp = "^\\+\\d{1}\\(\\d{3}\\)\\d{3}-\\d{2}-\\d{2}$",
-            message = "Не корректный номер телефона"
-    )
-    private String phone;
-
-    @NotBlank(message = "Не указано имя")
     private String fullname;
 
-    @Past(message = "Дата рождения не может быть позже текущей даты")
-    private LocalDate birthday;
+    private OrganisationModel organisation;
 
-    @NotBlank(message = "Не указан пароль")
-    private String password;
+    @NotBlank(message = "Не указано имя")
+    private String shortname;
+
+    private String male;
+
+    @Past(message = "Дата рождения не может быть позже текущей даты")
+    @Pattern(
+            regexp = "^\\d{2}-\\d{2}-\\d{4}$",
+            message = "Не корректная дата"
+    )
+    private String birthday;
+
+//    private String address;
+//    @Pattern(
+//            regexp = "^\\+\\d{1}\\(\\d{3}\\)\\d{3}-\\d{2}-\\d{2}$",
+//            message = "Не корректный номер телефона"
+//    )
+//    private String phone;
 
 }

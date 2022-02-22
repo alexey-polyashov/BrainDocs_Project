@@ -39,6 +39,9 @@ public class UserModel {
     @Column(name = "male")
     private String male; // list of: 'female', 'male'
 
+    @Column(name = "birthday")
+    private String birthday;
+
     @OneToMany
     @JoinColumn(name="user_id")
     private List<UserContactModel> contacts;
