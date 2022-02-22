@@ -18,10 +18,10 @@
             <fileNamePattern>slf4jlogbackexample.%d{yyyy-MM-dd}.log</fileNamePattern>
 
             <!-- Храним файлы логов 10 дней -->
-            <maxHistory>10</maxHistory>
+            <maxHistory>3</maxHistory>
 
             <!-- Максимальный размер файлов лога 10 гигабайт -->
-            <totalSizeCap>10GB</totalSizeCap>
+            <totalSizeCap>200KB</totalSizeCap>
 
         </rollingPolicy>
         <encoder>

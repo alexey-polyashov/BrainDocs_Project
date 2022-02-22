@@ -1,4 +1,4 @@
-package com.braindocs.controllers;
+package com.braindocs.controllers.documents;
 
 import com.braindocs.dto.FieldsListDTO;
 import com.braindocs.dto.SearchCriteriaDTO;
@@ -11,8 +11,9 @@ import com.braindocs.exceptions.AnyOtherException;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.files.FileModel;
 import com.braindocs.repositories.specifications.DocumentSpecificationBuilder;
-import com.braindocs.services.DocumentTypeService;
-import com.braindocs.services.DocumentsService;
+import com.braindocs.services.documents.DocumentTypeService;
+import com.braindocs.services.documents.DocumentsService;
+import com.braindocs.services.OrganisationService;
 import com.braindocs.services.UserService;
 import com.braindocs.services.mappers.DocumentMapper;
 import com.braindocs.services.mappers.FileMapper;
@@ -33,6 +34,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RestController
@@ -45,6 +47,7 @@ public class DocumentController {
     private final DocumentsService documentsService;
     private final DocumentTypeService documentTypeService;
     private final UserService userService;
+    private final OrganisationService organisationService;
     private final DocumentMapper documentMapper;
     private final FileMapper fileMapper;
 
@@ -63,7 +66,7 @@ public class DocumentController {
     public Set<FieldsListDTO> getFields(){
         log.info("DocumentController: getFields");
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
-        fieldsSet.add(new FieldsListDTO("Вид документа", "documentType", "/api/v1/doc_types", Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Вид документа", "documentType", "/api/v1/documents/types", Arrays.asList(":"), LONG_TYPE, false));
         fieldsSet.add(new FieldsListDTO("Номер докуемнта","number", "", Arrays.asList(":"), STRING_TYPE, false));
         fieldsSet.add(new FieldsListDTO("Дата документа","documentDate","", Arrays.asList("<",">"), DATE_TYPE, true));
         fieldsSet.add(new FieldsListDTO("Заголовок документа", "heading","", Arrays.asList(":"), STRING_TYPE, false));
@@ -78,7 +81,7 @@ public class DocumentController {
     @PostMapping(value="")
     public Long addDocument(@Valid @RequestBody DocumentDTO documentDTO) throws ParseException {
         log.info("DocumentController: add");
-        if(documentDTO.getId()!=null && !documentDTO.getId().equals(0)){
+        if(documentDTO.getId()!=null && (documentDTO.getId()!=0)){
             throw new AnyOtherException("При добавлении нового объекта id должен быть пустым");
         }
         DocumentModel docModel = documentMapper.toModel(documentDTO);
@@ -100,29 +103,34 @@ public class DocumentController {
         return docId;
     }
 
-    @DeleteMapping(value="/{id}")
+    @DeleteMapping(value="/finally/{id}")
     public void deleteDocument(@PathVariable("id") Long id){
         log.info("DocumentController: deleteDocument, id-{}", id);
         documentsService.deleteDocument(id);
         log.info("DocumentController: deleteDocument - ok");
     }
 
+    @DeleteMapping(value="/{id}")
+    public void markDocument(@PathVariable("id") Long id){
+        log.info("DocumentController: markDocument, id-{}", id);
+        documentsService.markDocument(id);
+        log.info("DocumentController: markDocument - ok");
+    }
+
     @GetMapping(value="")
-    @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public Page<DocumentDTO> getDocuments(@RequestParam( name = "pagenumber", defaultValue = "0") int pageNumber, @RequestParam(name = "pagesize", defaultValue = "10") int pageSize){
         log.info("DocumentController: getDocuments, pagenumber-{}, pagesize-{}", pageNumber, pageSize);
-        Page<DocumentModel> documents = documentsService.getDocuments(pageNumber, pageSize);
-        Page<DocumentDTO> docDtoPage = documents.map(documentMapper::toDTO);
+        Page<DocumentDTO> docDtoPage = documentsService.getDocumentsDTO(pageNumber,
+                pageSize,
+                this::setLinkToFile);
         log.info("DocumentController: getDocuments return {} elements", docDtoPage.getNumberOfElements());
         return docDtoPage;
     }
 
     @GetMapping(value="{id}")
-    @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public DocumentDTO getDocumentById(@PathVariable("id") Long id){
         log.info("DocumentController: getDocumentById");
-        DocumentModel doc = documentsService.getDocumentById(id);
-        DocumentDTO docDTO = documentMapper.toDTO(doc);
+        DocumentDTO docDTO = documentsService.getDocumentDTOById(id);
         if(docDTO.getFiles()!=null) {
             for (FileDTO fileDTO : docDTO.getFiles()) {
                 setLinkToFile(fileDTO, id);
@@ -133,29 +141,24 @@ public class DocumentController {
     }
 
     @PostMapping(value="/search")
-    @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public Page<DocumentDTO>  getDocumentsByFilter(@RequestBody SearchCriteriaListDTO requestDTO){
         log.info("DocumentController: getDocumentsByFilter");
         List<SearchCriteriaDTO> filter = requestDTO.getFilter();
         Integer page = requestDTO.getPage();
         Integer recordsOnPage = requestDTO.getRecordsOnPage();
-        DocumentSpecificationBuilder builder = new DocumentSpecificationBuilder(userService);
+        DocumentSpecificationBuilder builder = new DocumentSpecificationBuilder(userService, organisationService, documentTypeService);
         for(SearchCriteriaDTO creteriaDTO: filter) {
             Object value = creteriaDTO.getValue();
             builder.with(creteriaDTO.getKey(), creteriaDTO.getOperation(), value);
         }
         Specification<DocumentModel> spec = builder.build();
-        Page<DocumentModel> documents = documentsService.getDocumentsByFields(page, recordsOnPage, spec);
-        Page<DocumentDTO> docDtoPage = documents.map(documentMapper::toDTO);
+        Page<DocumentDTO> docDtoPage = documentsService.getDocumentsDTOByFields(page, recordsOnPage, spec);
         log.info("DocumentController: getDocumentsByFilter return {} elements", docDtoPage.getSize());
         return docDtoPage;
     }
 
-
-    //@PostMapping(value="/upload_file/{docid}")
     @PostMapping(value = "/{docid}/files/upload",
             consumes = {"multipart/form-data"})
-    @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
     public FileDTO uploadFile(@PathVariable("docid") Long docid, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart("file") MultipartFile fileData) throws IOException {
         log.info("DocumentController: uploadfile");
         NewFileDTO fileDescribe = new ObjectMapper().readValue(jsonDescribe, NewFileDTO.class);
@@ -170,48 +173,14 @@ public class DocumentController {
             log.error("Ошибка получения данных файла\n" + e.getMessage() + "\n" + e.getCause());
             throw new AnyOtherException("Ошибка получения данных файла");
         }
-        fileModel = documentsService.addFile(docid, fileModel, fileData);
-        FileDTO fileDTO = fileMapper.toDTO(fileModel);
+        FileDTO fileDTO = documentsService.addFile(docid, fileModel, fileData);
         setLinkToFile(fileDTO, docid);
         return fileDTO;
     }
 
-    @GetMapping(value="/{docid}/files")
-    @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
-    public Set<FileDTO> getFiles(@PathVariable("docid") Long docid){
-        log.info("DocumentController: getFileslist");
-        Set<FileModel> filesList = documentsService.getFilesList(docid);
-        return filesList.stream().map(
-                p->{
-                    FileDTO res = fileMapper.toDTO(p);
-                    setLinkToFile(res, docid);
-                    return res;
-                }
-            ).collect(Collectors.toSet());
-    }
-
-    @GetMapping(value="/{docid}/files/{fileid}")
-    @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
-    public FileDTO getFileDescribe(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
-        log.info("DocumentController: getFileDescribe, docid-{}, fileid{}", docid, fileid);
-        FileDTO fDTO = fileMapper.toDTO(documentsService.getFileDescribe(docid, fileid));
-        setLinkToFile(fDTO, docid);
-        return fDTO;
-    }
-
-    @GetMapping(value="/{docid}/files/{fileid}/data")
-    @ResponseBody
-    @Transactional //это нужно из-за наличия в файлах данных Lob, без этого выскакивает исключение Unable to access lob stream
-    public ResponseEntity<byte[]> getFileData(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
-        log.info("DocumentController: getFileData");
-        FileDataDTO fileData = documentsService.getFileData(docid, fileid);
-        MediaType mt = MediaType.valueOf(fileData.getContentType());
-        return ResponseEntity.ok().contentType(mt).body(fileData.getFileData());
-    }
-
     @PostMapping(value = "/{docid}/files/{fileid}",
             consumes = {"multipart/form-data"})
-    public FileDTO changeFile(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileId, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart("file") MultipartFile fileData) throws JsonProcessingException {
+    public FileDTO changeFile(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileId, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart("file") MultipartFile fileData) throws IOException {
         log.info("DocumentController: changeFile, docid-{}, fileDescribe{}", docid, jsonDescribe);
         if(fileId==0){
             throw new AnyOtherException("id файла не должен быть пустым");
@@ -225,11 +194,32 @@ public class DocumentController {
             throw new AnyOtherException("Ошибка получения данных файла");
         }
         fileModel.setId(fileId);
-        fileModel = documentsService.changeFile(docid, fileModel, fileData);
-        FileDTO fileDTO = fileMapper.toDTO(fileModel);
+        FileDTO fileDTO = documentsService.changeFile(docid, fileModel, fileData);
         setLinkToFile(fileDTO, docid);
         log.info("DocumentController: changeFile - changed, docid-{}, fileDescribe - {}, fileId-{}", docid, fileDTO.getId(), jsonDescribe);
         return fileDTO;
+    }
+
+    @GetMapping(value="/{docid}/files/{fileid}/data")
+    @ResponseBody
+    public ResponseEntity<byte[]> getFileData(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
+        log.info("DocumentController: getFileData");
+        FileDataDTO fileData = documentsService.getFileData(docid, fileid);
+        MediaType mt = MediaType.valueOf(fileData.getContentType());
+        return ResponseEntity.ok().contentType(mt).body(fileData.getFileData());
+    }
+
+    @GetMapping(value="/{docid}/files")
+    public Set<FileDTO> getFiles(@PathVariable("docid") Long docid){
+        log.info("DocumentController: getFileslist");
+        return documentsService.getFilesDTOList(docid, this::setLinkToFile);
+    }
+
+    @GetMapping(value="/{docid}/files/{fileid}")
+    public FileDTO getFileDescribe(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
+        log.info("DocumentController: getFileDescribe, docid-{}, fileid{}", docid, fileid);
+        return documentsService.getFileDTODescribe(
+                docid, fileid, this::setLinkToFile);
     }
 
     @DeleteMapping(value="/{docid}/files/{fileid}")

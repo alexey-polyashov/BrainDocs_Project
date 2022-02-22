@@ -33,13 +33,18 @@ public class FilesService {
         }
     }
 
-    public Long saveWithAllData(FileModel file){
+    public FileModel saveWithAllData(FileModel file, MultipartFile fileData) throws IOException {
         int storageType= options.getFileStorageType();
         if(storageType==1) {
-            Optional<FileModel> oldFile = filesRepository.findById(file.getId());
-            oldFile.orElseThrow(() -> new ResourceNotFoundException("Файл с id - '" + file.getId() + "' не найден"));
-            filesRepository.save(file);
-            return file.getId();
+            Optional<FileModel> optOldFile = filesRepository.findById(file.getId());
+            FileModel oldFile = optOldFile.orElseThrow(() -> new ResourceNotFoundException("Файл с id - '" + file.getId() + "' не найден"));
+            oldFile.setDescription(file.getDescription());
+            oldFile.setAuthor(file.getAuthor());
+            oldFile.setName(file.getName());
+            oldFile.setFileData(fileData.getBytes());
+            oldFile.setContentType(fileData.getContentType());
+            filesRepository.save(oldFile);
+            return file;
         }
         else{
             //1.найти файл на диске
@@ -47,18 +52,18 @@ public class FilesService {
             //3.получить путь
             //4.очистить в модели данные файла
             //5.записать в базу модель
-            return 0L;
+            return null;
         }
     }
 
-    public Long saveOnlyDescribe(FileModel file){
+    public FileModel saveOnlyDescribe(FileModel file){
         Optional<FileModel> oldFile = filesRepository.findById(file.getId());
         FileModel fileModel = oldFile.orElseThrow(()->new ResourceNotFoundException("Файл с id - '" + file.getId() + "' не найден"));
         fileModel.setDescription(file.getDescription());
         fileModel.setAuthor(file.getAuthor());
         fileModel.setName(file.getName());
         filesRepository.save(fileModel);
-        return file.getId();
+        return file;
     }
 
     public FileModel findById(Long id){
