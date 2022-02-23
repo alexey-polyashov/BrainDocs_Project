@@ -200,7 +200,8 @@ public class DocumentController {
         return fileDTO;
     }
 
-    @GetMapping(value="/{docid}/files/{fileid}/data")
+    @GetMapping(value="/{docid}/files/{fileid}/data",
+            produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseBody
     public ResponseEntity<byte[]> getFileData(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
         log.info("DocumentController: getFileData");
@@ -215,8 +216,7 @@ public class DocumentController {
         return documentsService.getFilesDTOList(docid, this::setLinkToFile);
     }
 
-    @GetMapping(value="/{docid}/files/{fileid}",
-            produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping(value="/{docid}/files/{fileid}")
     public FileDTO getFileDescribe(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
         log.info("DocumentController: getFileDescribe, docid-{}, fileid{}", docid, fileid);
         return documentsService.getFileDTODescribe(
