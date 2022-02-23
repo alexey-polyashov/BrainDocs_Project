@@ -200,14 +200,22 @@ public class DocumentController {
         return fileDTO;
     }
 
-    @GetMapping(value="/{docid}/files/{fileid}/data",
+    @GetMapping(value="/{docid}/files/{fileid}/download",
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @ResponseBody
+    public ResponseEntity<byte[]> getFileDataForDownload(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
+        log.info("DocumentController: getFileDataForDownload");
+        FileDataDTO fileData = documentsService.getFileData(docid, fileid);
+        MediaType mt = MediaType.valueOf(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        return ResponseEntity.ok().contentType(mt).body(fileData.getFileData());
+    }
+
+    @GetMapping(value="/{docid}/files/{fileid}/data")
     @ResponseBody
     public ResponseEntity<byte[]> getFileData(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
         log.info("DocumentController: getFileData");
         FileDataDTO fileData = documentsService.getFileData(docid, fileid);
-        //MediaType mt = MediaType.valueOf(fileData.getContentType());
-        MediaType mt = MediaType.valueOf(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        MediaType mt = MediaType.valueOf(fileData.getContentType());
         return ResponseEntity.ok().contentType(mt).body(fileData.getFileData());
     }
 

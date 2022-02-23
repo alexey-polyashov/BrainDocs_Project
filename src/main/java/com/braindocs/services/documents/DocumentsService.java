@@ -194,7 +194,7 @@ public class DocumentsService {
         }
         getDocumentFile(docId, file.getId()); //проверка существования файла
         FileModel fileModel=null;
-        if(fileData==null) {
+        if(fileData==null || fileData.isEmpty()) {
             fileModel = filesService.saveOnlyDescribe(file);
         }else{
             fileModel = filesService.saveWithAllData(file, fileData);

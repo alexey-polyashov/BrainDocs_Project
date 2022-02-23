@@ -68,9 +68,11 @@ public class FileMapper {
         file.setFileType(fileData.getFileType());
         UserModel userModel = userService.findById(fileData.getAuthor().getId());
         file.setAuthor(userModel);
-        file.setFileSize(mpf.getSize());
-        file.setFileData(mpf.getBytes());
-        file.setContentType(mpf.getContentType());
+        if(mpf!=null) {
+            file.setFileSize(mpf.getSize());
+            file.setFileData(mpf.getBytes());
+            file.setContentType(mpf.getContentType());
+        }
         return file;
     }
 
