@@ -20,7 +20,6 @@ public class FileDTO {
     @NotEmpty(message = "Не указан автор файла")
     private UserNameDTO author;
     private String contentType;
-    private String originalFilename;
     @NotEmpty(message = "Не указан тип файла")
     private String fileType;
     private String link;

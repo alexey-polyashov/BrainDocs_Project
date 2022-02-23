@@ -34,9 +34,6 @@ public class FileModel {
     @Column(name="parsedtext")
     private String parsedText;
 
-    @Column(name="originalfilename")
-    private String originalFilename;
-
     @Column(name="filetype")
     private String fileType;
 
