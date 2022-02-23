@@ -206,7 +206,8 @@ public class DocumentController {
     public ResponseEntity<byte[]> getFileData(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
         log.info("DocumentController: getFileData");
         FileDataDTO fileData = documentsService.getFileData(docid, fileid);
-        MediaType mt = MediaType.valueOf(fileData.getContentType());
+        //MediaType mt = MediaType.valueOf(fileData.getContentType());
+        MediaType mt = MediaType.valueOf(MediaType.APPLICATION_OCTET_STREAM_VALUE);
         return ResponseEntity.ok().contentType(mt).body(fileData.getFileData());
     }
 
