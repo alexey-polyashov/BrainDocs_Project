@@ -215,7 +215,8 @@ public class DocumentController {
         return documentsService.getFilesDTOList(docid, this::setLinkToFile);
     }
 
-    @GetMapping(value="/{docid}/files/{fileid}")
+    @GetMapping(value="/{docid}/files/{fileid}",
+            produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     public FileDTO getFileDescribe(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
         log.info("DocumentController: getFileDescribe, docid-{}, fileid{}", docid, fileid);
         return documentsService.getFileDTODescribe(
