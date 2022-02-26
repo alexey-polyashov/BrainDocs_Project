@@ -25,19 +25,6 @@ public class TestController {
         return Arrays.asList("It works");
     }
 
-    @GetMapping("/organisations")
-    public OrganisationNameDTO[] getOrganisationsList(){
-        OrganisationNameDTO[] orgs = new OrganisationNameDTO[10];
-        orgs[0] = OrganisationNameDTO.builder().name("'ООО \"Ромашка\"'").id(1L).build();
-        orgs[1] = OrganisationNameDTO.builder().name("'ИП Иванов'").id(2L).build();
-        for (int i = 2; i < orgs.length; i++) {
-            orgs[i] = new OrganisationNameDTO();
-            orgs[i].setId(Long.valueOf(i+1L));
-            orgs[i].setName("Organisation " + i);
-        }
-        return orgs;
-    }
-
     @GetMapping("/users")
     public UserNameDTO[] getUsersList(){
         UserNameDTO[] users = new UserNameDTO[15];
@@ -50,20 +37,6 @@ public class TestController {
             users[i].setShortname("User " + i);
         }
         return users;
-    }
-
-    @GetMapping("/doc_types")
-    public DocumentTypeNameDTO[] getDocumentTypesList(){
-        DocumentTypeNameDTO[] docTypes = new DocumentTypeNameDTO[10];
-        docTypes[0] = DocumentTypeNameDTO.builder().name("Приказы").id(1L).build();
-        docTypes[1] = DocumentTypeNameDTO.builder().name("Договора").id(2L).build();
-        docTypes[2] = DocumentTypeNameDTO.builder().name("Прочие").id(3L).build();
-        for (int i = 3; i < docTypes.length; i++) {
-            docTypes[i] = new DocumentTypeNameDTO();
-            docTypes[i].setId(Long.valueOf(i+1L));
-            docTypes[i].setName("Doc type " + i);
-        }
-        return docTypes;
     }
 
 }
