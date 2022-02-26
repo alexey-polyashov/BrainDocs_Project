@@ -2,6 +2,8 @@ package com.braindocs.controllers.documents;
 
 
 import com.braindocs.dto.FieldsListDTO;
+import com.braindocs.dto.SearchCriteriaDTO;
+import com.braindocs.dto.SearchCriteriaListDTO;
 import com.braindocs.dto.documents.DocumentTypeDTO;
 import com.braindocs.dto.documents.NewDocumentTypeDTO;
 import com.braindocs.dto.files.FileDTO;
@@ -10,12 +12,15 @@ import com.braindocs.dto.files.NewFileDTO;
 import com.braindocs.exceptions.AnyOtherException;
 import com.braindocs.models.documents.DocumentTypeModel;
 import com.braindocs.models.files.FileModel;
+import com.braindocs.repositories.specifications.DocumentTypeSpecificationBuilder;
 import com.braindocs.services.documents.DocumentTypeService;
 import com.braindocs.services.mappers.DocumentTypeMapper;
 import com.braindocs.services.mappers.FileMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +30,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -50,7 +54,7 @@ public class DocumentViewController {
     //операции: ">" (больше или равно), "<" (меньше или равно), ":" (для строковых полей модели - содержит, для других = )
     //типы полей могут быть любыми - это просто описание типа для правильного построения интерфейса
     public Set<FieldsListDTO> getFields(){
-        log.info("DocumentController: getFields");
+        log.info("DocumentViewController: getFields");
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
         fieldsSet.add(new FieldsListDTO("Наименование вида документа", "name", "", Arrays.asList(":"), STRING_TYPE, false));
         log.info("DocumentController: getFields return {} elements", fieldsSet.size());
@@ -59,12 +63,14 @@ public class DocumentViewController {
 
     @PostMapping
     public Long addView(@RequestBody NewDocumentTypeDTO documentTypeDTO) {
+        log.info("DocumentViewController: addView");
         DocumentTypeModel docType = documentTypeMapper.toModel(documentTypeDTO);
         return documentTypeService.addType(docType);
     }
 
     @PostMapping("/{typeid}")
-    public DocumentTypeDTO changeView(@PathVariable Long typeid, @RequestBody NewDocumentTypeDTO documentTypeDTO) {
+    public Long changeView(@PathVariable Long typeid, @RequestBody NewDocumentTypeDTO documentTypeDTO) {
+        log.info("DocumentViewController: changeView");
         if(typeid==0){
             throw new AnyOtherException("id должен быть отличен от 0");
         }
@@ -73,22 +79,43 @@ public class DocumentViewController {
 
     @GetMapping("/{id}")
     public DocumentTypeDTO findById(@PathVariable Long id){
+        log.info("DocumentViewController: findById");
         return documentTypeService.findDTOById(id, this::setLinkToFile);
     }
 
     @DeleteMapping("/finally/{id}")
     public void deleteView(@PathVariable Long id){
+        log.info("DocumentViewController: deleteView");
         documentTypeService.deleteById(id);
     }
 
     @DeleteMapping("/{id}")
     public void markView(@PathVariable Long id){
+        log.info("DocumentViewController: markView");
         documentTypeService.markById(id);
     }
 
     @GetMapping("")
     public List<DocumentTypeDTO> findAll() {
+        log.info("DocumentViewController: findAll");
         return documentTypeService.findAllDTO(this::setLinkToFile);
+    }
+
+    @PostMapping("/search")
+    public Page<DocumentTypeDTO> search(@RequestBody SearchCriteriaListDTO requestDTO) {
+        log.info("DocumentViewController: search");
+        List<SearchCriteriaDTO> filter = requestDTO.getFilter();
+        Integer page = requestDTO.getPage();
+        Integer recordsOnPage = requestDTO.getRecordsOnPage();
+        DocumentTypeSpecificationBuilder builder = new DocumentTypeSpecificationBuilder();
+        for(SearchCriteriaDTO creteriaDTO: filter) {
+            Object value = creteriaDTO.getValue();
+            builder.with(creteriaDTO.getKey(), creteriaDTO.getOperation(), value);
+        }
+        Specification<DocumentTypeModel> spec = builder.build();
+        Page<DocumentTypeDTO> docTypeDtoPage = documentTypeService.getTypesDTOByFields(page, recordsOnPage, spec);
+        log.info("DocumentViewController: search return {} elements", docTypeDtoPage.getSize());
+        return docTypeDtoPage;
     }
 
     @PostMapping(value = "/{typeid}/files/upload",
