@@ -85,4 +85,12 @@ public class UserService  implements UserDetailsService {
     public Optional<UserModel> findByLogin(String login) {
         return userRepository.findByLogin(login);
     }
+
+    public UserModel findById(Long id){
+        return userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Пользователь по id '" + id + "' не найден"));
+    }
+
+//    public List<UserModel> findAllConfirmed(){
+//        return userRepository.findByConfirmed(true);
+//    }
 }

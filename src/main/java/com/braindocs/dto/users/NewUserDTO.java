@@ -2,14 +2,11 @@ package com.braindocs.dto.users;
 
 import com.braindocs.dto.validators.UniqUserEmail;
 import com.braindocs.dto.validators.UniqUserName;
-import com.braindocs.models.organisations.OrganisationModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
-import java.time.LocalDate;
 
 @NoArgsConstructor
 @Data

@@ -10,6 +10,7 @@ import com.braindocs.models.users.UserModel;
 import com.braindocs.services.*;
 import com.braindocs.services.documents.DocumentTypeService;
 import com.braindocs.services.documents.DocumentsService;
+import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

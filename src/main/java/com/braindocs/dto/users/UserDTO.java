@@ -14,8 +14,10 @@ public class UserDTO {
     private OrganisationDTO organisation;
     private String shortname;
     private String male; // list of: 'female', 'male'
+    private String birthday;
     private List<UserContactDTO> contacts;
     private List<RoleDTO> roles;
     private Long id;
     private Boolean marked;
+    private Boolean confirmed;
 }
