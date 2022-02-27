@@ -25,5 +25,4 @@ public class SingUpController {
         UserModel user = userMapper.toModel(signUpRequest);
         userService.saveNewUser(user);
     }
-
 }
