@@ -2,6 +2,7 @@ package com.braindocs.services.users;
 
 import com.braindocs.dto.users.UserDTO;
 import com.braindocs.exceptions.ResourceNotFoundException;
+import com.braindocs.repositories.users.UserContactRepository;
 import com.braindocs.services.mappers.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService  implements UserDetailsService {
     private final UserRepository userRepository;
+    private final UserContactRepository userContactRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -97,23 +99,24 @@ public class UserService  implements UserDetailsService {
                 .orElseThrow(()->new ResourceNotFoundException("Пользователь по id '" + id + "' не найден"));
     }
 
-    public List<UserModel> findNoConfirmedUsers(){
-        return userRepository.findByConfirmedIsFalse();
+    public List<UserModel> findByConfirmed(Boolean confirmed){
+        return userRepository.findByConfirmed(confirmed);
     }
 
-    public UserModel confirmedIsTrue(UserModel user) {
-        UserModel oldUser = userRepository.findById(user.getId())
-                .orElseThrow(()->new ResourceNotFoundException("Пользователь с логином " + user.getId() + ""));
-        user.setPassword(oldUser.getPassword());
+    public UserModel confirmUser(Long id) {
+        UserModel user = userRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Пользователь с логином " + id + ""));
         user.setConfirmed(true);
         return userRepository.save(user);
     }
 
     public UserModel update(UserModel user) {
-        UserModel oldUser = userRepository.findByLogin(
-                        user.getLogin())
-                .orElseThrow(()->new ResourceNotFoundException("Пользователь с логином " + user.getLogin() + ""));
+        UserModel oldUser = userRepository.findById(
+                        user.getId())
+                .orElseThrow(()->new ResourceNotFoundException("Пользователь с ID " + user.getId() + ""));
         user.setPassword(oldUser.getPassword());
-        return userRepository.save(user);
+        UserModel saveUser = userRepository.save(user);
+        user.getContacts().stream().forEach(userContactRepository::save);
+        return saveUser;
     }
 }

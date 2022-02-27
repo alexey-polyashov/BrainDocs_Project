@@ -1,6 +1,6 @@
 package com.braindocs.dto.users;
 
-import com.braindocs.dto.organization.OrganisationDTO;
+import com.braindocs.dto.organization.OrganisationNameDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
@@ -11,7 +11,7 @@ public class UserDTO {
     private String login;
     private String email;
     private String fullname;
-    private OrganisationDTO organisation;
+    private OrganisationNameDTO organisation;
     private String shortname;
     private String male; // list of: 'female', 'male'
     private String birthday;

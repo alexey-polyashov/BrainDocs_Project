@@ -42,7 +42,7 @@ public class UserModel {
     @Column(name = "birthday")
     private String birthday;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="user_id")
     private List<UserContactModel> contacts;
 

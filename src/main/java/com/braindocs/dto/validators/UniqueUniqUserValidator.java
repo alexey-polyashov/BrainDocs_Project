@@ -19,7 +19,7 @@ public class UniqueUniqUserValidator implements ConstraintValidator<UniqUserName
 
     @Override
     public boolean isValid(String checkValue, ConstraintValidatorContext ctx) {
-        return usersService.findByLogin(checkValue).isPresent();
+        return !usersService.findByLogin(checkValue).isPresent();
     }
 
 }

@@ -36,9 +36,9 @@ public class NewUserDTO {
 
     private String male;
 
-    @Past(message = "Дата рождения не может быть позже текущей даты")
+//    @Past(message = "Дата рождения не может быть позже текущей даты")
     @Pattern(
-            regexp = "^\\d{2}-\\d{2}-\\d{4}$",
+            regexp = "^\\d{4}-\\d{2}-\\d{2}$",
             message = "Не корректная дата"
     )
     private String birthday;

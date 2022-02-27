@@ -1,5 +1,6 @@
 package com.braindocs.services.mappers;
 
+import com.braindocs.dto.organization.OrganisationNameDTO;
 import com.braindocs.dto.users.NewUserDTO;
 import com.braindocs.dto.users.UserDTO;
 import com.braindocs.models.users.UserModel;
@@ -8,22 +9,26 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class UserMapper {
     private final OrganisationService organisationService;
-    private final ModelMapper modelMapper;
-    private final OrganisationMapper organisationMapper;
+    private final UserContactMapper userContactMapper;
 
     public UserDTO toDTO(UserModel userModel){
         UserDTO userDTO = new UserDTO();
+        userDTO.setId(userModel.getId());
         userDTO.setLogin(userModel.getLogin());
         userDTO.setEmail(userModel.getEmail());
         userDTO.setFullname(userModel.getFullname());
-        userDTO.setOrganisation(organisationMapper.toDTO(userModel.getOrganisation()));
+        userDTO.setOrganisation(new OrganisationNameDTO(userModel.getOrganisation()));
+        userDTO.setContacts(userModel.getContacts().stream().map(userContactMapper::toDTO).collect(Collectors.toList()));
         userDTO.setShortname(userModel.getShortname());
         userDTO.setMale(userModel.getMale());
         userDTO.setBirthday(userModel.getBirthday());
+        userDTO.setConfirmed(userModel.getConfirmed());
         return userDTO;
     }
 
@@ -37,17 +42,23 @@ public class UserMapper {
         user.setShortname(dto.getShortname());
         user.setMale(dto.getMale());
         user.setBirthday(dto.getBirthday());
+        user.setConfirmed(false);
         return user;
     }
 
     public UserModel toModel(UserDTO dto) {
         UserModel user = new UserModel();
+        user.setId(dto.getId());
         user.setLogin(dto.getLogin());
         user.setEmail(dto.getEmail());
         user.setFullname(dto.getFullname());
+        user.setOrganisation(
+                organisationService.findById(
+                        dto.getOrganisation().getId()));
         user.setShortname(dto.getShortname());
         user.setMale(dto.getMale());
         user.setBirthday(dto.getBirthday());
+        user.setContacts(dto.getContacts().stream().map(userContactMapper::toModel).collect(Collectors.toList()));
         return user;
     }
 
