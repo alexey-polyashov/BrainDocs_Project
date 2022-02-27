@@ -16,6 +16,7 @@ import com.braindocs.services.documents.DocumentsService;
 import com.braindocs.services.OrganisationService;
 import com.braindocs.services.mappers.DocumentMapper;
 import com.braindocs.services.mappers.FileMapper;
+import com.braindocs.services.users.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;

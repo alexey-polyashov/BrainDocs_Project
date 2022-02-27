@@ -1,7 +1,7 @@
 package com.braindocs.repositories.specifications;
 
 import com.braindocs.models.organisations.OrganisationModel;
-import com.braindocs.services.UserService;
+import com.braindocs.services.users.UserService;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;

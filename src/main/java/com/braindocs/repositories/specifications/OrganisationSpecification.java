@@ -4,7 +4,7 @@ import com.braindocs.exceptions.NotValidFields;
 import com.braindocs.exceptions.Violation;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.users.UserModel;
-import com.braindocs.services.UserService;
+import com.braindocs.services.users.UserService;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
 import javax.persistence.criteria.CriteriaBuilder;
