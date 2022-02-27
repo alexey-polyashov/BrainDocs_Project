@@ -1,6 +1,8 @@
 package com.braindocs.services.users;
 
+import com.braindocs.dto.users.UserDTO;
 import com.braindocs.exceptions.ResourceNotFoundException;
+import com.braindocs.services.mappers.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,6 +17,7 @@ import com.braindocs.repositories.users.RoleRepository;
 import com.braindocs.repositories.users.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -56,6 +59,7 @@ public class UserService  implements UserDetailsService {
         user.setPassword(oldUser.getPassword());
         return userRepository.save(user);
     }
+
     public UserModel changePassword(Long userId, String oldPassword, String newPassword) {
         UserModel user = userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("Пользователь с id '" + userId + "'"));
         if (user.getPassword().equals(passwordEncoder.encode(oldPassword)))
@@ -88,10 +92,19 @@ public class UserService  implements UserDetailsService {
     }
 
     public UserModel findById(Long id){
-        return userRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Пользователь по id '" + id + "' не найден"));
+        return userRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Пользователь по id '" + id + "' не найден"));
     }
 
     public List<UserModel> findNoConfirmedUsers(){
         return userRepository.findByConfirmedIsFalse();
+    }
+
+    public UserModel confirmedIsTrue(UserModel user) {
+        UserModel oldUser = userRepository.findById(user.getId())
+                .orElseThrow(()->new ResourceNotFoundException("Пользователь с логином " + user.getId() + ""));
+        user.setPassword(oldUser.getPassword());
+        user.setConfirmed(true);
+        return userRepository.save(user);
     }
 }
