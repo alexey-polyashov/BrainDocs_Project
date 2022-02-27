@@ -31,5 +31,6 @@ public class OrganisationMapper {
         organisation.setKpp(organisationDTO.getKpp());
         organisation.setName(organisationDTO.getName());
         organisation.setContacts(organisationDTO.getContacts().stream().map(organisationContactMapper::toModel).collect(Collectors.toList()));
-        return organisation;    }
+        return organisation;
+    }
 }

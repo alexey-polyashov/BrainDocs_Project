@@ -14,7 +14,6 @@ import com.braindocs.repositories.specifications.DocumentSpecificationBuilder;
 import com.braindocs.services.documents.DocumentTypeService;
 import com.braindocs.services.documents.DocumentsService;
 import com.braindocs.services.OrganisationService;
-import com.braindocs.services.UserService;
 import com.braindocs.services.mappers.DocumentMapper;
 import com.braindocs.services.mappers.FileMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;

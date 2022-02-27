@@ -7,7 +7,7 @@ import com.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.services.documents.DocumentTypeService;
 import com.braindocs.services.OrganisationService;
-import com.braindocs.services.UserService;
+import com.braindocs.services.users.UserService;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
 

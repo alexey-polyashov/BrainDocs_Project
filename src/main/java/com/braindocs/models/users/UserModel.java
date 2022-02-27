@@ -39,9 +39,15 @@ public class UserModel {
     @Column(name = "male")
     private String male; // list of: 'female', 'male'
 
-    @OneToMany
+    @Column(name = "birthday")
+    private String birthday;
+
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="user_id")
     private List<UserContactModel> contacts;
+
+    @Column(name="confirmed")
+    Boolean confirmed;
 
     @ManyToMany
     @JoinTable(name = "users_roles",

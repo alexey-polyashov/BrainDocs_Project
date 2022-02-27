@@ -8,7 +8,7 @@ import com.braindocs.common.Options;
 import com.braindocs.models.files.FileModel;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.services.FilesService;
-import com.braindocs.services.UserService;
+import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

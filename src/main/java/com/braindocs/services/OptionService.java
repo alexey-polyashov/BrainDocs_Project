@@ -13,7 +13,7 @@ public class OptionService {
 
     private final OptionRepositories optionRepositories;
 
-    private final String dateFormat = "yy-MM-dd";
+    private final String dateFormat = "yyyy-MM-dd";
 
     public Optional<OptionModel> readOptions() {
         return optionRepositories.findById(1);
