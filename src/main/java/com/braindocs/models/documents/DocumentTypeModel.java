@@ -1,5 +1,6 @@
 package com.braindocs.models.documents;
 
+import com.braindocs.models.files.FileModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -7,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name="documents_types")
@@ -29,5 +31,11 @@ public class DocumentTypeModel {
     @UpdateTimestamp
     @Column(name="updated_at")
     private LocalDateTime updateTime;
+
+    @ManyToMany
+    @JoinTable(name ="documenttypes_files",
+            joinColumns = @JoinColumn(name = "ownerid", referencedColumnName = "id"),
+            inverseJoinColumns =  @JoinColumn(name="fileid"))
+    private Set<FileModel> files;
 
 }

@@ -9,11 +9,8 @@ import com.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.services.*;
 import com.braindocs.services.documents.DocumentTypeService;
-import com.braindocs.services.documents.DocumentsService;
-import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,8 +22,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DocumentMapper {
 
-    private final DocumentsService documentsService;
-    private final DocumentTypeMapper documentTypeMapper;
     private final DocumentTypeService documentTypeService;
     private final OrganisationService organisationService;
     private final UserService userService;
