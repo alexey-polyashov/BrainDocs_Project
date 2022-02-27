@@ -17,12 +17,12 @@ public class ConfirmedController {
     private final UserService userService;
     private final UserMapper userMapper;
 
-    @GetMapping("/api/v1/noconfirmed")
+    @GetMapping("/api/v1/users/noconfirmed")
     public List<UserModel> findNoConfirmedUsers() {
         return userService.findNoConfirmedUsers();
     }
 
-    @GetMapping("/api/v1/confirmed/{id}")
+    @GetMapping("/api/v1/users/confirmed/{id}")
     public UserModel findUserById(@PathVariable Long id) {
         UserModel user = userService.findById(id);
         return userService.confirmedIsTrue(user);

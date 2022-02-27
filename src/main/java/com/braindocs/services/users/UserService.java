@@ -52,6 +52,7 @@ public class UserService  implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
+
     public UserModel saveUser(UserModel user) {
         UserModel oldUser = userRepository.findByLogin(
                 user.getLogin())
@@ -105,6 +106,14 @@ public class UserService  implements UserDetailsService {
                 .orElseThrow(()->new ResourceNotFoundException("Пользователь с логином " + user.getId() + ""));
         user.setPassword(oldUser.getPassword());
         user.setConfirmed(true);
+        return userRepository.save(user);
+    }
+
+    public UserModel update(UserModel user) {
+        UserModel oldUser = userRepository.findByLogin(
+                        user.getLogin())
+                .orElseThrow(()->new ResourceNotFoundException("Пользователь с логином " + user.getLogin() + ""));
+        user.setPassword(oldUser.getPassword());
         return userRepository.save(user);
     }
 }

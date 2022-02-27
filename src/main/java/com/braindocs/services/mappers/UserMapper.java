@@ -40,4 +40,15 @@ public class UserMapper {
         return user;
     }
 
+    public UserModel toModel(UserDTO dto) {
+        UserModel user = new UserModel();
+        user.setLogin(dto.getLogin());
+        user.setEmail(dto.getEmail());
+        user.setFullname(dto.getFullname());
+        user.setShortname(dto.getShortname());
+        user.setMale(dto.getMale());
+        user.setBirthday(dto.getBirthday());
+        return user;
+    }
+
 }
