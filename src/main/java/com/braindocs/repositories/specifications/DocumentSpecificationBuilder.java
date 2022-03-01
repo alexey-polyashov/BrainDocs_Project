@@ -3,7 +3,7 @@ package com.braindocs.repositories.specifications;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.services.documents.DocumentTypeService;
 import com.braindocs.services.OrganisationService;
-import com.braindocs.services.UserService;
+import com.braindocs.services.users.UserService;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.ArrayList;

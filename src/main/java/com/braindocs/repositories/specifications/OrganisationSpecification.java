@@ -1,16 +1,12 @@
 package com.braindocs.repositories.specifications;
+
 import com.braindocs.exceptions.NotValidFields;
 import com.braindocs.exceptions.Violation;
 import com.braindocs.models.documents.DocumentModel;
-import com.braindocs.models.documents.DocumentTypeModel;
-import com.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.models.users.UserModel;
-import com.braindocs.services.documents.DocumentTypeService;
-import com.braindocs.services.OrganisationService;
 import com.braindocs.services.users.UserService;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
-
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -21,21 +17,15 @@ import java.util.Arrays;
 import java.util.Date;
 
 @Data
-public class DocumentSpecification implements Specification<DocumentModel> {
+public class OrganisationSpecification implements Specification<DocumentModel> {
 
     private SearchCriteria criteria;
     private UserService userService;
-    private OrganisationService organisationService;
-    private DocumentTypeService documentTypeService;
 
-    public DocumentSpecification(SearchCriteria criteria,
-                                 UserService userService,
-                                 OrganisationService organisationService,
-                                 DocumentTypeService documentTypeService) {
+    public OrganisationSpecification(SearchCriteria criteria,
+                                     UserService userService) {
         this.criteria = criteria;
         this.userService = userService;
-        this.organisationService = organisationService;
-        this.documentTypeService = documentTypeService;
     }
 
     @Override
@@ -53,10 +43,6 @@ public class DocumentSpecification implements Specification<DocumentModel> {
             }
         }else if(valueClass == UserModel.class){
             value = userService.findById(Long.valueOf(value.toString()));
-        }else if(valueClass == OrganisationModel.class){
-            value = organisationService.findById(Long.valueOf(value.toString()));
-        }else if(valueClass == DocumentTypeModel.class){
-            value = documentTypeService.findById(Long.valueOf(value.toString()));
         }
 
         if (criteria.getOperation().equalsIgnoreCase(">")) {

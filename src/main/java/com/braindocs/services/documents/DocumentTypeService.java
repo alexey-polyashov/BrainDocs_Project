@@ -1,10 +1,12 @@
 package com.braindocs.services.documents;
 
+import com.braindocs.dto.documents.DocumentDTO;
 import com.braindocs.dto.documents.DocumentTypeDTO;
 import com.braindocs.dto.files.FileDTO;
 import com.braindocs.dto.files.FileDataDTO;
 import com.braindocs.exceptions.AnyOtherException;
 import com.braindocs.exceptions.ResourceNotFoundException;
+import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.documents.DocumentTypeModel;
 import com.braindocs.models.files.FileModel;
 import com.braindocs.repositories.documents.DocumentTypeRepository;
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -75,6 +78,17 @@ public class DocumentTypeService {
     }
 
     @Transactional
+    public Page<DocumentTypeModel> getTypesByFields(int page, int recordsOnPage, Specification spec){
+        return documentTypeRepository.findAll(spec, PageRequest.of(page, recordsOnPage));
+    }
+
+    @Transactional
+    public Page<DocumentTypeDTO> getTypesDTOByFields(int page, int recordsOnPage, Specification spec){
+        Page<DocumentTypeModel> documentTypes = getTypesByFields(page, recordsOnPage, spec);
+        return documentTypes.map(documentTypeMapper::toDTO);
+    }
+
+    @Transactional
     public Long addType(DocumentTypeModel documentTypeModel) {
         DocumentTypeModel doc = documentTypeRepository.save(documentTypeModel);
         return doc.getId();
@@ -94,18 +108,20 @@ public class DocumentTypeService {
         documentTypeRepository.save(docType);
     }
 
-    public DocumentTypeModel changeType(Long id, DocumentTypeModel docType) {
+    @Transactional
+    public Long changeType(Long id, DocumentTypeModel docType) {
         DocumentTypeModel oldDocType = documentTypeRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Вид документа с id '" + id + "' не найден"));
         oldDocType.setName(docType.getName());
         documentTypeRepository.save(oldDocType);
-        return oldDocType;
+        return oldDocType.getId();
     }
 
-    public DocumentTypeDTO changeDTOType(Long id, DocumentTypeModel docType) {
+    @Transactional
+    public Long changeDTOType(Long id, DocumentTypeModel docType) {
         DocumentTypeModel oldDocType = documentTypeRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Вид документа с id '" + id + "' не найден"));
         oldDocType.setName(docType.getName());
         documentTypeRepository.save(oldDocType);
-        return documentTypeMapper.toDTO(oldDocType);
+        return oldDocType.getId();
     }
 
     //получение файла по id

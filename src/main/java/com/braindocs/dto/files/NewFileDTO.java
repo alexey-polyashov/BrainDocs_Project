@@ -15,7 +15,6 @@ public class NewFileDTO {
     private String description;
     @NotEmpty(message = "Не указан автор файла")
     private UserNameDTO author;
-    private String originalFilename;
     private String fileType;
 
 

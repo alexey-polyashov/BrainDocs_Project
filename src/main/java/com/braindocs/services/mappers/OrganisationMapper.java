@@ -24,4 +24,13 @@ public class OrganisationMapper {
         return dto;
     }
 
+    public OrganisationModel toModel(OrganisationDTO organisationDTO) {
+        OrganisationModel organisation = new OrganisationModel();
+        organisation.setId(organisationDTO.getId());
+        organisation.setInn(organisationDTO.getInn());
+        organisation.setKpp(organisationDTO.getKpp());
+        organisation.setName(organisationDTO.getName());
+        organisation.setContacts(organisationDTO.getContacts().stream().map(organisationContactMapper::toModel).collect(Collectors.toList()));
+        return organisation;
+    }
 }
