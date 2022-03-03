@@ -69,7 +69,6 @@ public class DocumentMapper {
         docModel.setAuthor(userModel);
         userModel = userService.findById(docDTO.getResponsible().getId());
         docModel.setResponsible(userModel);
-        docModel.setMarked(docDTO.getMarked());
 
         return docModel;
     }

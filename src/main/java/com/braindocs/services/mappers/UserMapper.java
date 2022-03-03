@@ -6,7 +6,6 @@ import com.braindocs.dto.users.UserDTO;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.services.OrganisationService;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
@@ -16,6 +15,7 @@ import java.util.stream.Collectors;
 public class UserMapper {
     private final OrganisationService organisationService;
     private final UserContactMapper userContactMapper;
+    private final UserRoleMapper userRoleMapper;
 
     public UserDTO toDTO(UserModel userModel){
         UserDTO userDTO = new UserDTO();
@@ -25,6 +25,7 @@ public class UserMapper {
         userDTO.setFullname(userModel.getFullname());
         userDTO.setOrganisation(new OrganisationNameDTO(userModel.getOrganisation()));
         userDTO.setContacts(userModel.getContacts().stream().map(userContactMapper::toDTO).collect(Collectors.toList()));
+        userDTO.setRoles(userModel.getRoles().stream().map(userRoleMapper::toDTO).collect(Collectors.toList()));
         userDTO.setShortname(userModel.getShortname());
         userDTO.setMale(userModel.getMale());
         userDTO.setBirthday(userModel.getBirthday());

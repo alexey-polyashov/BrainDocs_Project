@@ -1,21 +1,28 @@
 package com.braindocs.services.documents;
 
-import com.braindocs.dto.documents.DocumentDTO;
+import com.braindocs.common.MarkedRequestValue;
+import com.braindocs.common.Options;
+import com.braindocs.dto.SearchCriteriaDTO;
 import com.braindocs.dto.documents.DocumentTypeDTO;
 import com.braindocs.dto.files.FileDTO;
 import com.braindocs.dto.files.FileDataDTO;
-import com.braindocs.exceptions.AnyOtherException;
+import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.documents.DocumentTypeModel;
 import com.braindocs.models.files.FileModel;
 import com.braindocs.repositories.documents.DocumentTypeRepository;
+import com.braindocs.repositories.specifications.DocumentSpecificationBuilder;
+import com.braindocs.repositories.specifications.DocumentTypeSpecificationBuilder;
 import com.braindocs.services.FilesService;
+import com.braindocs.services.OrganisationService;
 import com.braindocs.services.mappers.DocumentTypeMapper;
 import com.braindocs.services.mappers.FileMapper;
+import com.braindocs.services.users.UserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -24,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -39,6 +47,10 @@ public class DocumentTypeService {
     private final FilesService filesService;
     private final FileMapper fileMapper;
     private final DocumentTypeMapper documentTypeMapper;
+    private final UserService userService;
+    private final OrganisationService organisationService;
+    private final Options options;
+
 
     public DocumentTypeModel findById(Long id){
         Optional<DocumentTypeModel> docTypeModel = documentTypeRepository.findById(id);
@@ -59,14 +71,21 @@ public class DocumentTypeService {
 
     }
 
-    public List<DocumentTypeModel> findAll() {
-        return documentTypeRepository.findAll();
+    public List<DocumentTypeModel> findAll(MarkedRequestValue marked) {
+        switch(marked){
+            case OFF:
+                return documentTypeRepository.findByMarked(false);
+            case ONLY:
+                return documentTypeRepository.findByMarked(true);
+            default:
+                return documentTypeRepository.findAll();
+        }
     }
 
     @Transactional
-    public List<DocumentTypeDTO> findAllDTO(BiConsumer<FileDTO, Long> setLink) {
+    public List<DocumentTypeDTO> findAllDTO(MarkedRequestValue marked, BiConsumer<FileDTO, Long> setLink) {
 
-        return findAll().stream()
+        return findAll(marked).stream()
                 .map(documentTypeMapper::toDTO)
                 .peek(typeDTO->{
                     if(typeDTO.getFiles()!=null) {
@@ -78,13 +97,38 @@ public class DocumentTypeService {
     }
 
     @Transactional
-    public Page<DocumentTypeModel> getTypesByFields(int page, int recordsOnPage, Specification spec){
-        return documentTypeRepository.findAll(spec, PageRequest.of(page, recordsOnPage));
+    public Page<DocumentTypeModel> getTypesByFields(int pageNumber, int pageSize, List<SearchCriteriaDTO> filter){
+
+        List<SearchCriteriaDTO> markedCriteria = filter.stream()
+                .filter(p->p.getKey().equals("marked"))
+                .collect(Collectors.toList());
+
+        if(markedCriteria.isEmpty()){
+            filter.add(new SearchCriteriaDTO("marked", ":", "OFF"));
+        }else{
+            if(!EnumUtils.isValidEnum(MarkedRequestValue.class,
+                    markedCriteria.get(0)
+                            .getValue()
+                            .toUpperCase(Locale.ROOT))){
+                throw new BadRequestException("Недопустимое значение параметра marked");
+            }
+        }
+
+        DocumentTypeSpecificationBuilder builder =
+                new DocumentTypeSpecificationBuilder(
+                        options);
+        for(SearchCriteriaDTO creteriaDTO: filter) {
+            Object value = creteriaDTO.getValue();
+            builder.with(creteriaDTO.getKey(), creteriaDTO.getOperation(), value);
+        }
+        Specification<DocumentTypeModel> spec = builder.build();
+
+        return documentTypeRepository.findAll(spec, PageRequest.of(pageNumber, pageSize));
     }
 
     @Transactional
-    public Page<DocumentTypeDTO> getTypesDTOByFields(int page, int recordsOnPage, Specification spec){
-        Page<DocumentTypeModel> documentTypes = getTypesByFields(page, recordsOnPage, spec);
+    public Page<DocumentTypeDTO> getTypesDTOByFields(int page, int recordsOnPage, List<SearchCriteriaDTO> filter){
+        Page<DocumentTypeModel> documentTypes = getTypesByFields(page, recordsOnPage, filter);
         return documentTypes.map(documentTypeMapper::toDTO);
     }
 
@@ -96,15 +140,15 @@ public class DocumentTypeService {
 
     public void deleteById(Long id) {
         if(id==null){
-            throw new AnyOtherException("Id типа документа не указан");
+            throw new BadRequestException("Id типа документа не указан");
         }
         documentTypeRepository.deleteById(id);
     }
 
-    public void markById(Long id) {
+    public void setMark(Long id, Boolean mark) {
         DocumentTypeModel docType = documentTypeRepository.findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("Тип документа с id '" + id + "' не найден"));
-        docType.setMarked(true);
+        docType.setMarked(mark);
         documentTypeRepository.save(docType);
     }
 
@@ -146,7 +190,7 @@ public class DocumentTypeService {
     public FileDTO addFile(Long docId, FileModel file, MultipartFile fileData) throws IOException {
         if(file.getId()!=0){
             log.error("file id is not empty");
-            throw new AnyOtherException("file id is not empty");
+            throw new BadRequestException("Не указан id файла");
         }
         DocumentTypeModel documentTypeModel = findById(docId);
         FileModel fileModel = filesService.add(file, fileData);
@@ -200,7 +244,7 @@ public class DocumentTypeService {
     public FileDTO changeFile(Long docId, FileModel file, MultipartFile fileData) throws IOException {
         if(file.getId()==null || file.getId()==0){
             log.error("file 'id' is empty");
-            throw new RuntimeException("Не определен 'id' изменяемого файла");
+            throw new BadRequestException("Не определен 'id' изменяемого файла");
         }
         getDocumentTypeFile(docId, file.getId()); //проверка существования файла
         FileModel fileModel=null;

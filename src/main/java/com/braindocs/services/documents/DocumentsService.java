@@ -1,18 +1,25 @@
 package com.braindocs.services.documents;
 
+import com.braindocs.common.MarkedRequestValue;
+import com.braindocs.common.Options;
+import com.braindocs.dto.SearchCriteriaDTO;
 import com.braindocs.dto.documents.DocumentDTO;
 import com.braindocs.dto.files.FileDTO;
 import com.braindocs.dto.files.FileDataDTO;
-import com.braindocs.exceptions.AnyOtherException;
+import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.files.FileModel;
 import com.braindocs.repositories.documents.DocumentsRepository;
+import com.braindocs.repositories.specifications.DocumentSpecificationBuilder;
 import com.braindocs.services.FilesService;
+import com.braindocs.services.OrganisationService;
 import com.braindocs.services.mappers.DocumentMapper;
 import com.braindocs.services.mappers.FileMapper;
+import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,6 +27,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.function.*;
 import java.util.stream.Collectors;
@@ -33,7 +42,10 @@ public class DocumentsService {
     private final FilesService filesService;
     private final FileMapper fileMapper;
     private final DocumentMapper documentMapper;
-
+    private final DocumentTypeService documentTypeService;
+    private final UserService userService;
+    private final OrganisationService organisationService;
+    private final Options options;
 
     //получение документа по id
     private DocumentModel getDocument(Long docId){
@@ -57,6 +69,7 @@ public class DocumentsService {
                         .peek(p->document.getFiles().add(p))
                         .collect(Collectors.toSet())
         );
+        document.setMarked(oldDoc.getMarked());
         DocumentModel doc = documentsRepository.save(document);
         return doc.getId();
     }
@@ -80,24 +93,55 @@ public class DocumentsService {
     }
 
     @Transactional
-    public Page<DocumentModel> getDocumentsByFields(int page, int recordsOnPage, Specification spec){
-        return documentsRepository.findAll(spec, PageRequest.of(page, recordsOnPage));
+    public Page<DocumentModel> getDocumentsByFields(int pageNumber, int pageSize, List<SearchCriteriaDTO> filter){
+
+        List<SearchCriteriaDTO> markedCriteria = filter.stream()
+                .filter(p->p.getKey().equals("marked"))
+                .collect(Collectors.toList());
+
+        if(markedCriteria.isEmpty()){
+            filter.add(new SearchCriteriaDTO("marked", ":", "OFF"));
+        }else{
+            if(!EnumUtils.isValidEnum(MarkedRequestValue.class,
+                    markedCriteria.get(0)
+                            .getValue()
+                            .toUpperCase(Locale.ROOT))){
+                throw new BadRequestException("Недопустимое значение параметра marked");
+            }
+        }
+
+        DocumentSpecificationBuilder builder = new DocumentSpecificationBuilder(userService, organisationService, documentTypeService, options);
+        for(SearchCriteriaDTO creteriaDTO: filter) {
+            Object value = creteriaDTO.getValue();
+            builder.with(creteriaDTO.getKey(), creteriaDTO.getOperation(), value);
+        }
+        Specification<DocumentModel> spec = builder.build();
+
+        return documentsRepository.findAll(spec, PageRequest.of(pageNumber, pageSize));
+
     }
 
     @Transactional
-    public Page<DocumentDTO> getDocumentsDTOByFields(int page, int recordsOnPage, Specification spec){
-        Page<DocumentModel> documents = getDocumentsByFields(page, recordsOnPage, spec);
+    public Page<DocumentDTO> getDocumentsDTOByFields(int page, int recordsOnPage, List<SearchCriteriaDTO> filter){
+        Page<DocumentModel> documents = getDocumentsByFields(page, recordsOnPage, filter);
         return documents.map(documentMapper::toDTO);
     }
 
     @Transactional
-    public Page<DocumentModel> getDocuments(int pageNumber, int pageSize){
-        return documentsRepository.findAll(PageRequest.of(pageNumber, pageSize));
+    public Page<DocumentModel> getDocuments(int pageNumber, int pageSize, MarkedRequestValue marked){
+        switch(marked){
+            case ON:
+                return documentsRepository.findByMarked(false, PageRequest.of(pageNumber, pageSize));
+            case ONLY:
+                return documentsRepository.findByMarked(true, PageRequest.of(pageNumber, pageSize));
+            default:
+                return documentsRepository.findAll(PageRequest.of(pageNumber, pageSize));
+        }
     }
 
     @Transactional
-    public Page<DocumentDTO> getDocumentsDTO(int pageNumber, int pageSize, BiConsumer<FileDTO, Long> setLink) {
-        Page<DocumentModel> documents = documentsRepository.findAll(PageRequest.of(pageNumber, pageSize));
+    public Page<DocumentDTO> getDocumentsDTO(int pageNumber, int pageSize, MarkedRequestValue marked, BiConsumer<FileDTO, Long> setLink) {
+        Page<DocumentModel> documents = getDocuments(pageNumber, pageSize, marked);
         return documents.map(
                 docModel->{
                     DocumentDTO docDto = documentMapper.toDTO(docModel);
@@ -107,16 +151,16 @@ public class DocumentsService {
                 });
     }
 
-    public void markDocument(Long id) {
+    public void setMark(Long id, Boolean mark) {
         DocumentModel doc = documentsRepository.findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("Документ с id '" + id + "' не найден"));
-        doc.setMarked(true);
+        doc.setMarked(mark);
         documentsRepository.save(doc);
     }
 
     //получение файла по id
     @Transactional
-    private FileModel getDocumentFile(Long docId, Long fileId){
+    public FileModel getDocumentFile(Long docId, Long fileId){
         DocumentModel documentModel = getDocument(docId);
         FileModel fileModel = null;
         for (FileModel file: documentModel.getFiles()) {
@@ -136,7 +180,7 @@ public class DocumentsService {
     public FileDTO addFile(Long docId, FileModel file, MultipartFile fileData) throws IOException {
         if(file.getId()!=0){
             log.error("file id is not empty");
-            throw new RuntimeException("file id is not empty");
+            throw new BadRequestException("Id файла должен быть пустым");
         }
         DocumentModel documentModel = getDocument(docId);
         FileModel fileModel = filesService.add(file, fileData);
@@ -190,7 +234,7 @@ public class DocumentsService {
     public FileDTO changeFile(Long docId, FileModel file, MultipartFile fileData) throws IOException {
         if(file.getId()==null || file.getId()==0){
             log.error("file 'id' is empty");
-            throw new AnyOtherException("Не определен 'id' изменяемого файла");
+            throw new BadRequestException("Не определен 'id' изменяемого файла");
         }
         getDocumentFile(docId, file.getId()); //проверка существования файла
         FileModel fileModel=null;

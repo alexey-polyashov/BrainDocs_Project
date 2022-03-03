@@ -42,6 +42,16 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
+    public ResponseEntity<?> catchAnyOtherException(BadRequestException e){
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<?> catchInternalException(ServiceError e){
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler
     public ResponseEntity<?> catchOtherException(Exception e){
         log.error("Exception, {}", e.getMessage() + "\n"+ e.getStackTrace()[0]);
         return new ResponseEntity<>(e.getMessage() + "\n"+ e.getStackTrace()[0], HttpStatus.INTERNAL_SERVER_ERROR);

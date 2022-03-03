@@ -2,9 +2,8 @@ package com.braindocs.controllers.users;
 
 import com.braindocs.dto.users.*;
 import com.braindocs.configs.JwtTokenUtil;
-import com.braindocs.exceptions.AnyOtherException;
 import com.braindocs.exceptions.ResourceNotFoundException;
-import com.braindocs.exceptions.ServiceError;
+import com.braindocs.exceptions.Violation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -32,9 +31,9 @@ public class AuthController {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         } catch (BadCredentialsException ex) {
             log.info("createAuthToken, Incorrect username or password for user {}", authRequest.getUsername());
-            return new ResponseEntity<>(new ServiceError("Incorrect username or password"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Violation("","Incorrect username or password"), HttpStatus.UNAUTHORIZED);
         }
-        if (userService.findByLogin(authRequest.getUsername()).get().getConfirmed() == false) {
+        if (!userService.findByLogin(authRequest.getUsername()).get().getConfirmed()) {
             throw new ResourceNotFoundException("Учётная запись пользователя не подтвеждена!");
         }
         UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());

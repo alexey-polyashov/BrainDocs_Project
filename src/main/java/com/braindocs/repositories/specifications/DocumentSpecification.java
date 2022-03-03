@@ -1,6 +1,7 @@
 package com.braindocs.repositories.specifications;
-import com.braindocs.exceptions.NotValidFields;
-import com.braindocs.exceptions.Violation;
+import com.braindocs.common.MarkedRequestValue;
+import com.braindocs.common.Options;
+import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.documents.DocumentTypeModel;
 import com.braindocs.models.organisations.OrganisationModel;
@@ -17,8 +18,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 
 @Data
 public class DocumentSpecification implements Specification<DocumentModel> {
@@ -27,15 +28,18 @@ public class DocumentSpecification implements Specification<DocumentModel> {
     private UserService userService;
     private OrganisationService organisationService;
     private DocumentTypeService documentTypeService;
+    private Options options;
 
     public DocumentSpecification(SearchCriteria criteria,
                                  UserService userService,
                                  OrganisationService organisationService,
-                                 DocumentTypeService documentTypeService) {
+                                 DocumentTypeService documentTypeService,
+                                 Options options) {
         this.criteria = criteria;
         this.userService = userService;
         this.organisationService = organisationService;
         this.documentTypeService = documentTypeService;
+        this.options = options;
     }
 
     @Override
@@ -44,12 +48,13 @@ public class DocumentSpecification implements Specification<DocumentModel> {
 
         Class valueClass = root.get(criteria.getKey()).getJavaType();
         Object value = criteria.getValue();
+
         if(valueClass == java.sql.Date.class){
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat(options.getDateFormat());
             try {
                 value = new Date(sdf.parse(value.toString()).getTime());
             } catch (ParseException e) {
-                throw new NotValidFields(Arrays.asList(new Violation(criteria.getKey(), "Не корректный формат даты")));
+                throw new BadRequestException( "Не корректный формат даты в поле - " + criteria.getKey());
             }
         }else if(valueClass == UserModel.class){
             value = userService.findById(Long.valueOf(value.toString()));
@@ -59,7 +64,19 @@ public class DocumentSpecification implements Specification<DocumentModel> {
             value = documentTypeService.findById(Long.valueOf(value.toString()));
         }
 
-        if (criteria.getOperation().equalsIgnoreCase(">")) {
+        return getPredicate(root, builder, value);
+    }
+
+    private Predicate getPredicate(Root<DocumentModel> root, CriteriaBuilder builder, Object value) {
+        if(criteria.getKey().equals("marked")){
+            MarkedRequestValue marked = MarkedRequestValue.valueOf(
+                    criteria.getValue().toString().toUpperCase(Locale.ROOT));
+            if(marked == MarkedRequestValue.ONLY){
+                return builder.equal(root.get(criteria.getKey()), true);
+            }else if(marked == MarkedRequestValue.OFF){
+                return builder.equal(root.get(criteria.getKey()), false);
+            }
+        } else if (criteria.getOperation().equalsIgnoreCase(">")) {
             if(value instanceof Date) {
                 return builder.greaterThanOrEqualTo(
                         root.<Date>get(criteria.getKey()), (Date) value);
@@ -89,4 +106,6 @@ public class DocumentSpecification implements Specification<DocumentModel> {
 
         return null;
     }
+
+
 }

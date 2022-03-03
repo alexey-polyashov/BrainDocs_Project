@@ -2,16 +2,13 @@ package com.braindocs.controllers.users;
 
 import com.braindocs.dto.users.NewUserDTO;
 import com.braindocs.dto.users.UserDTO;
-import com.braindocs.exceptions.AnyOtherException;
+import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.services.mappers.UserMapper;
 import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -39,7 +36,7 @@ public class UserController {
     @ResponseBody
     public UserDTO getData(Principal principal) {
         if(principal==null){
-            throw new AnyOtherException("Пользователь не авторизован");
+            throw new BadRequestException("Пользователь не авторизован");
         }
         String userName = principal.getName();
         UserModel user = userService.findByUsername(userName).orElseThrow(()->new ResourceNotFoundException("User with login '" + userName + "' not found!"));
@@ -47,9 +44,9 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public UserDTO updateUser(@RequestBody UserDTO updateRequest, @PathVariable(name = "id") Long id) throws ParseException {
+    public UserDTO updateUser(@RequestBody UserDTO updateRequest, @PathVariable(name = "id") Long id){
         if (id == 0) {
-            throw new AnyOtherException("ID не должен быть равен нулю");
+            throw new BadRequestException("ID не должен быть равен нулю");
         }
         updateRequest.setId(id);
         updateRequest.getContacts().stream().forEach(p->p.setUserId(id));

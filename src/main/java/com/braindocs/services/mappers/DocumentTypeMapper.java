@@ -29,14 +29,13 @@ public class DocumentTypeMapper {
         DocumentTypeModel docTypeModel = new DocumentTypeModel();
         docTypeModel.setId(docTypeDTO.getId());
         docTypeModel.setName(docTypeDTO.getName());
-        docTypeModel.setMarked(docTypeDTO.getMarked());
         return docTypeModel;
     }
 
     public DocumentTypeModel toModel(NewDocumentTypeDTO docTypeDTO){
         DocumentTypeModel docTypeModel = new DocumentTypeModel();
         docTypeModel.setName(docTypeDTO.getName());
-        docTypeModel.setMarked(docTypeDTO.getMarked());
+        docTypeModel.setMarked(false);
         return docTypeModel;
     }
 
