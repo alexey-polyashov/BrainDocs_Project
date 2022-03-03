@@ -1,0 +1,8 @@
+ALTER TABLE documents
+  ALTER COLUMN marked SET NOT NULL;
+
+ALTER TABLE documents_types
+  ALTER COLUMN marked SET NOT NULL;
+
+ALTER TABLE organisations
+  ALTER COLUMN marked SET NOT NULL;
