@@ -2,6 +2,7 @@ package com.braindocs.services;
 
 import com.braindocs.common.MarkedRequestValue;
 import com.braindocs.common.Options;
+import com.braindocs.common.Utils;
 import com.braindocs.dto.SearchCriteriaDTO;
 import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ResourceNotFoundException;
@@ -10,7 +11,6 @@ import com.braindocs.repositories.OrganisationRepository;
 import com.braindocs.repositories.specifications.OrganisationSpecificationBuilder;
 import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -55,7 +55,7 @@ public class OrganisationService {
         if(markedCriteria.isEmpty()){
             filter.add(new SearchCriteriaDTO("marked", ":", "OFF"));
         }else{
-            if(!EnumUtils.isValidEnum(MarkedRequestValue.class,
+            if(!Utils.isValidEnum(MarkedRequestValue.class,
                     markedCriteria.get(0)
                             .getValue()
                             .toUpperCase(Locale.ROOT))){

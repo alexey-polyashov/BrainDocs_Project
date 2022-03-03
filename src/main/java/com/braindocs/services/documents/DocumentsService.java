@@ -2,6 +2,7 @@ package com.braindocs.services.documents;
 
 import com.braindocs.common.MarkedRequestValue;
 import com.braindocs.common.Options;
+import com.braindocs.common.Utils;
 import com.braindocs.dto.SearchCriteriaDTO;
 import com.braindocs.dto.documents.DocumentDTO;
 import com.braindocs.dto.files.FileDTO;
@@ -19,7 +20,6 @@ import com.braindocs.services.mappers.FileMapper;
 import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -102,7 +102,7 @@ public class DocumentsService {
         if(markedCriteria.isEmpty()){
             filter.add(new SearchCriteriaDTO("marked", ":", "OFF"));
         }else{
-            if(!EnumUtils.isValidEnum(MarkedRequestValue.class,
+            if(!Utils.isValidEnum(MarkedRequestValue.class,
                     markedCriteria.get(0)
                             .getValue()
                             .toUpperCase(Locale.ROOT))){

@@ -1,21 +1,19 @@
 package com.braindocs.controllers.documents;
 
 import com.braindocs.common.MarkedRequestValue;
+import com.braindocs.common.Utils;
 import com.braindocs.dto.FieldsListDTO;
 import com.braindocs.dto.SearchCriteriaDTO;
 import com.braindocs.dto.SearchCriteriaListDTO;
 import com.braindocs.dto.organization.OrganisationDTO;
 import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.models.organisations.OrganisationModel;
-import com.braindocs.repositories.specifications.OrganisationSpecificationBuilder;
 import com.braindocs.services.OrganisationService;
 import com.braindocs.services.mappers.OrganisationMapper;
 import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -101,7 +99,7 @@ public class OrganisqtionController {
 
     @GetMapping("")
     public List<OrganisationDTO> findAll(@RequestParam(name = "marked", defaultValue = "off", required = false) String marked) {
-        if(!EnumUtils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))){
+        if(!Utils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))){
             throw new BadRequestException("Недопустимое значение параметра marked");
         }
         return organisationService.findAll(MarkedRequestValue.valueOf(marked.toUpperCase(Locale.ROOT)))

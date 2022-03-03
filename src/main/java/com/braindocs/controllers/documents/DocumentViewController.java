@@ -2,6 +2,7 @@ package com.braindocs.controllers.documents;
 
 
 import com.braindocs.common.MarkedRequestValue;
+import com.braindocs.common.Utils;
 import com.braindocs.dto.FieldsListDTO;
 import com.braindocs.dto.SearchCriteriaDTO;
 import com.braindocs.dto.SearchCriteriaListDTO;
@@ -14,16 +15,13 @@ import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ServiceError;
 import com.braindocs.models.documents.DocumentTypeModel;
 import com.braindocs.models.files.FileModel;
-import com.braindocs.repositories.specifications.DocumentTypeSpecificationBuilder;
 import com.braindocs.services.documents.DocumentTypeService;
 import com.braindocs.services.mappers.DocumentTypeMapper;
 import com.braindocs.services.mappers.FileMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -102,7 +100,7 @@ public class DocumentViewController {
     @GetMapping("")
     public List<DocumentTypeDTO> findAll(@RequestParam(name = "marked", defaultValue = "off", required = false) String marked) {
         log.info("DocumentViewController: findAll");
-        if(!EnumUtils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))){
+        if(!Utils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))){
             throw new BadRequestException("Недопустимое значение параметра marked");
         }
         return documentTypeService.findAllDTO(MarkedRequestValue.valueOf(marked.toUpperCase(Locale.ROOT)),

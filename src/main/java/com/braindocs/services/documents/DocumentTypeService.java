@@ -2,17 +2,16 @@ package com.braindocs.services.documents;
 
 import com.braindocs.common.MarkedRequestValue;
 import com.braindocs.common.Options;
+import com.braindocs.common.Utils;
 import com.braindocs.dto.SearchCriteriaDTO;
 import com.braindocs.dto.documents.DocumentTypeDTO;
 import com.braindocs.dto.files.FileDTO;
 import com.braindocs.dto.files.FileDataDTO;
 import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ResourceNotFoundException;
-import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.documents.DocumentTypeModel;
 import com.braindocs.models.files.FileModel;
 import com.braindocs.repositories.documents.DocumentTypeRepository;
-import com.braindocs.repositories.specifications.DocumentSpecificationBuilder;
 import com.braindocs.repositories.specifications.DocumentTypeSpecificationBuilder;
 import com.braindocs.services.FilesService;
 import com.braindocs.services.OrganisationService;
@@ -22,7 +21,6 @@ import com.braindocs.services.users.UserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -106,7 +104,7 @@ public class DocumentTypeService {
         if(markedCriteria.isEmpty()){
             filter.add(new SearchCriteriaDTO("marked", ":", "OFF"));
         }else{
-            if(!EnumUtils.isValidEnum(MarkedRequestValue.class,
+            if(!Utils.isValidEnum(MarkedRequestValue.class,
                     markedCriteria.get(0)
                             .getValue()
                             .toUpperCase(Locale.ROOT))){

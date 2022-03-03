@@ -1,6 +1,7 @@
 package com.braindocs.controllers.documents;
 
 import com.braindocs.common.MarkedRequestValue;
+import com.braindocs.common.Utils;
 import com.braindocs.dto.FieldsListDTO;
 import com.braindocs.dto.SearchCriteriaDTO;
 import com.braindocs.dto.SearchCriteriaListDTO;
@@ -12,20 +13,14 @@ import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ServiceError;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.files.FileModel;
-import com.braindocs.repositories.specifications.DocumentSpecificationBuilder;
-import com.braindocs.services.documents.DocumentTypeService;
 import com.braindocs.services.documents.DocumentsService;
-import com.braindocs.services.OrganisationService;
 import com.braindocs.services.mappers.DocumentMapper;
 import com.braindocs.services.mappers.FileMapper;
-import com.braindocs.services.users.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.EnumUtils;
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -125,7 +120,7 @@ public class DocumentController {
                                           @RequestParam(name = "marked", defaultValue = "off", required = false) String marked
     ){
         log.info("DocumentController: getDocuments, pagenumber-{}, pagesize-{}, marked -{} ", pageNumber, pageSize, marked);
-        if(!EnumUtils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))){
+        if(!Utils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))){
             throw new BadRequestException("Недопустимое значение параметра marked");
         }
         Page<DocumentDTO> docDtoPage = documentsService.getDocumentsDTO(
