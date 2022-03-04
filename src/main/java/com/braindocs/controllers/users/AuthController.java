@@ -33,13 +33,16 @@ public class AuthController {
             log.info("createAuthToken, Incorrect username or password for user {}", authRequest.getUsername());
             return new ResponseEntity<>(new Violation("","Incorrect username or password"), HttpStatus.UNAUTHORIZED);
         }
-        if (!userService.findByLogin(authRequest.getUsername()).get().getConfirmed()) {
-            throw new ResourceNotFoundException("Учётная запись пользователя не подтвеждена!");
+        if (Boolean.TRUE.equals(userService.findByLogin(
+                authRequest.getUsername())
+                .get()
+                .getConfirmed())) {
+            UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
+            String token = jwtTokenUtil.generateToken(userDetails);
+            log.info("createAuthToken, succes - {}", authRequest.getUsername());
+            return ResponseEntity.ok(new JwtResponseDTO(token));
         }
-        UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());
-        String token = jwtTokenUtil.generateToken(userDetails);
-        log.info("createAuthToken, succes - {}", authRequest.getUsername());
-        return ResponseEntity.ok(new JwtResponseDTO(token));
+        throw new ResourceNotFoundException("Учётная запись пользователя не подтвеждена!");
     }
 
 //    @GetMapping("/logout")
