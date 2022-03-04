@@ -13,6 +13,7 @@ import java.sql.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,7 +32,10 @@ public class UserMapper {
         userDTO.setFullname(userModel.getFullname());
         userDTO.setOrganisation(new OrganisationNameDTO(userModel.getOrganisation()));
         userDTO.setContacts(userModel.getContacts().stream().map(userContactMapper::toDTO).collect(Collectors.toList()));
-        userDTO.setRoles(userModel.getRoles().stream().map(userRoleMapper::toDTO).collect(Collectors.toList()));
+        userDTO.setRoles(userModel.getRoles().stream()
+                .filter(Objects::nonNull)
+                .map(userRoleMapper::toDTO)
+                .collect(Collectors.toList()));
         userDTO.setShortname(userModel.getShortname());
         userDTO.setMale(userModel.getMale());
         if(userModel.getBirthday()!=null) {
