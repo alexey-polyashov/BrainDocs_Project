@@ -66,6 +66,7 @@ public class DocumentsService {
         //при изменении документа в DTO нет списка файлов
         document.setFiles(
                 oldDoc.getFiles().stream()
+                        .filter(p->p!=null)
                         .peek(p->document.getFiles().add(p))
                         .collect(Collectors.toSet())
         );
