@@ -203,10 +203,10 @@ public class DocumentController {
         return fileDTO;
     }
 
-    @GetMapping(value="/{docid}/files/{fileid}/download",
+    @GetMapping(value="/{docid}/files/{fileid}/download/{filename}",
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseBody
-    public ResponseEntity<byte[]> getFileDataForDownload(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
+    public ResponseEntity<byte[]> getFileDataForDownload(@PathVariable("docid") Long docid, @PathVariable("filename") String filename, @PathVariable("fileid") Long fileid){
         log.info("DocumentController: getFileDataForDownload");
         FileDataDTO fileData = documentsService.getFileData(docid, fileid);
         MediaType mt = MediaType.valueOf(MediaType.APPLICATION_OCTET_STREAM_VALUE);
