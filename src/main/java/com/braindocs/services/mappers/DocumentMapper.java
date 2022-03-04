@@ -5,6 +5,7 @@ import com.braindocs.dto.documents.DocumentTypeNameDTO;
 import com.braindocs.dto.organization.OrganisationNameDTO;
 import com.braindocs.dto.users.UserNameDTO;
 import com.braindocs.models.documents.DocumentModel;
+import com.braindocs.models.files.FileModel;
 import com.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.services.*;
@@ -17,6 +18,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import java.sql.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,6 +70,7 @@ public class DocumentMapper {
         docModel.setOrganisation(orgModel);
         UserModel userModel = userService.findById(docDTO.getAuthor().getId());
         docModel.setAuthor(userModel);
+        docModel.setFiles(new HashSet<FileModel>());
         userModel = userService.findById(docDTO.getResponsible().getId());
         docModel.setResponsible(userModel);
 

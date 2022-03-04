@@ -3,9 +3,11 @@ package com.braindocs.services.mappers;
 import com.braindocs.dto.documents.DocumentTypeDTO;
 import com.braindocs.dto.documents.NewDocumentTypeDTO;
 import com.braindocs.models.documents.DocumentTypeModel;
+import com.braindocs.models.files.FileModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +38,7 @@ public class DocumentTypeMapper {
         DocumentTypeModel docTypeModel = new DocumentTypeModel();
         docTypeModel.setName(docTypeDTO.getName());
         docTypeModel.setMarked(false);
+        docTypeModel.setFiles(new HashSet<FileModel>());
         return docTypeModel;
     }
 

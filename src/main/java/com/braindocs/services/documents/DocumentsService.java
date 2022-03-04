@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.*;
 import java.util.stream.Collectors;
@@ -66,7 +67,7 @@ public class DocumentsService {
         //при изменении документа в DTO нет списка файлов
         document.setFiles(
                 oldDoc.getFiles().stream()
-                        .filter(p->p!=null)
+                        .filter(Objects::nonNull)
                         .peek(p->document.getFiles().add(p))
                         .collect(Collectors.toSet())
         );
