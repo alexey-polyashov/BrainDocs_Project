@@ -2,6 +2,7 @@ package com.braindocs.services.mappers;
 
 import com.braindocs.dto.organization.OrganisationNameDTO;
 import com.braindocs.dto.users.NewUserDTO;
+import com.braindocs.dto.users.RoleDTO;
 import com.braindocs.dto.users.UserDTO;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.services.OptionService;
@@ -9,10 +10,12 @@ import com.braindocs.services.OrganisationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.management.relation.Role;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -32,10 +35,14 @@ public class UserMapper {
         userDTO.setFullname(userModel.getFullname());
         userDTO.setOrganisation(new OrganisationNameDTO(userModel.getOrganisation()));
         userDTO.setContacts(userModel.getContacts().stream().map(userContactMapper::toDTO).collect(Collectors.toList()));
-        userDTO.setRoles(userModel.getRoles().stream()
-                .filter(Objects::nonNull)
-                .map(userRoleMapper::toDTO)
-                .collect(Collectors.toList()));
+        if(userModel.getRoles()!=null) {
+            userDTO.setRoles(userModel.getRoles().stream()
+                    .filter(Objects::nonNull)
+                    .map(userRoleMapper::toDTO)
+                    .collect(Collectors.toList()));
+        }else{
+            userDTO.setRoles(new ArrayList<RoleDTO>());
+        }
         userDTO.setShortname(userModel.getShortname());
         userDTO.setMale(userModel.getMale());
         if(userModel.getBirthday()!=null) {
