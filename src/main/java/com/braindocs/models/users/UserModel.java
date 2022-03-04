@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
+import java.sql.Date;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -40,7 +40,7 @@ public class UserModel {
     private String male; // list of: 'female', 'male'
 
     @Column(name = "birthday")
-    private String birthday;
+    private Date birthday;
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name="user_id")

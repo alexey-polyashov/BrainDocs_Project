@@ -26,7 +26,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping
-    public Long registerUser(@Valid @RequestBody NewUserDTO signUpRequest) {
+    public Long registerUser(@Valid @RequestBody NewUserDTO signUpRequest) throws ParseException {
         UserModel user = userMapper.toModel(signUpRequest);
         userService.saveNewUser(user);
         return user.getId();
@@ -44,7 +44,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public UserDTO updateUser(@RequestBody UserDTO updateRequest, @PathVariable(name = "id") Long id){
+    public UserDTO updateUser(@RequestBody UserDTO updateRequest, @PathVariable(name = "id") Long id) throws ParseException {
         if (id == 0) {
             throw new BadRequestException("ID не должен быть равен нулю");
         }

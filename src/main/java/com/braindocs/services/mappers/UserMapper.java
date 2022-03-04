@@ -4,10 +4,15 @@ import com.braindocs.dto.organization.OrganisationNameDTO;
 import com.braindocs.dto.users.NewUserDTO;
 import com.braindocs.dto.users.UserDTO;
 import com.braindocs.models.users.UserModel;
+import com.braindocs.services.OptionService;
 import com.braindocs.services.OrganisationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.stream.Collectors;
 
 @Service
@@ -16,6 +21,7 @@ public class UserMapper {
     private final OrganisationService organisationService;
     private final UserContactMapper userContactMapper;
     private final UserRoleMapper userRoleMapper;
+    private final OptionService optionService;
 
     public UserDTO toDTO(UserModel userModel){
         UserDTO userDTO = new UserDTO();
@@ -28,12 +34,13 @@ public class UserMapper {
         userDTO.setRoles(userModel.getRoles().stream().map(userRoleMapper::toDTO).collect(Collectors.toList()));
         userDTO.setShortname(userModel.getShortname());
         userDTO.setMale(userModel.getMale());
-        userDTO.setBirthday(userModel.getBirthday());
+        DateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
+        userDTO.setBirthday(dateFormat.format(userModel.getBirthday()));
         userDTO.setConfirmed(userModel.getConfirmed());
         return userDTO;
     }
 
-    public UserModel toModel(NewUserDTO dto) {
+    public UserModel toModel(NewUserDTO dto) throws ParseException {
         UserModel user = new UserModel();
         user.setLogin(dto.getLogin());
         user.setPassword(dto.getPassword());
@@ -42,12 +49,13 @@ public class UserMapper {
         user.setOrganisation(organisationService.findById(dto.getOrganisationId()));
         user.setShortname(dto.getShortname());
         user.setMale(dto.getMale());
-        user.setBirthday(dto.getBirthday());
+        SimpleDateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
+        user.setBirthday(new Date(dateFormat.parse(dto.getBirthday()).getTime()));
         user.setConfirmed(false);
         return user;
     }
 
-    public UserModel toModel(UserDTO dto) {
+    public UserModel toModel(UserDTO dto) throws ParseException {
         UserModel user = new UserModel();
         user.setId(dto.getId());
         user.setLogin(dto.getLogin());
@@ -58,7 +66,8 @@ public class UserMapper {
                         dto.getOrganisation().getId()));
         user.setShortname(dto.getShortname());
         user.setMale(dto.getMale());
-        user.setBirthday(dto.getBirthday());
+        SimpleDateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
+        user.setBirthday(new Date(dateFormat.parse(dto.getBirthday()).getTime()));
         user.setContacts(dto.getContacts().stream().map(userContactMapper::toModel).collect(Collectors.toList()));
         return user;
     }
