@@ -37,6 +37,8 @@ public class UserMapper {
         if(userModel.getBirthday()!=null) {
             DateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
             userDTO.setBirthday(dateFormat.format(userModel.getBirthday()));
+        }else{
+            userDTO.setBirthday("0001-01-01");
         }
         userDTO.setConfirmed(userModel.getConfirmed());
         return userDTO;
@@ -54,6 +56,8 @@ public class UserMapper {
         if(dto.getBirthday()!=null) {
             SimpleDateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
             user.setBirthday(new Date(dateFormat.parse(dto.getBirthday()).getTime()));
+        }else{
+            user.setBirthday(new Date(1L));
         }
         user.setConfirmed(false);
         return user;
