@@ -34,8 +34,10 @@ public class UserMapper {
         userDTO.setRoles(userModel.getRoles().stream().map(userRoleMapper::toDTO).collect(Collectors.toList()));
         userDTO.setShortname(userModel.getShortname());
         userDTO.setMale(userModel.getMale());
-        DateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
-        userDTO.setBirthday(dateFormat.format(userModel.getBirthday()));
+        if(userModel.getBirthday()!=null) {
+            DateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
+            userDTO.setBirthday(dateFormat.format(userModel.getBirthday()));
+        }
         userDTO.setConfirmed(userModel.getConfirmed());
         return userDTO;
     }
@@ -49,8 +51,10 @@ public class UserMapper {
         user.setOrganisation(organisationService.findById(dto.getOrganisationId()));
         user.setShortname(dto.getShortname());
         user.setMale(dto.getMale());
-        SimpleDateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
-        user.setBirthday(new Date(dateFormat.parse(dto.getBirthday()).getTime()));
+        if(dto.getBirthday()!=null) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
+            user.setBirthday(new Date(dateFormat.parse(dto.getBirthday()).getTime()));
+        }
         user.setConfirmed(false);
         return user;
     }
@@ -66,8 +70,10 @@ public class UserMapper {
                         dto.getOrganisation().getId()));
         user.setShortname(dto.getShortname());
         user.setMale(dto.getMale());
-        SimpleDateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
-        user.setBirthday(new Date(dateFormat.parse(dto.getBirthday()).getTime()));
+        if(dto.getBirthday()!=null) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
+            user.setBirthday(new Date(dateFormat.parse(dto.getBirthday()).getTime()));
+        }
         user.setContacts(dto.getContacts().stream().map(userContactMapper::toModel).collect(Collectors.toList()));
         return user;
     }
