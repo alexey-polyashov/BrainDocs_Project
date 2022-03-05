@@ -56,8 +56,8 @@ public class DocumentsService {
 
     //добавление документа без файлов
     public Long addDocument(DocumentModel document){
+        document.setMarked(false);
         DocumentModel doc = documentsRepository.save(document);
-        doc.setMarked(false);
         return doc.getId();
     }
 
