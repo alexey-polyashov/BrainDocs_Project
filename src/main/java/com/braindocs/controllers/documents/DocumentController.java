@@ -21,6 +21,7 @@ import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -210,7 +211,10 @@ public class DocumentController {
         log.info("DocumentController: getFileDataForDownload");
         FileDataDTO fileData = documentsService.getFileData(docid, fileid);
         MediaType mt = MediaType.valueOf(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-        return ResponseEntity.ok().contentType(mt).body(fileData.getFileData());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        httpHeaders.set("Content-Disposition", "attachment; filename=" + filename);
+        return ResponseEntity.ok().headers(httpHeaders).body(fileData.getFileData());
     }
 
     @GetMapping(value="/{docid}/files/{fileid}/data")
