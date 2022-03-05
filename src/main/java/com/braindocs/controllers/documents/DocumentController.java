@@ -207,12 +207,12 @@ public class DocumentController {
     @GetMapping(value="/{docid}/files/{fileid}/download/{filename}",
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseBody
-    public ResponseEntity<byte[]> getFileDataForDownload(@PathVariable("docid") Long docid, @PathVariable(name = "filename", required = false) String reqFilename, @PathVariable(name="fileid") Long fileid){
+    public ResponseEntity<byte[]> getFileDataForDownload(@PathVariable("docid") Long docid, @PathVariable(name = "filename", required = false) Optional<String> reqFilename, @PathVariable(name="fileid") Long fileid){
         log.info("DocumentController: getFileDataForDownload");
         FileDataDTO fileData = documentsService.getFileData(docid, fileid);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        String fileName = (reqFilename==null) ? fileData.getName() : reqFilename;
+        String fileName = reqFilename.orElse(fileData.getName());
         httpHeaders.set("Content-Disposition", "attachment; filename=" + fileName);
         return ResponseEntity.ok().headers(httpHeaders).body(fileData.getFileData());
     }
