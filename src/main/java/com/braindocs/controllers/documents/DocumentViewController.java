@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -171,6 +172,19 @@ public class DocumentViewController {
         FileDataDTO fileData = documentTypeService.getFileData(typeid, fileid);
         MediaType mt = MediaType.valueOf(fileData.getContentType());
         return ResponseEntity.ok().contentType(mt).body(fileData.getFileData());
+    }
+
+    @GetMapping(value="/{typeid}/files/{fileid}/download/{filename}",
+            produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @ResponseBody
+    public ResponseEntity<byte[]> getFileDataForDownload(@PathVariable("typeid") Long typeid, @PathVariable("filename") String filename, @PathVariable("fileid") Long fileid){
+        log.info("DocumentController: getFileDataForDownload");
+        FileDataDTO fileData = documentTypeService.getFileData(typeid, fileid);
+        MediaType mt = MediaType.valueOf(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        httpHeaders.set("Content-Disposition", "attachment; filename=" + filename);
+        return ResponseEntity.ok().headers(httpHeaders).body(fileData.getFileData());
     }
 
     @GetMapping(value="/{typeid}/files")
