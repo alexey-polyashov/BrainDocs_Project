@@ -3,6 +3,7 @@ package com.braindocs.models.users;
 import com.braindocs.models.ContactTypeModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -26,5 +27,6 @@ public class UserContactModel {
     @Column(name = "id")
     private Long id;
     @Column(name = "marked")
-    private Boolean marked;
+    @ColumnDefault("false")
+    private Boolean marked = false;
 }
