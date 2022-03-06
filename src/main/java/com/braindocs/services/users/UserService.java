@@ -60,6 +60,8 @@ public class UserService  implements UserDetailsService {
                 user.getLogin())
                 .orElseThrow(()->new ResourceNotFoundException("Пользователь с логином " + user.getLogin() + ""));
         user.setPassword(oldUser.getPassword());
+        user.setConfirmed(oldUser.getConfirmed());
+        user.setMarked(oldUser.getMarked());
         return userRepository.save(user);
     }
 
