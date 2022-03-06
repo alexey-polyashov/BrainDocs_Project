@@ -5,6 +5,7 @@ import com.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.models.users.UserModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -58,6 +59,7 @@ public class DocumentModel {
     private Long id;
 
     @Column(name = "marked")
+    @ColumnDefault("false")
     private Boolean marked;
     @CreationTimestamp
     @Column(name="created_at")

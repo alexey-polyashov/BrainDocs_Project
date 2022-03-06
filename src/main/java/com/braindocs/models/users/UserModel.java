@@ -3,6 +3,7 @@ package com.braindocs.models.users;
 import com.braindocs.models.organisations.OrganisationModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.sql.Date;
@@ -60,7 +61,8 @@ public class UserModel {
     @Column(name = "id")
     private Long id;
     @Column(name = "marked")
-    private Boolean marked;
+    @ColumnDefault("false")
+    private Boolean marked = false;
     @CreationTimestamp
     @Column(name="created_at")
     private LocalDateTime createTime;
