@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserContactRepository extends JpaRepository<UserContactModel, Long> {
+
+    void deleteByUserid(Long userid);
+
 }

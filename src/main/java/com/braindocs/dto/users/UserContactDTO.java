@@ -12,5 +12,4 @@ public class UserContactDTO {
     private String typeName;
     private String present;
     private Long id;
-    private Boolean marked;
 }

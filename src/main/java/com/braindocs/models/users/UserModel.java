@@ -9,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.sql.Date;
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -43,8 +44,10 @@ public class UserModel {
     @Column(name = "birthday")
     private Date birthday;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name="user_id")
+    //@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER )
+    //@OneToMany(fetch = FetchType.EAGER , mappedBy = "userid",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany
+    @JoinColumn(name="userid")
     private List<UserContactModel> contacts;
 
     @Column(name="confirmed")

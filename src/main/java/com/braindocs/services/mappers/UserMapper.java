@@ -9,8 +9,6 @@ import com.braindocs.services.OptionService;
 import com.braindocs.services.OrganisationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import javax.management.relation.Role;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -52,6 +50,7 @@ public class UserMapper {
             userDTO.setBirthday("0001-01-01");
         }
         userDTO.setConfirmed(userModel.getConfirmed());
+        userDTO.setMarked(userModel.getMarked());
         return userDTO;
     }
 
@@ -71,6 +70,7 @@ public class UserMapper {
             user.setBirthday(new Date(1L));
         }
         user.setConfirmed(false);
+        user.setMarked(false);
         return user;
     }
 

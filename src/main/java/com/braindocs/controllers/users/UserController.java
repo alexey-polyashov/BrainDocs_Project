@@ -43,15 +43,25 @@ public class UserController {
         return userMapper.toDTO(user);
     }
 
+    @GetMapping("/{id}")
+    @ResponseBody
+    public UserDTO getUser(@PathVariable(name = "id") Long id) throws ParseException {
+        return userMapper.toDTO(userService.findById(id));
+    }
+
     @PutMapping("/{id}")
     public UserDTO updateUser(@RequestBody UserDTO updateRequest, @PathVariable(name = "id") Long id) throws ParseException {
         if (id == 0) {
             throw new BadRequestException("ID не должен быть равен нулю");
         }
-        updateRequest.setId(id);
-        updateRequest.getContacts().stream().forEach(p->p.setUserId(id));
-        UserModel user = userMapper.toModel(updateRequest);
-        return userMapper.toDTO(userService.update(user));
+//        updateRequest.setId(id);
+//        if(updateRequest.getContacts()!=null) {
+//            updateRequest.getContacts().stream().forEach(p -> p.setUserId(id));
+//        }
+//        UserModel user = userMapper.toModel(updateRequest);
+        return userMapper.toDTO(
+                userService.update(
+                        userMapper.toModel(updateRequest)));
     }
 
     @GetMapping()

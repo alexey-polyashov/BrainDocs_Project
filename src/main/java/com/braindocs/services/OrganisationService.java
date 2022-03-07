@@ -6,8 +6,10 @@ import com.braindocs.common.Utils;
 import com.braindocs.dto.SearchCriteriaDTO;
 import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ResourceNotFoundException;
+import com.braindocs.models.organisations.OrganisationContactsModel;
 import com.braindocs.models.organisations.OrganisationModel;
-import com.braindocs.repositories.OrganisationRepository;
+import com.braindocs.repositories.organisation.OrganisationContactRepository;
+import com.braindocs.repositories.organisation.OrganisationRepository;
 import com.braindocs.repositories.specifications.OrganisationSpecificationBuilder;
 import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Locale;
@@ -25,6 +28,7 @@ import java.util.stream.Collectors;
 public class OrganisationService {
 
     private final OrganisationRepository organisationRepository;
+    private final OrganisationContactRepository orgContactsRepository;
     private final Options options;
     private final UserService userService;
 
@@ -37,12 +41,19 @@ public class OrganisationService {
         return newOrganisation.getId();
     }
 
+    @Transactional
     public Long change(Long orgid, OrganisationModel organisation) {
         OrganisationModel oldOrganisation = organisationRepository.findById(orgid).orElseThrow(()->new ResourceNotFoundException("Организаия с id '" + orgid + "' не найдена"));
         oldOrganisation.setName(organisation.getName());
         oldOrganisation.setInn(organisation.getInn());
         oldOrganisation.setKpp(organisation.getKpp());
-        organisationRepository.save(oldOrganisation);
+        List<OrganisationContactsModel> orgContacts = organisation.getContacts();
+        orgContactsRepository.deleteByOrganisation(orgid);
+        if(orgContacts!=null){
+            for (OrganisationContactsModel orgContact: orgContacts) {
+                orgContactsRepository.save(orgContact);
+            }
+        }
         return oldOrganisation.getId();
     }
 
