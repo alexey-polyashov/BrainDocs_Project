@@ -9,7 +9,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.sql.Date;
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 

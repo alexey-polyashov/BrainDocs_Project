@@ -1,7 +1,6 @@
 package com.braindocs.services.users;
 
 import com.braindocs.exceptions.ResourceNotFoundException;
-import com.braindocs.models.organisations.OrganisationContactsModel;
 import com.braindocs.models.users.UserContactModel;
 import com.braindocs.repositories.users.UserContactRepository;
 import lombok.RequiredArgsConstructor;
@@ -47,22 +46,9 @@ public class UserService  implements UserDetailsService {
     }
 
     public UserModel saveNewUser(UserModel user) {
-//        UserRoleModel role = roleRepository.findByName("users_roles");
-//        user.setRoles(Collections.singletonList(role));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        //user.setMarked(false);
         return userRepository.save(user);
     }
-//
-//    public UserModel saveUser(UserModel user) {
-//        UserModel oldUser = userRepository.findByLogin(
-//                user.getLogin())
-//                .orElseThrow(()->new ResourceNotFoundException("Пользователь с логином " + user.getLogin() + ""));
-//        user.setPassword(oldUser.getPassword());
-//        user.setConfirmed(oldUser.getConfirmed());
-//        user.setMarked(oldUser.getMarked());
-//        return userRepository.save(user);
-//    }
 
     public UserModel changePassword(Long userId, String oldPassword, String newPassword) {
         UserModel user = userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("Пользователь с id '" + userId + "'"));
