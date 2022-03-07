@@ -102,13 +102,13 @@ public class UserService  implements UserDetailsService {
         UserModel oldUser = userRepository.findById(
                         user.getId())
                 .orElseThrow(()->new ResourceNotFoundException("Пользователь с ID " + user.getId() + ""));
-        oldUser.setBirthday(oldUser.getBirthday());
-        oldUser.setEmail(oldUser.getEmail());
-        oldUser.setFullname(oldUser.getFullname());
-        oldUser.setLogin(oldUser.getLogin());
-        oldUser.setMale(oldUser.getMale());
-        oldUser.setShortname(oldUser.getShortname());
-        oldUser.setOrganisation(oldUser.getOrganisation());
+        oldUser.setBirthday(user.getBirthday());
+        oldUser.setEmail(user.getEmail());
+        oldUser.setFullname(user.getFullname());
+        oldUser.setLogin(user.getLogin());
+        oldUser.setMale(user.getMale());
+        oldUser.setShortname(user.getShortname());
+        oldUser.setOrganisation(user.getOrganisation());
         List<UserContactModel> userContacts = user.getContacts();
         userContactsRepository.deleteByUserid(user.getId());
         if(userContacts!=null){
