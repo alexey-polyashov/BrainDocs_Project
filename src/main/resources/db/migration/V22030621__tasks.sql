@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS tasks
     header text NOT NULL,
     content text,
     status int, --0 активна, 1- выполнена, 2- отменена
+    author_id bigint NOT NULL,
     marked boolean,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
@@ -90,8 +91,8 @@ CREATE TABLE IF NOT EXISTS task_subjects
 --FILES FOR TASKS
 CREATE TABLE IF NOT EXISTS tasks_files
 (
-    ownerid bigserial not null,
-    fileid bigserial,
+    owner_id bigserial not null,
+    file_id bigserial,
     CONSTRAINT fk_tasks_files_ownerid FOREIGN KEY (ownerid)
         REFERENCES tasks (id)
         ON UPDATE NO ACTION
