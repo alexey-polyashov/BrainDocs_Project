@@ -4,7 +4,8 @@
 CREATE TABLE IF NOT EXISTS task_types
 (
     id bigserial,
-    typename text,
+    typename varchar,
+    marked boolean NOT NULL default FALSE,
     CONSTRAINT task_types_pkey PRIMARY KEY (id)
 );
 INSERT INTO task_types (typename)
@@ -18,7 +19,8 @@ CREATE TABLE IF NOT EXISTS task_results
 (
     id bigserial,
     task_type_id bigint NOT NULL,
-    resultname text,
+    resultname varchar,
+    marked boolean NOT NULL default FALSE,
     CONSTRAINT task_results_pkey PRIMARY KEY (id)
 );
 INSERT INTO task_results (task_type_id, resultname)
@@ -36,7 +38,7 @@ CREATE TABLE IF NOT EXISTS tasks
 (
     id bigserial,
     type_id bigint NOT NULL,
-    header text NOT NULL,
+    heading varchar NOT NULL,
     content varchar,
     status int, --1 активна, 2- выполнена, 3- отменена
     author_id bigint NOT NULL,
@@ -78,14 +80,16 @@ CREATE TABLE IF NOT EXISTS task_executors
 --TASK_SUBJECTS
 CREATE TABLE IF NOT EXISTS task_subjects
 (
-    id bigserial,
-    task_id bigint NOT NULL,
-    subject_id bigint NOT NULL,
-    CONSTRAINT task_subjects_pk PRIMARY KEY (id),
-    CONSTRAINT subject_task_fk FOREIGN KEY (task_id)
+    task_id bigserial not null,
+    subject_id bigserial,
+    CONSTRAINT task_subjects_task_fk FOREIGN KEY (task_id)
         REFERENCES tasks (id)
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT task_subjects_subject_fk FOREIGN KEY (subject_id)
+        REFERENCES documents (id)
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
 );
 
 --FILES FOR TASKS
@@ -102,3 +106,5 @@ CREATE TABLE IF NOT EXISTS tasks_files
         ON UPDATE NO ACTION
         ON DELETE CASCADE
 );
+
+

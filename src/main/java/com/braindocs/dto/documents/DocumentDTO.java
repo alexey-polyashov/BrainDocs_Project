@@ -4,14 +4,17 @@ import com.braindocs.dto.files.FileDTO;
 import com.braindocs.dto.organization.OrganisationNameDTO;
 import com.braindocs.dto.users.UserNameDTO;
 import com.braindocs.dto.validators.DateValidator;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class DocumentDTO {
 

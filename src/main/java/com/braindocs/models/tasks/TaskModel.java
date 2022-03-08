@@ -1,8 +1,10 @@
 package com.braindocs.models.tasks;
 
+import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.users.UserModel;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -10,10 +12,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="tasks")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class TaskModel {
 
@@ -22,7 +26,7 @@ public class TaskModel {
     private TaskTypeModel type;
 
     @Column(name="header")
-    private String header;
+    private String heading;
 
     @Column(name="content")
     private String content;
@@ -38,13 +42,13 @@ public class TaskModel {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    List<TaskExecutorModel> taskExecutor;
+    List<TaskExecutorModel> executors;
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    List<TaskSubjectModel> taskSubject;
+    @ManyToMany
+    @JoinTable(name ="task_subjects",
+            joinColumns = @JoinColumn(name = "task_id", referencedColumnName = "id"),
+            inverseJoinColumns =  @JoinColumn(name="subject_id"))
+    private Set<DocumentModel> subjects;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

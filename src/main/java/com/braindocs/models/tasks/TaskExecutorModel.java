@@ -1,8 +1,9 @@
 package com.braindocs.models.tasks;
 
 import com.braindocs.models.users.UserModel;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -12,7 +13,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name="task_executors")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class TaskExecutorModel {
 
