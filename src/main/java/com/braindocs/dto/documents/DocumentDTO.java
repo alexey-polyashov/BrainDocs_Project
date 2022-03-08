@@ -6,8 +6,6 @@ import com.braindocs.dto.users.UserNameDTO;
 import com.braindocs.dto.validators.DateValidator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;

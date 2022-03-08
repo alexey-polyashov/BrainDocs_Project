@@ -1,32 +1,44 @@
-package com.braindocs.models.organisations;
+package com.braindocs.models.tasks;
 
+import com.braindocs.models.users.UserModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import java.sql.Date;
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
-@Table(name="organisations")
+@Table(name="task_executors")
 @Data
 @NoArgsConstructor
-public class OrganisationModel {
+public class TaskExecutorModel {
 
-    @Column(name = "name")
-    private String name;
+    @ManyToOne
+    @JoinColumn(name="type_id")
+    private TaskTypeModel type;
 
-    @Column(name = "inn")
-    private String inn;
+    @ManyToOne
+    @JoinColumn(name="executor_id")
+    private UserModel executor;
 
-    @Column(name = "kpp")
-    private String kpp;
+    @Column(name="planed_date")
+    private Date planedDate;
 
-    @OneToMany
-    @JoinColumn(name="organisation")
-    private List<OrganisationContactsModel> contacts;
+    @Column(name="date_of_comletion")
+    private Date dateOfComletion;
+
+    @Column(name="comment")
+    private String comment;
+
+    @ManyToOne
+    @JoinColumn(name="result_id")
+    private TaskResultsModel result;
+
+    @Column(name="status")
+    private Long status;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,4 +53,5 @@ public class OrganisationModel {
     @UpdateTimestamp
     @Column(name="updated_at")
     private LocalDateTime updateTime;
+
 }
