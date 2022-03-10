@@ -1,5 +1,7 @@
 package com.braindocs.controllers.documents;
 
+import com.braindocs.common.MarkedRequestValue;
+import com.braindocs.common.Utils;
 import com.braindocs.dto.FieldsListDTO;
 import com.braindocs.dto.SearchCriteriaDTO;
 import com.braindocs.dto.SearchCriteriaListDTO;
@@ -7,22 +9,19 @@ import com.braindocs.dto.documents.DocumentDTO;
 import com.braindocs.dto.files.FileDTO;
 import com.braindocs.dto.files.FileDataDTO;
 import com.braindocs.dto.files.NewFileDTO;
-import com.braindocs.exceptions.AnyOtherException;
+import com.braindocs.exceptions.BadRequestException;
+import com.braindocs.exceptions.ServiceError;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.files.FileModel;
-import com.braindocs.repositories.specifications.DocumentSpecificationBuilder;
-import com.braindocs.services.documents.DocumentTypeService;
 import com.braindocs.services.documents.DocumentsService;
-import com.braindocs.services.OrganisationService;
 import com.braindocs.services.mappers.DocumentMapper;
 import com.braindocs.services.mappers.FileMapper;
-import com.braindocs.services.users.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,9 +39,6 @@ import java.util.*;
 public class DocumentController {
 
     private final DocumentsService documentsService;
-    private final DocumentTypeService documentTypeService;
-    private final UserService userService;
-    private final OrganisationService organisationService;
     private final DocumentMapper documentMapper;
     private final FileMapper fileMapper;
 
@@ -77,7 +73,7 @@ public class DocumentController {
     public Long addDocument(@Valid @RequestBody DocumentDTO documentDTO) throws ParseException {
         log.info("DocumentController: add");
         if(documentDTO.getId()!=null && (documentDTO.getId()!=0)){
-            throw new AnyOtherException("При добавлении нового объекта id должен быть пустым");
+            throw new BadRequestException("При добавлении нового объекта id должен быть пустым");
         }
         DocumentModel docModel = documentMapper.toModel(documentDTO);
         Long docId = documentsService.addDocument(docModel);
@@ -89,7 +85,7 @@ public class DocumentController {
     public Long saveDocument(@PathVariable("id") Long id, @Valid @RequestBody DocumentDTO documentDTO) throws ParseException {
         log.info("DocumentController: saveDocument");
         if(id==0){
-            throw new AnyOtherException("id не должен быть пустым");
+            throw new BadRequestException("id не должен быть пустым");
         }
         DocumentModel docModel = documentMapper.toModel(documentDTO);
         docModel.setId(id);
@@ -108,15 +104,30 @@ public class DocumentController {
     @DeleteMapping(value="/{id}")
     public void markDocument(@PathVariable("id") Long id){
         log.info("DocumentController: markDocument, id-{}", id);
-        documentsService.markDocument(id);
+        documentsService.setMark(id, true);
+        log.info("DocumentController: markDocument - ok");
+    }
+
+    @PostMapping(value="/unmark/{id}")
+    public void unMarkDocument(@PathVariable("id") Long id){
+        log.info("DocumentController: markDocument, id-{}", id);
+        documentsService.setMark(id, false);
         log.info("DocumentController: markDocument - ok");
     }
 
     @GetMapping(value="")
-    public Page<DocumentDTO> getDocuments(@RequestParam( name = "pagenumber", defaultValue = "0") int pageNumber, @RequestParam(name = "pagesize", defaultValue = "10") int pageSize){
-        log.info("DocumentController: getDocuments, pagenumber-{}, pagesize-{}", pageNumber, pageSize);
-        Page<DocumentDTO> docDtoPage = documentsService.getDocumentsDTO(pageNumber,
+    public Page<DocumentDTO> getDocuments(@RequestParam( name = "pagenumber", defaultValue = "0") int pageNumber,
+                                          @RequestParam(name = "pagesize", defaultValue = "10") int pageSize,
+                                          @RequestParam(name = "marked", defaultValue = "off", required = false) String marked
+    ){
+        log.info("DocumentController: getDocuments, pagenumber-{}, pagesize-{}, marked -{} ", pageNumber, pageSize, marked);
+        if(!Utils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))){
+            throw new BadRequestException("Недопустимое значение параметра marked");
+        }
+        Page<DocumentDTO> docDtoPage = documentsService.getDocumentsDTO(
+                pageNumber,
                 pageSize,
+                MarkedRequestValue.valueOf(marked.toUpperCase(Locale.ROOT)),
                 this::setLinkToFile);
         log.info("DocumentController: getDocuments return {} elements", docDtoPage.getNumberOfElements());
         return docDtoPage;
@@ -141,13 +152,11 @@ public class DocumentController {
         List<SearchCriteriaDTO> filter = requestDTO.getFilter();
         Integer page = requestDTO.getPage();
         Integer recordsOnPage = requestDTO.getRecordsOnPage();
-        DocumentSpecificationBuilder builder = new DocumentSpecificationBuilder(userService, organisationService, documentTypeService);
-        for(SearchCriteriaDTO creteriaDTO: filter) {
-            Object value = creteriaDTO.getValue();
-            builder.with(creteriaDTO.getKey(), creteriaDTO.getOperation(), value);
-        }
-        Specification<DocumentModel> spec = builder.build();
-        Page<DocumentDTO> docDtoPage = documentsService.getDocumentsDTOByFields(page, recordsOnPage, spec);
+        Page<DocumentDTO> docDtoPage = documentsService.getDocumentsDTOByFields(
+                page,
+                recordsOnPage,
+                filter
+        );
         log.info("DocumentController: getDocumentsByFilter return {} elements", docDtoPage.getSize());
         return docDtoPage;
     }
@@ -159,14 +168,14 @@ public class DocumentController {
         NewFileDTO fileDescribe = new ObjectMapper().readValue(jsonDescribe, NewFileDTO.class);
         if(fileData.isEmpty()){
             log.info("Нет данных файла");
-            throw new AnyOtherException("Нет данных файла");
+            throw new BadRequestException("Нет данных файла");
         }
         FileModel fileModel;
         try {
             fileModel = fileMapper.toModel(fileDescribe, fileData);
         } catch (IOException e) {
             log.error("Ошибка получения данных файла\n" + e.getMessage() + "\n" + e.getCause());
-            throw new AnyOtherException("Ошибка получения данных файла");
+            throw new ServiceError("Ошибка получения данных файла");
         }
         FileDTO fileDTO = documentsService.addFile(docid, fileModel, fileData);
         setLinkToFile(fileDTO, docid);
@@ -178,7 +187,7 @@ public class DocumentController {
     public FileDTO changeFile(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileId, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart(name="file", required = false) MultipartFile fileData) throws IOException {
         log.info("DocumentController: changeFile, docid-{}, fileDescribe{}", docid, jsonDescribe);
         if(fileId==0){
-            throw new AnyOtherException("id файла не должен быть пустым");
+            throw new BadRequestException("id файла не должен быть пустым");
         }
         NewFileDTO fileDescribe = new ObjectMapper().readValue(jsonDescribe, NewFileDTO.class);
         FileModel fileModel;
@@ -186,7 +195,7 @@ public class DocumentController {
             fileModel = fileMapper.toModel(fileDescribe, fileData);
         } catch (IOException e) {
             log.error("Ошибка получения данных файла\n{}\n{}", e.getMessage(), e.getCause());
-            throw new AnyOtherException("Ошибка получения данных файла");
+            throw new ServiceError("Ошибка получения данных файла");
         }
         fileModel.setId(fileId);
         FileDTO fileDTO = documentsService.changeFile(docid, fileModel, fileData);
@@ -195,14 +204,17 @@ public class DocumentController {
         return fileDTO;
     }
 
-    @GetMapping(value="/{docid}/files/{fileid}/download",
+    @GetMapping(value={"/{docid}/files/{fileid}/download", "/{docid}/files/{fileid}/download/{filename}"},
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseBody
-    public ResponseEntity<byte[]> getFileDataForDownload(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
+    public ResponseEntity<byte[]> getFileDataForDownload(@PathVariable("docid") Long docid, @PathVariable(name = "filename", required = false) Optional<String> reqFilename, @PathVariable(name="fileid") Long fileid){
         log.info("DocumentController: getFileDataForDownload");
         FileDataDTO fileData = documentsService.getFileData(docid, fileid);
-        MediaType mt = MediaType.valueOf(MediaType.APPLICATION_OCTET_STREAM_VALUE);
-        return ResponseEntity.ok().contentType(mt).body(fileData.getFileData());
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        String fileName = reqFilename.orElse(fileData.getName()) + "." + fileData.getFileType();
+        httpHeaders.set("Content-Disposition", "attachment; filename=" + fileName);
+        return ResponseEntity.ok().headers(httpHeaders).body(fileData.getFileData());
     }
 
     @GetMapping(value="/{docid}/files/{fileid}/data")

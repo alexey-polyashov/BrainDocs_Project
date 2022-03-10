@@ -12,8 +12,6 @@ import java.util.Optional;
 @Component
 public class Options {
 
-    private final OptionService optionService;
-
     @Autowired
     private ServletContext servletContext;
     private String contextPath;
@@ -23,7 +21,6 @@ public class Options {
 
     @Autowired
     public Options(OptionService optionService) {
-        this.optionService = optionService;
         Optional<OptionModel> options = optionService.readOptions();
         if(options.isPresent()){
             OptionModel opt = options.get();
@@ -44,6 +41,5 @@ public class Options {
     public String getDateFormat() {
         return dateFormat;
     }
-
 
 }

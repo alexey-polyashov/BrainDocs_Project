@@ -27,6 +27,5 @@ public class OrganisationContactsModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @Column(name = "marked")
-    private Boolean marked;
+
 }

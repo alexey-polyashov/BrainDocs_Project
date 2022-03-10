@@ -1,9 +1,8 @@
 package com.braindocs.services.users;
 
-import com.braindocs.dto.users.UserDTO;
 import com.braindocs.exceptions.ResourceNotFoundException;
+import com.braindocs.models.users.UserContactModel;
 import com.braindocs.repositories.users.UserContactRepository;
-import com.braindocs.services.mappers.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,9 +17,7 @@ import com.braindocs.repositories.users.RoleRepository;
 import com.braindocs.repositories.users.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.ParseException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,7 +26,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService  implements UserDetailsService {
     private final UserRepository userRepository;
-    private final UserContactRepository userContactRepository;
+    private final UserContactRepository userContactsRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -49,17 +46,7 @@ public class UserService  implements UserDetailsService {
     }
 
     public UserModel saveNewUser(UserModel user) {
-//        UserRoleModel role = roleRepository.findByName("users_roles");
-//        user.setRoles(Collections.singletonList(role));
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
-    }
-
-    public UserModel saveUser(UserModel user) {
-        UserModel oldUser = userRepository.findByLogin(
-                user.getLogin())
-                .orElseThrow(()->new ResourceNotFoundException("Пользователь с логином " + user.getLogin() + ""));
-        user.setPassword(oldUser.getPassword());
         return userRepository.save(user);
     }
 
@@ -110,13 +97,25 @@ public class UserService  implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public UserModel update(UserModel user) {
         UserModel oldUser = userRepository.findById(
                         user.getId())
                 .orElseThrow(()->new ResourceNotFoundException("Пользователь с ID " + user.getId() + ""));
-        user.setPassword(oldUser.getPassword());
-        UserModel saveUser = userRepository.save(user);
-        user.getContacts().stream().forEach(userContactRepository::save);
-        return saveUser;
+        oldUser.setBirthday(user.getBirthday());
+        oldUser.setEmail(user.getEmail());
+        oldUser.setFullname(user.getFullname());
+        oldUser.setLogin(user.getLogin());
+        oldUser.setMale(user.getMale());
+        oldUser.setShortname(user.getShortname());
+        oldUser.setOrganisation(user.getOrganisation());
+        List<UserContactModel> userContacts = user.getContacts();
+        userContactsRepository.deleteByUserid(user.getId());
+        if(userContacts!=null){
+            for (UserContactModel userContact: userContacts) {
+                userContactsRepository.save(userContact);
+            }
+        }
+        return oldUser;
     }
 }

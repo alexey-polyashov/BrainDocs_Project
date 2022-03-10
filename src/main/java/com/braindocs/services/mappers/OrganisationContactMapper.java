@@ -19,7 +19,6 @@ public class OrganisationContactMapper {
         dto.setTypeName(organisationContactsModel.getType().getName());
         dto.setPresent(organisationContactsModel.getPresent());
         dto.setOrganisationId(organisationContactsModel.getOrganisation());
-        dto.setMarked(organisationContactsModel.getMarked());
         return dto;
     }
 
@@ -29,7 +28,6 @@ public class OrganisationContactMapper {
         model.setType(contactTypeService.findById(organisationContactsDTO.getTypeId()));
         model.setPresent(organisationContactsDTO.getPresent());
         model.setOrganisation(organisationContactsDTO.getOrganisationId());
-        model.setMarked(organisationContactsDTO.getMarked());
         return model;
     }
 

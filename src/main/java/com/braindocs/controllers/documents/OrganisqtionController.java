@@ -1,24 +1,22 @@
 package com.braindocs.controllers.documents;
 
+import com.braindocs.common.MarkedRequestValue;
+import com.braindocs.common.Utils;
 import com.braindocs.dto.FieldsListDTO;
 import com.braindocs.dto.SearchCriteriaDTO;
 import com.braindocs.dto.SearchCriteriaListDTO;
 import com.braindocs.dto.organization.OrganisationDTO;
-import com.braindocs.exceptions.AnyOtherException;
+import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.models.organisations.OrganisationModel;
-import com.braindocs.repositories.specifications.OrganisationSpecificationBuilder;
 import com.braindocs.services.OrganisationService;
 import com.braindocs.services.mappers.OrganisationMapper;
 import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.*;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -33,7 +31,6 @@ public class OrganisqtionController {
 
     private static final String STRING_TYPE = "String";
     private static final String LONG_TYPE = "Long";
-    private static final String DATE_TYPE = "Date";
 
     @GetMapping(value="/fields")
     //возвращает список доступных полей и операций с ними
@@ -57,9 +54,9 @@ public class OrganisqtionController {
     }
 
     @PostMapping("/{orgid}")
-    public Long changeView(@PathVariable Long orgid, @RequestBody OrganisationDTO organisationDTO) {
+    public Long change(@PathVariable Long orgid, @RequestBody OrganisationDTO organisationDTO) {
         if(orgid==0){
-            throw new AnyOtherException("id должен быть отличен от 0");
+            throw new BadRequestException("id должен быть отличен от 0");
         }
         return organisationService.change(orgid, organisationMapper.toModel(organisationDTO));
     }
@@ -75,31 +72,37 @@ public class OrganisqtionController {
         List<SearchCriteriaDTO> filter = requestDTO.getFilter();
         Integer page = requestDTO.getPage();
         Integer recordsOnPage = requestDTO.getRecordsOnPage();
-        OrganisationSpecificationBuilder builder = new OrganisationSpecificationBuilder(userService);
-        for(SearchCriteriaDTO creteriaDTO: filter) {
-            Object value = creteriaDTO.getValue();
-            builder.with(creteriaDTO.getKey(), creteriaDTO.getOperation(), value);
-        }
-        Specification<OrganisationModel> spec = builder.build();
-        Page<OrganisationModel> organisationPage = organisationService.getOrganisationByFields(page, recordsOnPage, spec);
+        Page<OrganisationModel> organisationPage =
+                organisationService.getOrganisationByFields(
+                    page,
+                    recordsOnPage,
+                        filter);
         Page<OrganisationDTO> organisationDTOPage = organisationPage.map(organisationMapper::toDTO);
         log.info("DocumentViewController: search return {} elements", organisationDTOPage.getSize());
         return organisationDTOPage;
     }
 
     @DeleteMapping("/finally/{orgid}")
-    public void deleteView(@PathVariable Long orgid){
+    public void delete(@PathVariable Long orgid){
         organisationService.deleteById(orgid);
     }
 
     @DeleteMapping("/{orgid}")
-    public void markView(@PathVariable Long orgid){
-        organisationService.markById(orgid);
+    public void mark(@PathVariable Long orgid){
+        organisationService.setMark(orgid, true);
+    }
+
+    @PostMapping("/unmark/{orgid}")
+    public void unMark(@PathVariable Long orgid){
+        organisationService.setMark(orgid, false);
     }
 
     @GetMapping("")
-    public List<OrganisationDTO> findAll() {
-        return organisationService.findAll()
+    public List<OrganisationDTO> findAll(@RequestParam(name = "marked", defaultValue = "off", required = false) String marked) {
+        if(!Utils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))){
+            throw new BadRequestException("Недопустимое значение параметра marked");
+        }
+        return organisationService.findAll(MarkedRequestValue.valueOf(marked.toUpperCase(Locale.ROOT)))
                 .stream()
                 .map(organisationMapper::toDTO)
                 .collect(Collectors.toList());

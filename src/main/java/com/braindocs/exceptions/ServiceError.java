@@ -3,19 +3,13 @@ package com.braindocs.exceptions;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class ServiceError {
-
-    private String message;
-    private List<String> fieldsWithError;
-    private Date timestamp;
+public class ServiceError  extends RuntimeException{
 
     public ServiceError(String message) {
-        this.message = message;
-        this.timestamp = new Date();
+        super(message);
     }
+
 }

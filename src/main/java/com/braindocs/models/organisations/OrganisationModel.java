@@ -2,6 +2,7 @@ package com.braindocs.models.organisations;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -33,7 +34,8 @@ public class OrganisationModel {
     @Column(name = "id")
     private Long id;
     @Column(name = "marked")
-    private Boolean marked;
+    @ColumnDefault("false")
+    private Boolean marked = false;
     @CreationTimestamp
     @Column(name="created_at")
     private LocalDateTime createTime;

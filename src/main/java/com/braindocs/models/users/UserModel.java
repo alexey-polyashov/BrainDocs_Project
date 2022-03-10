@@ -3,9 +3,10 @@ package com.braindocs.models.users;
 import com.braindocs.models.organisations.OrganisationModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
+import java.sql.Date;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -40,10 +41,12 @@ public class UserModel {
     private String male; // list of: 'female', 'male'
 
     @Column(name = "birthday")
-    private String birthday;
+    private Date birthday;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name="user_id")
+    //@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER )
+    //@OneToMany(fetch = FetchType.EAGER , mappedBy = "userid",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany
+    @JoinColumn(name="userid")
     private List<UserContactModel> contacts;
 
     @Column(name="confirmed")
@@ -60,7 +63,8 @@ public class UserModel {
     @Column(name = "id")
     private Long id;
     @Column(name = "marked")
-    private Boolean marked;
+    @ColumnDefault("false")
+    private Boolean marked = false;
     @CreationTimestamp
     @Column(name="created_at")
     private LocalDateTime createTime;

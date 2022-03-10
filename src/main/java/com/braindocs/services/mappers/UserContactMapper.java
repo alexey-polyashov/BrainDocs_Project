@@ -1,8 +1,6 @@
 package com.braindocs.services.mappers;
 
-import com.braindocs.dto.organization.OrganisationContactsDTO;
 import com.braindocs.dto.users.UserContactDTO;
-import com.braindocs.models.organisations.OrganisationContactsModel;
 import com.braindocs.models.users.UserContactModel;
 import com.braindocs.services.ContactTypeService;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +18,7 @@ public class UserContactMapper {
         dto.setTypeId(userContactsModel.getType().getId());
         dto.setTypeName(userContactsModel.getType().getName());
         dto.setPresent(userContactsModel.getPresent());
-        dto.setUserId(userContactsModel.getUserId());
-        dto.setMarked(userContactsModel.getMarked());
+        dto.setUserId(userContactsModel.getUserid());
         return dto;
     }
 
@@ -30,8 +27,7 @@ public class UserContactMapper {
         model.setId(userContactsDTO.getId());
         model.setType(contactTypeService.findById(userContactsDTO.getTypeId()));
         model.setPresent(userContactsDTO.getPresent());
-        model.setUserId(userContactsDTO.getUserId());
-        model.setMarked(userContactsDTO.getMarked());
+        model.setUserid(userContactsDTO.getUserId());
         return model;
     }
 

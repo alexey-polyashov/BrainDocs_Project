@@ -7,5 +7,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NewDocumentTypeDTO {
     private String name;
-    private Boolean marked;
 }

@@ -1,5 +1,6 @@
 package com.braindocs.repositories.specifications;
 
+import com.braindocs.common.Options;
 import com.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.services.users.UserService;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,14 +14,16 @@ public class OrganisationSpecificationBuilder {
 
     private final List<SearchCriteria> params;
     private UserService userService;
+    private final Options options;
 
     public OrganisationSpecificationBuilder with(String key, String operation, Object value) {
         params.add(new SearchCriteria(key, operation, value));
         return this;
     }
 
-    public OrganisationSpecificationBuilder(UserService userService) {
-        params = new ArrayList<SearchCriteria>();
+    public OrganisationSpecificationBuilder(UserService userService, Options options) {
+        this.options = options;
+        this.params = new ArrayList<SearchCriteria>();
         this.userService = userService;
     }
 
@@ -30,7 +33,7 @@ public class OrganisationSpecificationBuilder {
         }
 
         List<Specification> specs = params.stream()
-                .map(p->new OrganisationSpecification(p, userService))
+                .map(p->new OrganisationSpecification(p, userService, options))
                 .collect(Collectors.toList());
 
         Specification<OrganisationModel> result = specs.get(0);

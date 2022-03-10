@@ -11,8 +11,8 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 public class UserContactModel {
-    @Column(name="user_id")
-    private Long userId;
+    @Column(name="userid")
+    private Long userid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="type")
@@ -25,6 +25,5 @@ public class UserContactModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @Column(name = "marked")
-    private Boolean marked;
+
 }
