@@ -1,5 +1,6 @@
 package com.braindocs;
 
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.boot.SpringApplication;
@@ -21,7 +22,8 @@ public class BraindocsApplication {
 				.setMatchingStrategy(MatchingStrategies.STRICT)
 				.setFieldMatchingEnabled(true)
 				.setSkipNullEnabled(true)
-				.setFieldAccessLevel(PRIVATE);
+				.setFieldAccessLevel(PRIVATE)
+				.setPropertyCondition(Conditions.isNotNull());
 		return mapper;
 	}
 
