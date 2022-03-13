@@ -11,19 +11,28 @@ import com.braindocs.services.OptionService;
 import com.braindocs.services.tasks.TasksService;
 import com.braindocs.services.users.UserService;
 import javafx.util.converter.LocalDateTimeStringConverter;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class TaskExecutorMapper {
 
-    private final UserService userService;
-    private final OptionService optionService;
-    private final TasksService tasksService;
-    private final TaskResultsRepository taskResultsRepository;
+    private UserService userService;
+    private OptionService optionService;
+    private TasksService tasksService;
+    private TaskResultsRepository taskResultsRepository;
+
+    @Autowired
+    public TaskExecutorMapper(UserService userService, OptionService optionService, TaskResultsRepository taskResultsRepository,
+                              @Lazy TasksService tasksService) {
+        this.userService = userService;
+        this.optionService = optionService;
+        this.tasksService = tasksService;
+        this.taskResultsRepository = taskResultsRepository;
+    }
 
     public TaskExecutorDTO toDTO(TaskExecutorModel model) {
         TaskExecutorDTO dto = new TaskExecutorDTO();

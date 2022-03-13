@@ -3,26 +3,32 @@ package com.braindocs.services.mappers;
 import com.braindocs.dto.tasks.TaskCommentDTO;
 import com.braindocs.dto.users.UserNameDTO;
 import com.braindocs.models.tasks.TaskCommentModel;
-import com.braindocs.repositories.tasks.TaskResultsRepository;
 import com.braindocs.services.OptionService;
-import com.braindocs.services.tasks.TaskCommentsService;
 import com.braindocs.services.tasks.TasksService;
 import com.braindocs.services.users.UserService;
 import javafx.util.converter.LocalDateTimeStringConverter;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
 
 @Service
-@RequiredArgsConstructor
 public class TaskCommentMapper {
 
-    private final UserService userService;
-    private final OptionService optionService;
-    private final TasksService tasksService;
-    private final TaskResultsRepository taskResultsRepository;
-    private final TaskCommentsService taskCommentsService;
+    private UserService userService;
+    private OptionService optionService;
+    private TasksService tasksService;
+
+
+    @Autowired
+    public TaskCommentMapper(UserService userService, OptionService optionService,
+                             @Lazy TasksService tasksService) {
+        this.userService = userService;
+        this.optionService = optionService;
+        this.tasksService = tasksService;
+
+    }
 
     public TaskCommentDTO toDTO(TaskCommentModel model) {
         TaskCommentDTO dto = new TaskCommentDTO();
