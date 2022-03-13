@@ -56,12 +56,12 @@ CREATE TABLE IF NOT EXISTS task_executors
     id bigserial,
     task_id bigint NOT NULL,
     executor_id bigint NOT NULL,
+    created_at timestamp without time zone,
     planed_date timestamp without time zone,
     date_of_comletion timestamp without time zone,
     comment varchar,
     result_id bigint NOT NULL,
-    status int, --1 ожидает выполнения, 2- в работе, 3- выполнена, 4- отменена
-    marked boolean,
+    status int, --1 ожидает выполнения, 2- в работе, 3- выполнена, 4- отменена, 5- уточнение
     CONSTRAINT task_executors_pk PRIMARY KEY (id),
     CONSTRAINT executors_of_task_fk FOREIGN KEY (task_id)
         REFERENCES tasks (id)
@@ -107,4 +107,17 @@ CREATE TABLE IF NOT EXISTS tasks_files
         ON DELETE CASCADE
 );
 
-
+--COMMENT
+CREATE TABLE IF NOT EXISTS task_comments
+(
+    id bigserial,
+    task_id bigint NOT NULL,
+    author_id bigint NOT NULL,
+    comment varchar,
+    created_at timestamp without time zone,
+    CONSTRAINT task_comments_pk PRIMARY KEY (id),
+    CONSTRAINT task_comments_fk FOREIGN KEY (task_id)
+        REFERENCES tasks (id)
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+);

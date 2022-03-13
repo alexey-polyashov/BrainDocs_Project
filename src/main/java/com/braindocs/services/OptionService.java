@@ -14,6 +14,7 @@ public class OptionService {
     private final OptionRepositories optionRepositories;
 
     private final String dateFormat = "yyyy-MM-dd";
+    private final String dateTimeFormat = "yyyy-MM-dd HH:mm";
 
     public Optional<OptionModel> readOptions() {
         return optionRepositories.findById(1);
@@ -21,5 +22,8 @@ public class OptionService {
 
     public String getDateFormat() {
         return dateFormat;
+    }
+    public String getDateTimeFormat() {
+        return dateTimeFormat;
     }
 }

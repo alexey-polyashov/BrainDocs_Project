@@ -5,17 +5,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Date;
-
 @Getter
 @Setter
 @NoArgsConstructor
 public class TaskExecutorDTO {
 
     private Long id;
+    private Long taskId;
     private UserNameDTO executor;
-    private Date planedDate;
-    private Date dateOfComletion;
+    private String createdAt;
+    private String planedDate;
+    private String dateOfCompletion;
     private String comment;
     private TaskResultDTO result;
     private Long status; //1 ожидает выполнения, 2- в работе, 3- выполнена, 4- отменена

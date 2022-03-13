@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -13,31 +14,18 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TaskExecutorModel {
+public class TaskCommentModel {
 
     @ManyToOne
     @JoinColumn(name="task_id")
     private TaskModel task;
 
     @ManyToOne
-    @JoinColumn(name="executor_id")
-    private UserModel executor;
-
-    @Column(name="planed_date")
-    private LocalDateTime planedDate;
-
-    @Column(name="date_of_comletion")
-    private LocalDateTime dateOfComletion;
+    @JoinColumn(name="author_id")
+    private UserModel author;
 
     @Column(name="comment")
     private String comment;
-
-    @ManyToOne
-    @JoinColumn(name="result_id")
-    private TaskResultsModel result;
-
-    @Column(name="status")
-    private Long status;//1 ожидает выполнения, 2- в работе, 3- выполнена, 4- отменена, 5- уточнение
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
