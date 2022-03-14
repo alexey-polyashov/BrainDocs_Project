@@ -36,8 +36,15 @@ public class OrganisationService {
         return organisationRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Организаия '" + id + "' не найдена"));
     }
 
+    @Transactional
     public Long add(OrganisationModel organisation) {
         OrganisationModel newOrganisation = organisationRepository.save(organisation);
+        newOrganisation.getContacts()
+                .stream()
+                .forEach(p-> {
+                    p.setOrganisation(newOrganisation.getId());
+                    orgContactsRepository.save(p);
+                });
         return newOrganisation.getId();
     }
 
