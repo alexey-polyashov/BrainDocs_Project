@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,7 +49,7 @@ public class OrganisqtionController {
     }
 
     @PostMapping
-    public Long addOrganisation(@RequestBody OrganisationDTO organisationDTO) {
+    public Long addOrganisation(@Valid @RequestBody OrganisationDTO organisationDTO) {
         log.info("OrganisqtionController: addOrganisation");
         OrganisationModel organisation = organisationMapper.toModel(organisationDTO);
         return organisationService.add(organisation);

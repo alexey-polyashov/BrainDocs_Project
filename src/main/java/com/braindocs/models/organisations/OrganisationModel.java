@@ -25,7 +25,7 @@ public class OrganisationModel {
     @Column(name = "kpp")
     private String kpp;
 
-    @OneToMany()
+    @OneToMany
     @JoinColumn(name="organisation")
     private List<OrganisationContactsModel> contacts;
 
