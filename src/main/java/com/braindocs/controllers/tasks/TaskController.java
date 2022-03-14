@@ -130,13 +130,13 @@ public class TaskController {
         List<SearchCriteriaDTO> filter = requestDTO.getFilter();
         Integer page = requestDTO.getPage();
         Integer recordsOnPage = requestDTO.getRecordsOnPage();
-        Page<TaskExecutorDtoExt> taskDtoPages = tasksService.getTasksDTOByFields(
+        Page<TaskExecutorDtoExt> TaskExecutorDtoExtPages = tasksService.getExecutorsDTOByFields(
                 page,
                 recordsOnPage,
                 filter
         );
-        log.info("TaskController: getTaskList return {} elements", taskDtoPages.getSize());
-        return taskDtoPages;
+        log.info("TaskController: getTaskList return {} elements", TaskExecutorDtoExtPages.getSize());
+        return TaskExecutorDtoExtPages;
     }
 
     @PostMapping(value="")

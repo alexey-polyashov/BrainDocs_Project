@@ -7,6 +7,7 @@ import com.braindocs.dto.SearchCriteriaDTO;
 import com.braindocs.dto.tasks.TaskCommentDTO;
 import com.braindocs.dto.tasks.TaskDTO;
 import com.braindocs.dto.tasks.TaskExecutorDTO;
+import com.braindocs.dto.tasks.TaskExecutorDtoExt;
 import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.tasks.TaskCommentModel;
@@ -185,5 +186,9 @@ public class TasksService {
         TaskModel task = tasksRepository.findById(taskId)
                 .orElseThrow(()->new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
         taskExecutorsRepository.deleteByTaskAndId(task, exId);
+    }
+
+    public Page<TaskExecutorDtoExt> getExecutorsDTOByFields(Integer page, Integer recordsOnPage, List<SearchCriteriaDTO> filter) {
+        return null;
     }
 }
