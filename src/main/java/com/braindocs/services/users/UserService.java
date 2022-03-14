@@ -1,5 +1,6 @@
 package com.braindocs.services.users;
 
+import com.braindocs.dto.users.RoleDTO;
 import com.braindocs.dto.users.UserDTO;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.repositories.users.UserContactRepository;
@@ -118,5 +119,12 @@ public class UserService  implements UserDetailsService {
         UserModel saveUser = userRepository.save(user);
         user.getContacts().stream().forEach(userContactRepository::save);
         return saveUser;
+    }
+
+    public UserModel userRoles(Long id, Collection<UserRoleModel> roles) {
+        UserModel user = userRepository.findById(id)
+                .orElseThrow(()->new ResourceNotFoundException("Пользователь с логином " + id + ""));
+        user.setRoles(roles);
+        return userRepository.save(user);
     }
 }

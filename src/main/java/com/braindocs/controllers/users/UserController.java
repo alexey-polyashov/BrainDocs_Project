@@ -1,10 +1,13 @@
 package com.braindocs.controllers.users;
 
 import com.braindocs.dto.users.NewUserDTO;
+import com.braindocs.dto.users.RoleDTO;
 import com.braindocs.dto.users.UserDTO;
 import com.braindocs.exceptions.AnyOtherException;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.users.UserModel;
+import com.braindocs.models.users.UserRoleModel;
+import com.braindocs.services.mappers.RoleMapper;
 import com.braindocs.services.mappers.UserMapper;
 import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +31,7 @@ import java.util.stream.Collectors;
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
+    public final RoleMapper roleMapper;
 
     @PostMapping
     public Long registerUser(@Valid @RequestBody NewUserDTO signUpRequest) {
@@ -69,4 +74,9 @@ public class UserController {
         return userMapper.toDTO(userService.confirmUser(id));
     }
 
+    @PutMapping("/roles/{id}")
+    public UserDTO userRoles(@RequestBody UserDTO requestUser, @RequestBody Collection<RoleDTO> requestRoles, @PathVariable Long id) {
+        Collection<UserRoleModel> roles = roleMapper.toModel(requestRoles);
+        return userMapper.toDTO(userService.userRoles(id, roles));
+    }
 }
