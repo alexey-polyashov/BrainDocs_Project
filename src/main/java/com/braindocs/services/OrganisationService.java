@@ -56,11 +56,16 @@ public class OrganisationService {
         oldOrganisation.setKpp(organisation.getKpp());
         List<OrganisationContactsModel> orgContacts = organisation.getContacts();
         orgContactsRepository.deleteByOrganisation(orgid);
-        if(orgContacts!=null){
-            for (OrganisationContactsModel orgContact: orgContacts) {
-                orgContactsRepository.save(orgContact);
-            }
-        }
+//        if(orgContacts!=null){
+//            for (OrganisationContactsModel orgContact: orgContacts) {
+//                orgContactsRepository.save(orgContact);
+//            }
+//        }
+        orgContacts.stream()
+                .forEach(p-> {
+                    p.setOrganisation(oldOrganisation.getId());
+                    orgContactsRepository.save(p);
+                });
         return oldOrganisation.getId();
     }
 
