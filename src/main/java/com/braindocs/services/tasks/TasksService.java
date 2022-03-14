@@ -107,9 +107,10 @@ public class TasksService {
 
     @Transactional
     public Long saveExecutor(TaskExecutorDTO taskExecutorDTO) {
+        Long entId = taskExecutorDTO.getId();
         TaskExecutorModel executor = taskExecutorsRepository.findById(
-                taskExecutorDTO.getId())
-                .orElseThrow(()->new ResourceNotFoundException("Не найден исполнитель по id '" + taskExecutorDTO.getId() + "'"));
+                        entId)
+                .orElseThrow(()->new ResourceNotFoundException("Не найден исполнитель по id '" + entId + "'"));
         taskExecutorMapper.moveChanges(executor, taskExecutorDTO);
         return executor.getId();
     }
@@ -121,9 +122,10 @@ public class TasksService {
 
     @Transactional
     public Long saveComment(TaskCommentDTO taskCommentDTO) {
+        Long entId = taskCommentDTO.getId();
         TaskCommentModel taskComment = taskCommentsRepository.findById(
-                taskCommentDTO.getId())
-                .orElseThrow(()->new ResourceNotFoundException("Комментарий не найден по id '" + taskCommentDTO.getId() + "'"));
+                        entId)
+                .orElseThrow(()->new ResourceNotFoundException("Комментарий не найден по id '" + entId + "'"));
         taskCommentMapper.moveChanges(taskComment, taskCommentDTO);
         return taskComment.getId();
     }
@@ -174,7 +176,7 @@ public class TasksService {
     @Transactional
     public void deleteComment(Long taskId, Long commentId) {
         TaskModel task = tasksRepository.findById(taskId)
-                .orElseThrow(()->new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
+                .orElseThrow(()->new ResourceNotFoundException("Не найден задача по id '" + taskId + "'"));
         taskCommentsRepository.deleteByTaskAndId(task, commentId);
     }
 

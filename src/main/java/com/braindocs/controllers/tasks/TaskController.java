@@ -6,10 +6,7 @@ import com.braindocs.dto.FieldsListDTO;
 import com.braindocs.dto.SearchCriteriaDTO;
 import com.braindocs.dto.SearchCriteriaListDTO;
 import com.braindocs.dto.files.FileDTO;
-import com.braindocs.dto.tasks.TaskCommentDTO;
-import com.braindocs.dto.tasks.TaskDTO;
-import com.braindocs.dto.tasks.TaskExecutorDTO;
-import com.braindocs.dto.tasks.TaskTypeDTO;
+import com.braindocs.dto.tasks.*;
 import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.models.tasks.TaskCommentModel;
 import com.braindocs.models.tasks.TaskExecutorModel;
@@ -69,6 +66,20 @@ public class TaskController {
         return fieldsSet;
     }
 
+    @GetMapping(value="/executors/fields")
+    //возвращает список доступных полей и операций с ними
+    //операции: ">" (больше или равно), "<" (меньше или равно), ":" (для строковых полей модели - содержит, для других = )
+    //типы полей могут быть любыми - это просто описание типа для правильного построения интерфейса
+    public Set<FieldsListDTO> getExecutorFields(){
+        log.info("TaskController: getFields");
+        Set<FieldsListDTO> fieldsSet = new HashSet<>();
+        fieldsSet.add(new FieldsListDTO("Комментарий", "comment", "", Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Статус", "status", "/api/v1/tasks/statuslist", Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Исполнитель", "executor", "/api/v1/users", Arrays.asList(":"), LONG_TYPE, false));
+        log.info("TaskController: getFields return {} elements", fieldsSet.size());
+        return fieldsSet;
+    }
+
     @GetMapping(value="/statuslist/")
     public Map<Integer, String> getStatuslist(){
         log.info("TaskController: getStatuslist ");
@@ -105,6 +116,21 @@ public class TaskController {
         Integer page = requestDTO.getPage();
         Integer recordsOnPage = requestDTO.getRecordsOnPage();
         Page<TaskDTO> taskDtoPages = tasksService.getTasksDTOByFields(
+                page,
+                recordsOnPage,
+                filter
+        );
+        log.info("TaskController: getTaskList return {} elements", taskDtoPages.getSize());
+        return taskDtoPages;
+    }
+
+    @PostMapping(value="/executors/search")
+    public Page<TaskExecutorDtoExt> searchExecutors(@RequestBody SearchCriteriaListDTO requestDTO){
+        log.info("TaskController: getTaskList");
+        List<SearchCriteriaDTO> filter = requestDTO.getFilter();
+        Integer page = requestDTO.getPage();
+        Integer recordsOnPage = requestDTO.getRecordsOnPage();
+        Page<TaskExecutorDtoExt> taskDtoPages = tasksService.getTasksDTOByFields(
                 page,
                 recordsOnPage,
                 filter

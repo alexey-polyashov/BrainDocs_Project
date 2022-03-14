@@ -4,7 +4,7 @@ import com.braindocs.common.MarkedRequestValue;
 import com.braindocs.common.Options;
 import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.models.organisations.OrganisationModel;
-import com.braindocs.models.tasks.TaskModel;
+import com.braindocs.models.tasks.TaskExecutorModel;
 import com.braindocs.models.tasks.TaskTypeModel;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.services.OrganisationService;
@@ -23,7 +23,7 @@ import java.util.Date;
 import java.util.Locale;
 
 @Data
-public class TaskSpecification implements Specification<TaskModel> {
+public class TaskExecutorSpecification implements Specification<TaskExecutorModel> {
 
     private SearchCriteria criteria;
     private UserService userService;
@@ -31,11 +31,11 @@ public class TaskSpecification implements Specification<TaskModel> {
     private TaskTypesService taskTypesService;
     private Options options;
 
-    public TaskSpecification(SearchCriteria criteria,
-                             UserService userService,
-                             OrganisationService organisationService,
-                             TaskTypesService taskTypeService,
-                             Options options) {
+    public TaskExecutorSpecification(SearchCriteria criteria,
+                                     UserService userService,
+                                     OrganisationService organisationService,
+                                     TaskTypesService taskTypeService,
+                                     Options options) {
         this.criteria = criteria;
         this.userService = userService;
         this.organisationService = organisationService;
@@ -45,7 +45,7 @@ public class TaskSpecification implements Specification<TaskModel> {
 
     @Override
     public Predicate toPredicate
-            (Root<TaskModel> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+            (Root<TaskExecutorModel> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
         Class valueClass = root.get(criteria.getKey()).getJavaType();
         Object value = criteria.getValue();
@@ -68,7 +68,7 @@ public class TaskSpecification implements Specification<TaskModel> {
         return getPredicate(root, builder, value);
     }
 
-    private Predicate getPredicate(Root<TaskModel> root, CriteriaBuilder builder, Object value) {
+    private Predicate getPredicate(Root<TaskExecutorModel> root, CriteriaBuilder builder, Object value) {
         if(criteria.getKey().equals("marked")){
             MarkedRequestValue marked = MarkedRequestValue.valueOf(
                     criteria.getValue().toString().toUpperCase(Locale.ROOT));

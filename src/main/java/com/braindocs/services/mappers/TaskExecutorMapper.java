@@ -1,6 +1,7 @@
 package com.braindocs.services.mappers;
 
 import com.braindocs.dto.tasks.TaskExecutorDTO;
+import com.braindocs.dto.tasks.TaskExecutorDtoExt;
 import com.braindocs.dto.tasks.TaskResultDTO;
 import com.braindocs.dto.users.UserNameDTO;
 import com.braindocs.exceptions.ResourceNotFoundException;
@@ -24,20 +25,47 @@ public class TaskExecutorMapper {
     private OptionService optionService;
     private TasksService tasksService;
     private TaskResultsRepository taskResultsRepository;
+    private TaskMapper taskMapper;
 
     @Autowired
-    public TaskExecutorMapper(UserService userService, OptionService optionService, TaskResultsRepository taskResultsRepository,
+    public TaskExecutorMapper(UserService userService,
+                              OptionService optionService,
+                              TaskResultsRepository taskResultsRepository,
+                              TaskMapper taskMapper,
                               @Lazy TasksService tasksService) {
         this.userService = userService;
         this.optionService = optionService;
         this.tasksService = tasksService;
         this.taskResultsRepository = taskResultsRepository;
+        this.taskMapper = taskMapper;
     }
 
     public TaskExecutorDTO toDTO(TaskExecutorModel model) {
         TaskExecutorDTO dto = new TaskExecutorDTO();
         dto.setId(model.getId());
         dto.setExecutor(new UserNameDTO(model.getExecutor()));
+        dto.setTaskId(model.getTask().getId());
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
+        LocalDateTimeStringConverter ldtc = new LocalDateTimeStringConverter(dtf,dtf);
+        dto.setCreatedAt(ldtc.toString(model.getCreateTime()));
+        dto.setPlanedDate(ldtc.toString(model.getPlanedDate()));
+        dto.setDateOfCompletion(ldtc.toString(model.getDateOfComletion()));
+        dto.setComment(model.getComment());
+        TaskResultsModel taskResult = model.getResult();
+        dto.setResult(new TaskResultDTO(
+                taskResult.getId(),
+                taskResult.getResultName(),
+                taskResult.getMarked()
+        ));
+        dto.setStatus(model.getStatus());
+        return dto;
+    }
+
+    public TaskExecutorDtoExt toDtoExt(TaskExecutorModel model) {
+        TaskExecutorDtoExt dto = new TaskExecutorDtoExt();
+        dto.setId(model.getId());
+        dto.setExecutor(new UserNameDTO(model.getExecutor()));
+        dto.setTask(taskMapper.toDTO(model.getTask()));
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
         LocalDateTimeStringConverter ldtc = new LocalDateTimeStringConverter(dtf,dtf);
         dto.setCreatedAt(ldtc.toString(model.getCreateTime()));
