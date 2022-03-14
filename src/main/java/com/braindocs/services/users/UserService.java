@@ -111,11 +111,16 @@ public class UserService  implements UserDetailsService {
         oldUser.setOrganisation(user.getOrganisation());
         List<UserContactModel> userContacts = user.getContacts();
         userContactsRepository.deleteByUserid(user.getId());
-        if(userContacts!=null){
-            for (UserContactModel userContact: userContacts) {
-                userContactsRepository.save(userContact);
-            }
-        }
+        userContacts.stream()
+                .forEach(p-> {
+                    p.setUserid(oldUser.getId());
+                    userContactsRepository.save(p);
+                });
+//        if(userContacts!=null){
+//            for (UserContactModel userContact: userContacts) {
+//                userContactsRepository.save(userContact);
+//            }
+//        }
         return oldUser;
     }
 }
