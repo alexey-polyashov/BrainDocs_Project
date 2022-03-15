@@ -47,7 +47,7 @@ public class TaskExecutorMapper {
         dto.setId(model.getId());
         dto.setExecutor(new UserNameDTO(model.getExecutor()));
         dto.setTaskId(model.getTask().getId());
-        SimpleDateFormat dateFormatter = new SimpleDateFormat(optionService.getDateTimeFormat());
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
         dto.setCreatedAt(dateFormatter.format(model.getCreateTime()));
         dto.setPlanedDate(dateFormatter.format(model.getPlanedDate()));
         dto.setDateOfCompletion(dateFormatter.format(model.getDateOfComletion()));

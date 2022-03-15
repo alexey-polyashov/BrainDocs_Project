@@ -9,9 +9,10 @@ import com.braindocs.services.OptionService;
 import com.braindocs.services.documents.DocumentsService;
 import com.braindocs.services.tasks.TaskTypesService;
 import com.braindocs.services.users.UserService;
-import javafx.util.converter.LocalDateTimeStringConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
@@ -32,8 +33,7 @@ public class TaskMapper {
         TaskDTO dto = new TaskDTO();
         dto.setId(model.getId());
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        LocalDateTimeStringConverter ldtc = new LocalDateTimeStringConverter(dtf,dtf);
-        dto.setCreateTime(ldtc.toString(model.getCreateTime()));
+        dto.setCreateTime(dtf.format(model.getCreateTime()));
         dto.setTaskType(taskTypeMapper.toDTO(model.getType()));
         dto.setHeading(model.getHeading());
         dto.setContent(model.getContent());
@@ -53,8 +53,7 @@ public class TaskMapper {
         TaskModel model = new TaskModel();
         model.setId(dto.getId());
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        LocalDateTimeStringConverter ldtc = new LocalDateTimeStringConverter(dtf,dtf);
-        model.setCreateTime(ldtc.fromString(dto.getCreateTime()));
+        model.setCreateTime(LocalDateTime.parse(dto.getCreateTime(), dtf));
         model.setType(
                 taskTypesService.findById(dto.getTaskType().getId()));
         model.setHeading(dto.getHeading());
@@ -75,8 +74,7 @@ public class TaskMapper {
 
     public TaskModel moveChanges(TaskModel receiver, TaskDTO source) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        LocalDateTimeStringConverter ldtc = new LocalDateTimeStringConverter(dtf,dtf);
-        receiver.setCreateTime(ldtc.fromString(source.getCreateTime()));
+        receiver.setCreateTime(LocalDateTime.parse(source.getCreateTime(),dtf));
         receiver.setType(
                 taskTypesService.findById(source.getTaskType().getId()));
         receiver.setHeading(source.getHeading());
