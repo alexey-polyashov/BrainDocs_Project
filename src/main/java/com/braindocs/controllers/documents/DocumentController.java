@@ -89,9 +89,8 @@ public class DocumentController {
         if(id==0){
             throw new BadRequestException("id не должен быть пустым");
         }
-        DocumentModel docModel = documentMapper.toModel(documentDTO);
-        docModel.setId(id);
-        Long docId = documentsService.saveDocument(docModel);
+        documentDTO.setId(id);
+        Long docId = documentsService.saveDocument(documentDTO);
         log.info("DocumentController: add (saveDocument id {})", docId);
         return docId;
     }

@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.sql.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -82,5 +83,25 @@ public class DocumentMapper {
         return docModel;
     }
 
+    public void moveChange(DocumentModel receiver, DocumentDTO sourceDTO) throws ParseException{
+
+
+        DocumentModel source = this.toModel(sourceDTO);
+        receiver.setMarked(source.getMarked());
+        receiver.setHeading(source.getHeading());
+        receiver.setContent(source.getContent());
+        if(source.getAuthor()!=null){
+            receiver.setAuthor(source.getAuthor());}
+        if(source.getResponsible()!=null){
+            receiver.setAuthor(source.getResponsible());}
+        receiver.setOrganisation(source.getOrganisation());
+        receiver.setMarked(source.getMarked());
+//        receiver.setFiles(
+//                oldDoc.getFiles().stream()
+//                        .filter(Objects::nonNull)
+//                        .peek(p->document.getFiles().add(p))
+//                        .collect(Collectors.toSet())
+//        );
+    }
 
 }

@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.security.Principal;
+import java.text.ParseException;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
@@ -72,19 +73,10 @@ public class DocumentsService {
     }
 
     @Transactional
-    public Long saveDocument(DocumentModel document){
-        DocumentModel oldDoc = getDocumentById(document.getId());
-        //чтение данных для добавления файлов в модель, которые уже загружены
-        //при изменении документа в DTO нет списка файлов
-        document.setFiles(
-                oldDoc.getFiles().stream()
-                        .filter(Objects::nonNull)
-                        .peek(p->document.getFiles().add(p))
-                        .collect(Collectors.toSet())
-        );
-        document.setMarked(oldDoc.getMarked());
-        DocumentModel doc = documentsRepository.save(document);
-        return doc.getId();
+    public Long saveDocument(DocumentDTO documentDTO) throws ParseException {
+        DocumentModel oldDoc = getDocumentById(documentDTO.getId());
+        documentMapper.moveChange(oldDoc, documentDTO);
+        return oldDoc.getId();
     }
 
     public void deleteDocument(Long id){
