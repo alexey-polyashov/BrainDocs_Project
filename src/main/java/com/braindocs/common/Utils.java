@@ -1,6 +1,5 @@
 package com.braindocs.common;
 
-import org.apache.commons.collections4.collection.UnmodifiableCollection;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -9,7 +8,7 @@ import java.util.Collection;
 @Component
 public class Utils {
 
-    public static final Collection EMPTY_COLLECTION = UnmodifiableCollection.unmodifiableCollection(new ArrayList());
+    public static final Collection EMPTY_COLLECTION = new ArrayList();
 
     public static <E extends Enum<E>> boolean isValidEnum(Class<E> enumClass, String enumName){
         if (enumName == null) {
