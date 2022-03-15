@@ -27,7 +27,6 @@ public class DocumentDTO {
     @NotBlank(message = "Не указан заголовок документа")
     private String heading;
     private String content;
-    @NotNull(message = "Не указан автор документа")
     private UserNameDTO author;
     private UserNameDTO responsible;
     @NotNull(message = "Не указана организация")

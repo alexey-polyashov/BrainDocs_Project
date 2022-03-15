@@ -1,4 +1,4 @@
-package com.braindocs.controllers.documents;
+package com.braindocs.controllers.organisation;
 
 import com.braindocs.common.MarkedRequestValue;
 import com.braindocs.common.Utils;
@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,18 +38,19 @@ public class OrganisqtionController {
     //операции: ">" (больше или равно), "<" (меньше или равно), ":" (для строковых полей модели - содержит, для других = )
     //типы полей могут быть любыми - это просто описание типа для правильного построения интерфейса
     public Set<FieldsListDTO> getFields(){
-        log.info("DocumentController: getFields");
+        log.info("OrganisqtionController: getFields");
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
         fieldsSet.add(new FieldsListDTO("Наименование организации", "name", "", Arrays.asList(":"), STRING_TYPE, false));
         fieldsSet.add(new FieldsListDTO("ИНН организации", "inn", "", Arrays.asList(":"), STRING_TYPE, false));
         fieldsSet.add(new FieldsListDTO("КПП организации", "kpp", "", Arrays.asList(":"), STRING_TYPE, false));
         fieldsSet.add(new FieldsListDTO("Руководитель", "manager", "/api/v1/users", Arrays.asList(":"), LONG_TYPE, false));
-        log.info("DocumentController: getFields return {} elements", fieldsSet.size());
+        log.info("OrganisqtionController: getFields return {} elements", fieldsSet.size());
         return fieldsSet;
     }
 
     @PostMapping
-    public Long addView(@RequestBody OrganisationDTO organisationDTO) {
+    public Long addOrganisation(@Valid @RequestBody OrganisationDTO organisationDTO) {
+        log.info("OrganisqtionController: addOrganisation");
         OrganisationModel organisation = organisationMapper.toModel(organisationDTO);
         return organisationService.add(organisation);
     }
@@ -68,7 +70,7 @@ public class OrganisqtionController {
 
     @PostMapping("/search")
     public Page<OrganisationDTO> search(@RequestBody SearchCriteriaListDTO requestDTO) {
-        log.info("DocumentViewController: search");
+        log.info("OrganisqtionController: search");
         List<SearchCriteriaDTO> filter = requestDTO.getFilter();
         Integer page = requestDTO.getPage();
         Integer recordsOnPage = requestDTO.getRecordsOnPage();
@@ -78,22 +80,25 @@ public class OrganisqtionController {
                     recordsOnPage,
                         filter);
         Page<OrganisationDTO> organisationDTOPage = organisationPage.map(organisationMapper::toDTO);
-        log.info("DocumentViewController: search return {} elements", organisationDTOPage.getSize());
+        log.info("OrganisqtionController: search return {} elements", organisationDTOPage.getSize());
         return organisationDTOPage;
     }
 
     @DeleteMapping("/finally/{orgid}")
     public void delete(@PathVariable Long orgid){
+        log.info("OrganisqtionController: delete");
         organisationService.deleteById(orgid);
     }
 
     @DeleteMapping("/{orgid}")
     public void mark(@PathVariable Long orgid){
+        log.info("OrganisqtionController: mark");
         organisationService.setMark(orgid, true);
     }
 
     @PostMapping("/unmark/{orgid}")
     public void unMark(@PathVariable Long orgid){
+        log.info("OrganisqtionController: unMark");
         organisationService.setMark(orgid, false);
     }
 
