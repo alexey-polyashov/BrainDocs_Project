@@ -33,6 +33,6 @@ public class ContactTypeService {
 
     @Transactional
     public List<ContactTypeModel> findAll(MarkedRequestValue marked) {
-         return getTypes(marked);
+        return getTypes(marked);
     }
 }
