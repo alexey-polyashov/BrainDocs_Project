@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -22,6 +23,7 @@ public class TaskDTO {
     private Long status;//1 активна, 2- выполнена, 3- отменена
     @NotNull(message = "Не указан автор документа")
     private UserNameDTO author;
+    private Set<TaskSubjectDTO> subjects;
     private Boolean marked;
 
 }

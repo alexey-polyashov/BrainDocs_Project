@@ -73,11 +73,13 @@ public class TaskExecutorMapper {
         dto.setDateOfCompletion(ldtc.toString(model.getDateOfComletion()));
         dto.setComment(model.getComment());
         TaskResultsModel taskResult = model.getResult();
-        dto.setResult(new TaskResultDTO(
-                taskResult.getId(),
-                taskResult.getResultName(),
-                taskResult.getMarked()
-        ));
+        if(taskResult!=null) {
+            dto.setResult(new TaskResultDTO(
+                    taskResult.getId(),
+                    taskResult.getResultName(),
+                    taskResult.getMarked()
+            ));
+        }
         dto.setStatus(model.getStatus());
         return dto;
     }
@@ -92,13 +94,17 @@ public class TaskExecutorMapper {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
         LocalDateTimeStringConverter ldtc = new LocalDateTimeStringConverter(dtf,dtf);
         model.setPlanedDate(ldtc.fromString(dto.getCreatedAt()));
-        model.setDateOfComletion(ldtc.fromString(dto.getDateOfCompletion()));
+        if(!dto.getCreatedAt().isEmpty()){
+            model.setDateOfComletion(ldtc.fromString(dto.getDateOfCompletion()));
+        }
         model.setComment(dto.getComment());
-        Long resId = dto.getResult().getId();
-        Optional<TaskResultsModel> taskResult = taskResultsRepository.findById(resId);
-        model.setResult(taskResult.orElseThrow(
-                ()->new ResourceNotFoundException("Не найден результат выполнения задачи с id '" + resId + "'"))
-        );
+        if(dto.getResult()!=null) {
+            Long resId = dto.getResult().getId();
+            Optional<TaskResultsModel> taskResult = taskResultsRepository.findById(resId);
+            model.setResult(taskResult.orElseThrow(
+                    ()->new ResourceNotFoundException("Не найден результат выполнения задачи с id '" + resId + "'"))
+            );
+        }
         model.setStatus(dto.getStatus());
         return model;
     }

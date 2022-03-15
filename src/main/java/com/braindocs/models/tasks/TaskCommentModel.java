@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="task_executors")
+@Table(name="task_comments")
 @Getter
 @Setter
 @NoArgsConstructor

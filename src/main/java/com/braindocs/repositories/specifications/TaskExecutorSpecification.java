@@ -1,6 +1,5 @@
 package com.braindocs.repositories.specifications;
 
-import com.braindocs.common.MarkedRequestValue;
 import com.braindocs.common.Options;
 import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.models.organisations.OrganisationModel;
@@ -20,7 +19,6 @@ import javax.persistence.criteria.Root;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 @Data
 public class TaskExecutorSpecification implements Specification<TaskExecutorModel> {
@@ -69,15 +67,16 @@ public class TaskExecutorSpecification implements Specification<TaskExecutorMode
     }
 
     private Predicate getPredicate(Root<TaskExecutorModel> root, CriteriaBuilder builder, Object value) {
-        if(criteria.getKey().equals("marked")){
-            MarkedRequestValue marked = MarkedRequestValue.valueOf(
-                    criteria.getValue().toString().toUpperCase(Locale.ROOT));
-            if(marked == MarkedRequestValue.ONLY){
-                return builder.equal(root.get(criteria.getKey()), true);
-            }else if(marked == MarkedRequestValue.OFF){
-                return builder.equal(root.get(criteria.getKey()), false);
-            }
-        } else if (criteria.getOperation().equalsIgnoreCase(">")) {
+//        if(criteria.getKey().equals("marked")){
+//            MarkedRequestValue marked = MarkedRequestValue.valueOf(
+//                    criteria.getValue().toString().toUpperCase(Locale.ROOT));
+//            if(marked == MarkedRequestValue.ONLY){
+//                return builder.equal(root.get(criteria.getKey()), true);
+//            }else if(marked == MarkedRequestValue.OFF){
+//                return builder.equal(root.get(criteria.getKey()), false);
+//            }
+//        } else
+        if (criteria.getOperation().equalsIgnoreCase(">")) {
             if(value instanceof Date) {
                 return builder.greaterThanOrEqualTo(
                         root.<Date>get(criteria.getKey()), (Date) value);

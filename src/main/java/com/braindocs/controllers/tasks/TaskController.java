@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -45,10 +46,6 @@ public class TaskController {
     private static final String STRING_TYPE = "String";
     private static final String LONG_TYPE = "Long";
     private static final String DATE_TYPE = "Date";
-
-    private void setLinkToFile(FileDTO fileDTO, Long taskId){
-        fileDTO.setLink("/api/v1/tasks/" + taskId + "/files/" + fileDTO.getId() + "/data");
-    }
 
     @GetMapping(value="/fields")
     //возвращает список доступных полей и операций с ними
@@ -140,13 +137,13 @@ public class TaskController {
     }
 
     @PostMapping(value="")
-    public Long addTask(@Valid @RequestBody TaskDTO taskDTO){
+    public Long addTask(@Valid @RequestBody TaskDTO taskDTO, Principal principal){
         log.info("TaskController: addTask");
         if(taskDTO.getId()!=null && (taskDTO.getId()!=0)){
             throw new BadRequestException("При добавлении нового объекта id должен быть пустым");
         }
         TaskModel taskModel = taskMapper.toModel(taskDTO);
-        Long taskId = tasksService.add(taskModel);
+        Long taskId = tasksService.add(taskModel, principal);
         log.info("TaskController: addTask (return id {})", taskId);
         return taskId;
     }
@@ -172,7 +169,7 @@ public class TaskController {
         tasksService.markTask(taskId);
     }
 
-    @DeleteMapping(value="/unmark/{taskId}")
+    @PostMapping(value="/unmark/{taskId}")
     public void unMarkTask(@PathVariable("taskId") Long taskId){
         log.info("TaskController: unMarkTask, taskId {}", taskId);
         if(taskId==0){
@@ -236,6 +233,9 @@ public class TaskController {
             throw new BadRequestException("При добавлении нового объекта id должен быть пустым");
         }
         executorDTO.setTaskId(taskId);
+        executorDTO.setComment("");
+        executorDTO.setDateOfCompletion("");
+        executorDTO.setResult(null);
         TaskExecutorModel taskExecutorModel = taskExecutorMapper.toModel(executorDTO);
         Long executorId = tasksService.addExecutor(taskExecutorModel);
         log.info("TaskController: addExecutor (return id {})", executorId);
@@ -260,14 +260,15 @@ public class TaskController {
 
     @PostMapping(value="/{taskId}/comments/")
     public Long addComment(@PathVariable("taskId") Long taskId,
-                           @Valid @RequestBody TaskCommentDTO commentDTO){
+                           @Valid @RequestBody TaskCommentDTO commentDTO,
+                           Principal principal){
         log.info("TaskController: addComment");
         if(commentDTO.getId()!=null && (commentDTO.getId()!=0)){
             throw new BadRequestException("При добавлении нового объекта id должен быть пустым");
         }
         commentDTO.setTaskId(taskId);
         TaskCommentModel commentModel = taskCommentMapper.toModel(commentDTO);
-        Long commentId = tasksService.addComment(commentModel);
+        Long commentId = tasksService.addComment(commentModel, principal);
         log.info("TaskController: addComment (return id {})", commentId);
         return commentId;
     }

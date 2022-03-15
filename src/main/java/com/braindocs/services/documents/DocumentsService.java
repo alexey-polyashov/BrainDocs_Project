@@ -49,7 +49,7 @@ public class DocumentsService {
     private final Options options;
 
     //получение документа по id
-    private DocumentModel getDocument(Long docId){
+    public DocumentModel getDocument(Long docId){
         return documentsRepository.findById(docId)
                 .orElseThrow(()->new ResourceNotFoundException("Документ с id-'" + docId + "' не найден"));
     }

@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS task_executors
     planed_date timestamp without time zone,
     date_of_comletion timestamp without time zone,
     comment varchar,
-    result_id bigint NOT NULL,
+    result_id bigint,
     status int, --1 ожидает выполнения, 2- в работе, 3- выполнена, 4- отменена, 5- уточнение
     CONSTRAINT task_executors_pk PRIMARY KEY (id),
     CONSTRAINT executors_of_task_fk FOREIGN KEY (task_id)

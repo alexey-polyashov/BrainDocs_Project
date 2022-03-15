@@ -13,6 +13,8 @@ import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.tasks.TaskCommentModel;
 import com.braindocs.models.tasks.TaskExecutorModel;
 import com.braindocs.models.tasks.TaskModel;
+import com.braindocs.models.users.UserModel;
+import com.braindocs.repositories.specifications.TaskExecutorSpecificationBuilder;
 import com.braindocs.repositories.specifications.TaskSpecificationBuilder;
 import com.braindocs.repositories.tasks.TaskCommentsRepository;
 import com.braindocs.repositories.tasks.TaskExecutorsRepository;
@@ -30,6 +32,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -80,12 +83,54 @@ public class TasksService {
     }
 
     @Transactional
-    public Page<TaskDTO> getTasksDTOByFields(Integer page, Integer recordsOnPage, List<SearchCriteriaDTO> filter) {
-        Page<TaskModel> documents = getTasksByFields(page, recordsOnPage, filter);
-        return documents.map(taskMapper::toDTO);
+    public Page<TaskExecutorModel> getExecutorsByFields(int pageNumber, int pageSize, List<SearchCriteriaDTO> filter){
+
+//        List<SearchCriteriaDTO> markedCriteria = filter.stream()
+//                .filter(p->p.getKey().equals("marked"))
+//                .collect(Collectors.toList());
+//
+//        if(markedCriteria.isEmpty()){
+//            filter.add(new SearchCriteriaDTO("marked", ":", "OFF"));
+//        }else{
+//            if(!Utils.isValidEnum(MarkedRequestValue.class,
+//                    markedCriteria.get(0)
+//                            .getValue()
+//                            .toUpperCase(Locale.ROOT))){
+//                throw new BadRequestException("Недопустимое значение параметра marked");
+//            }
+//        }
+
+        TaskExecutorSpecificationBuilder builder = new TaskExecutorSpecificationBuilder(userService, organisationService, taskTypesService, options);
+        for(SearchCriteriaDTO creteriaDTO: filter) {
+            Object value = creteriaDTO.getValue();
+            builder.with(creteriaDTO.getKey(), creteriaDTO.getOperation(), value);
+        }
+        Specification<TaskExecutorModel> spec = builder.build();
+
+        return taskExecutorsRepository.findAll(spec, PageRequest.of(pageNumber, pageSize));
+
     }
 
-    public Long add(TaskModel taskModel) {
+    @Transactional
+    public Page<TaskDTO> getTasksDTOByFields(Integer page, Integer recordsOnPage, List<SearchCriteriaDTO> filter) {
+        Page<TaskModel> tasks = getTasksByFields(page, recordsOnPage, filter);
+        return tasks.map(taskMapper::toDTO);
+    }
+
+    public Page<TaskExecutorDtoExt> getExecutorsDTOByFields(Integer page, Integer recordsOnPage, List<SearchCriteriaDTO> filter) {
+        Page<TaskExecutorModel> executors = getExecutorsByFields(page, recordsOnPage, filter);
+        return executors.map(taskExecutorMapper::toDtoExt);
+    }
+
+    public Long add(TaskModel taskModel, Principal author) {
+        if(taskModel.getAuthor()==null){
+            if(author==null){
+                throw new BadRequestException("Автор задачи не может быть определен");
+            }
+            UserModel user = userService.findByUsername(
+                    author.getName()).orElseThrow(()->new ResourceNotFoundException("Пользователь по имени '" + author.getName() + "' не определен"));
+            taskModel.setAuthor(user);
+        }
         taskModel = tasksRepository.save(taskModel);
         return taskModel.getId();
     }
@@ -116,7 +161,15 @@ public class TasksService {
         return executor.getId();
     }
 
-    public Long addComment(TaskCommentModel taskCommentModel) {
+    public Long addComment(TaskCommentModel taskCommentModel, Principal author) {
+        if(taskCommentModel.getAuthor()==null){
+            if(author==null){
+                throw new BadRequestException("Автор комментария не может быть определен");
+            }
+            UserModel user = userService.findByUsername(
+                    author.getName()).orElseThrow(()->new ResourceNotFoundException("Пользователь по имени '" + author.getName() + "' не определен"));
+            taskCommentModel.setAuthor(user);
+        }
         taskCommentModel = taskCommentsRepository.save(taskCommentModel);
         return taskCommentModel.getId();
     }
@@ -188,7 +241,4 @@ public class TasksService {
         taskExecutorsRepository.deleteByTaskAndId(task, exId);
     }
 
-    public Page<TaskExecutorDtoExt> getExecutorsDTOByFields(Integer page, Integer recordsOnPage, List<SearchCriteriaDTO> filter) {
-        return null;
-    }
 }

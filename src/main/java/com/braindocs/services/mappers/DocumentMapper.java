@@ -3,6 +3,7 @@ package com.braindocs.services.mappers;
 import com.braindocs.dto.documents.DocumentDTO;
 import com.braindocs.dto.documents.DocumentTypeNameDTO;
 import com.braindocs.dto.organization.OrganisationNameDTO;
+import com.braindocs.dto.tasks.TaskSubjectDTO;
 import com.braindocs.dto.users.UserNameDTO;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.files.FileModel;
@@ -76,5 +77,18 @@ public class DocumentMapper {
         return docModel;
     }
 
+
+    public TaskSubjectDTO toSubjectDTO(DocumentModel docModel) {
+
+        TaskSubjectDTO dto = new TaskSubjectDTO();
+        dto.setId(docModel.getId());
+        dto.setSubjectType(docModel.getDocumentType().getName());
+        dto.setNumber(docModel.getNumber());
+        DateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
+        dto.setDate(dateFormat.format(docModel.getDocumentDate()));
+        dto.setName(docModel.getHeading());
+
+        return dto;
+    }
 
 }

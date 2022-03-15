@@ -9,8 +9,10 @@ import lombok.Setter;
 @NoArgsConstructor
 public class TaskSubjectDTO {
 
+    private String subjectType;
+    private String number;
+    private String date;
+    private String name;
     private Long id;
-    private String typeName;
-    private Boolean marked;
 
 }

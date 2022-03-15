@@ -1,6 +1,7 @@
 package com.braindocs.repositories.specifications;
 
 import com.braindocs.common.Options;
+import com.braindocs.models.tasks.TaskExecutorModel;
 import com.braindocs.models.tasks.TaskModel;
 import com.braindocs.services.OrganisationService;
 import com.braindocs.services.tasks.TaskTypesService;
@@ -36,16 +37,16 @@ public class TaskExecutorSpecificationBuilder {
         this.options = options;
     }
 
-    public Specification<TaskModel> build() {
+    public Specification<TaskExecutorModel> build() {
         if (params.isEmpty()) {
             return null;
         }
 
         List<Specification> specs = params.stream()
-                .map(p->new TaskSpecification(p, userService, organisationService, taskTypesService, options))
+                .map(p->new TaskExecutorSpecification(p, userService, organisationService, taskTypesService, options))
                 .collect(Collectors.toList());
 
-        Specification<TaskModel> result = specs.get(0);
+        Specification<TaskExecutorModel> result = specs.get(0);
 
         for (int i = 1; i < specs.size(); i++) {
             result = Specification.where(result)

@@ -1,16 +1,20 @@
 package com.braindocs.services.mappers;
 
+import com.braindocs.common.Utils;
 import com.braindocs.dto.tasks.TaskDTO;
 import com.braindocs.dto.users.UserNameDTO;
 import com.braindocs.models.tasks.TaskModel;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.services.OptionService;
+import com.braindocs.services.documents.DocumentsService;
 import com.braindocs.services.tasks.TaskTypesService;
 import com.braindocs.services.users.UserService;
 import javafx.util.converter.LocalDateTimeStringConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -18,10 +22,13 @@ public class TaskMapper {
 
     private final TaskTypeMapper taskTypeMapper;
     private final TaskTypesService taskTypesService;
+    private final DocumentMapper documentMapper;
+    private final DocumentsService documentsService;
     private final UserService userService;
     private final OptionService optionService;
 
     public TaskDTO toDTO(TaskModel model) {
+
         TaskDTO dto = new TaskDTO();
         dto.setId(model.getId());
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
@@ -33,10 +40,16 @@ public class TaskMapper {
         dto.setStatus(model.getStatus());
         dto.setAuthor(new UserNameDTO(model.getAuthor()));
         dto.setMarked(model.getMarked());
+        dto.setSubjects(Utils.emptyIfNull(model.getSubjects())
+                .stream()
+                .map(documentMapper::toSubjectDTO)
+                .collect(Collectors.toSet()));
         return dto;
+
     }
 
     public TaskModel toModel(TaskDTO dto) {
+
         TaskModel model = new TaskModel();
         model.setId(dto.getId());
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
@@ -50,7 +63,14 @@ public class TaskMapper {
         UserModel userModel = userService.findById(dto.getAuthor().getId());
         model.setAuthor(userModel);
         model.setMarked(false);
+
+        model.setSubjects(Utils.emptyIfNull(dto.getSubjects())
+                .stream()
+                .map(p->documentsService.getDocument(p.getId()))
+                .collect(Collectors.toSet()));
+
         return model;
+
     }
 
     public TaskModel moveChanges(TaskModel receiver, TaskDTO source) {
