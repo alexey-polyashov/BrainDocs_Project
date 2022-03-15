@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS tasks
     type_id bigint NOT NULL,
     heading varchar NOT NULL,
     content varchar,
-    status int, --1 активна, 2- выполнена, 3- отменена
+    status bigint, --1 активна, 2- выполнена, 3- отменена
     author_id bigint NOT NULL,
     marked boolean,
     created_at timestamp without time zone,
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS task_executors
     date_of_comletion timestamp without time zone,
     comment varchar,
     result_id bigint,
-    status int, --1 ожидает выполнения, 2- в работе, 3- выполнена, 4- отменена, 5- уточнение
+    status bigint, --1 ожидает выполнения, 2- в работе, 3- выполнена, 4- отменена, 5- уточнение
     CONSTRAINT task_executors_pk PRIMARY KEY (id),
     CONSTRAINT executors_of_task_fk FOREIGN KEY (task_id)
         REFERENCES tasks (id)
