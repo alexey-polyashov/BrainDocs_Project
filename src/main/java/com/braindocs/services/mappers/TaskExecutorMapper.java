@@ -11,10 +11,12 @@ import com.braindocs.repositories.tasks.TaskResultsRepository;
 import com.braindocs.services.OptionService;
 import com.braindocs.services.tasks.TasksService;
 import com.braindocs.services.users.UserService;
-import javafx.util.converter.LocalDateTimeStringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
@@ -45,11 +47,10 @@ public class TaskExecutorMapper {
         dto.setId(model.getId());
         dto.setExecutor(new UserNameDTO(model.getExecutor()));
         dto.setTaskId(model.getTask().getId());
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        LocalDateTimeStringConverter ldtc = new LocalDateTimeStringConverter(dtf,dtf);
-        dto.setCreatedAt(ldtc.toString(model.getCreateTime()));
-        dto.setPlanedDate(ldtc.toString(model.getPlanedDate()));
-        dto.setDateOfCompletion(ldtc.toString(model.getDateOfComletion()));
+        SimpleDateFormat dateFormatter = new SimpleDateFormat(optionService.getDateTimeFormat());
+        dto.setCreatedAt(dateFormatter.format(model.getCreateTime()));
+        dto.setPlanedDate(dateFormatter.format(model.getPlanedDate()));
+        dto.setDateOfCompletion(dateFormatter.format(model.getDateOfComletion()));
         dto.setComment(model.getComment());
         TaskResultsModel taskResult = model.getResult();
         dto.setResult(new TaskResultDTO(
@@ -66,11 +67,10 @@ public class TaskExecutorMapper {
         dto.setId(model.getId());
         dto.setExecutor(new UserNameDTO(model.getExecutor()));
         dto.setTask(taskMapper.toDTO(model.getTask()));
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        LocalDateTimeStringConverter ldtc = new LocalDateTimeStringConverter(dtf,dtf);
-        dto.setCreatedAt(ldtc.toString(model.getCreateTime()));
-        dto.setPlanedDate(ldtc.toString(model.getPlanedDate()));
-        dto.setDateOfCompletion(ldtc.toString(model.getDateOfComletion()));
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
+        dto.setCreatedAt(dateFormatter.format(model.getCreateTime()));
+        dto.setPlanedDate(dateFormatter.format(model.getPlanedDate()));
+        dto.setDateOfCompletion(dateFormatter.format(model.getDateOfComletion()));
         dto.setComment(model.getComment());
         TaskResultsModel taskResult = model.getResult();
         if(taskResult!=null) {
@@ -92,10 +92,9 @@ public class TaskExecutorMapper {
         model.setExecutor(
                 userService.findById(dto.getExecutor().getId()));
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        LocalDateTimeStringConverter ldtc = new LocalDateTimeStringConverter(dtf,dtf);
-        model.setPlanedDate(ldtc.fromString(dto.getCreatedAt()));
+        model.setPlanedDate(LocalDateTime.parse(dto.getCreatedAt(), dtf));
         if(!dto.getCreatedAt().isEmpty()){
-            model.setDateOfComletion(ldtc.fromString(dto.getDateOfCompletion()));
+            model.setDateOfComletion(LocalDateTime.parse(dto.getDateOfCompletion(), dtf));
         }
         model.setComment(dto.getComment());
         if(dto.getResult()!=null) {
@@ -113,9 +112,8 @@ public class TaskExecutorMapper {
         receiver.setExecutor(
                 userService.findById(source.getExecutor().getId()));
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        LocalDateTimeStringConverter ldtc = new LocalDateTimeStringConverter(dtf,dtf);
-        receiver.setPlanedDate(ldtc.fromString(source.getCreatedAt()));
-        receiver.setDateOfComletion(ldtc.fromString(source.getDateOfCompletion()));
+        receiver.setPlanedDate(LocalDateTime.parse(source.getCreatedAt(), dtf));
+        receiver.setDateOfComletion(LocalDateTime.parse(source.getDateOfCompletion(), dtf));
         receiver.setComment(source.getComment());
         Long resId = source.getResult().getId();
         Optional<TaskResultsModel> taskResult = taskResultsRepository.findById(resId);
