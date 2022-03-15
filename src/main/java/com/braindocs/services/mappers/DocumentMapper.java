@@ -57,7 +57,7 @@ public class DocumentMapper {
 
         DocumentModel docModel = new DocumentModel();
 
-        if(docDTO.getId() != null) {
+        if (docDTO.getId() != null) {
             docModel.setId(docDTO.getId());
         }
         docModel.setDocumentType(documentTypeService.findById(docDTO.getDocumentType().getId()));
@@ -68,11 +68,16 @@ public class DocumentMapper {
         docModel.setContent(docDTO.getContent());
         OrganisationModel orgModel = organisationService.findById(docDTO.getOrganisation().getId());
         docModel.setOrganisation(orgModel);
-        UserModel userModel = userService.findById(docDTO.getAuthor().getId());
-        docModel.setAuthor(userModel);
+        UserModel userModel = null;
+        if (docDTO.getAuthor() != null) {
+            userModel = userService.findById(docDTO.getAuthor().getId());
+            docModel.setAuthor(userModel);
+        }
         docModel.setFiles(new HashSet<FileModel>());
-        userModel = userService.findById(docDTO.getResponsible().getId());
-        docModel.setResponsible(userModel);
+        if (docDTO.getAuthor() != null) {
+            userModel = userService.findById(docDTO.getResponsible().getId());
+            docModel.setResponsible(userModel);
+        }
 
         return docModel;
     }
