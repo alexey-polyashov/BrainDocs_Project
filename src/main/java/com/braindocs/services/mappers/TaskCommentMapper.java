@@ -6,11 +6,11 @@ import com.braindocs.models.tasks.TaskCommentModel;
 import com.braindocs.services.OptionService;
 import com.braindocs.services.tasks.TasksService;
 import com.braindocs.services.users.UserService;
-import javafx.util.converter.LocalDateTimeStringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Service
@@ -36,8 +36,7 @@ public class TaskCommentMapper {
         dto.setTaskId(model.getTask().getId());
         dto.setAuthor(new UserNameDTO(model.getAuthor()));
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        LocalDateTimeStringConverter ldtc = new LocalDateTimeStringConverter(dtf,dtf);
-        dto.setCreateTime(ldtc.toString(model.getCreateTime()));
+        dto.setCreateTime(dtf.format(model.getCreateTime()));
         dto.setComment(model.getComment());
         return dto;
     }
@@ -50,8 +49,7 @@ public class TaskCommentMapper {
         model.setAuthor(
                 userService.findById(dto.getAuthor().getId()));
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        LocalDateTimeStringConverter ldtc = new LocalDateTimeStringConverter(dtf,dtf);
-        model.setCreateTime(ldtc.fromString(dto.getCreateTime()));
+        model.setCreateTime(LocalDateTime.parse(dto.getCreateTime(), dtf));
         model.setComment(dto.getComment());
         return model;
     }
