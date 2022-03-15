@@ -95,7 +95,6 @@ public class DocumentMapper {
         if(source.getResponsible()!=null){
             receiver.setAuthor(source.getResponsible());}
         receiver.setOrganisation(source.getOrganisation());
-        receiver.setMarked(source.getMarked());
 //        receiver.setFiles(
 //                oldDoc.getFiles().stream()
 //                        .filter(Objects::nonNull)
