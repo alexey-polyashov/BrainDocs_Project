@@ -4,7 +4,8 @@
 CREATE TABLE IF NOT EXISTS task_types
 (
     id bigserial,
-    typename text,
+    typename varchar,
+    marked boolean NOT NULL default FALSE,
     CONSTRAINT task_types_pkey PRIMARY KEY (id)
 );
 INSERT INTO task_types (typename)
@@ -18,7 +19,8 @@ CREATE TABLE IF NOT EXISTS task_results
 (
     id bigserial,
     task_type_id bigint NOT NULL,
-    resultname text,
+    resultname varchar,
+    marked boolean NOT NULL default FALSE,
     CONSTRAINT task_results_pkey PRIMARY KEY (id)
 );
 INSERT INTO task_results (task_type_id, resultname)
@@ -36,7 +38,7 @@ CREATE TABLE IF NOT EXISTS tasks
 (
     id bigserial,
     type_id bigint NOT NULL,
-    header text NOT NULL,
+    heading varchar NOT NULL,
     content varchar,
     status int, --1 активна, 2- выполнена, 3- отменена
     author_id bigint NOT NULL,
@@ -54,12 +56,12 @@ CREATE TABLE IF NOT EXISTS task_executors
     id bigserial,
     task_id bigint NOT NULL,
     executor_id bigint NOT NULL,
+    created_at timestamp without time zone,
     planed_date timestamp without time zone,
     date_of_comletion timestamp without time zone,
     comment varchar,
-    result_id bigint NOT NULL,
-    status int, --1 ожидает выполнения, 2- в работе, 3- выполнена, 4- отменена
-    marked boolean,
+    result_id bigint,
+    status int, --1 ожидает выполнения, 2- в работе, 3- выполнена, 4- отменена, 5- уточнение
     CONSTRAINT task_executors_pk PRIMARY KEY (id),
     CONSTRAINT executors_of_task_fk FOREIGN KEY (task_id)
         REFERENCES tasks (id)
@@ -78,14 +80,16 @@ CREATE TABLE IF NOT EXISTS task_executors
 --TASK_SUBJECTS
 CREATE TABLE IF NOT EXISTS task_subjects
 (
-    id bigserial,
-    task_id bigint NOT NULL,
-    subject_id bigint NOT NULL,
-    CONSTRAINT task_subjects_pk PRIMARY KEY (id),
-    CONSTRAINT subject_task_fk FOREIGN KEY (task_id)
+    task_id bigserial not null,
+    subject_id bigserial,
+    CONSTRAINT task_subjects_task_fk FOREIGN KEY (task_id)
         REFERENCES tasks (id)
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION
+        ON DELETE CASCADE,
+    CONSTRAINT task_subjects_subject_fk FOREIGN KEY (subject_id)
+        REFERENCES documents (id)
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
 );
 
 --FILES FOR TASKS
@@ -99,6 +103,21 @@ CREATE TABLE IF NOT EXISTS tasks_files
         ON DELETE CASCADE,
     CONSTRAINT fk_tasks_files_fileid FOREIGN KEY (fileid)
         REFERENCES files (id)
+        ON UPDATE NO ACTION
+        ON DELETE CASCADE
+);
+
+--COMMENT
+CREATE TABLE IF NOT EXISTS task_comments
+(
+    id bigserial,
+    task_id bigint NOT NULL,
+    author_id bigint NOT NULL,
+    comment varchar,
+    created_at timestamp without time zone,
+    CONSTRAINT task_comments_pk PRIMARY KEY (id),
+    CONSTRAINT task_comments_fk FOREIGN KEY (task_id)
+        REFERENCES tasks (id)
         ON UPDATE NO ACTION
         ON DELETE CASCADE
 );

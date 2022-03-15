@@ -3,6 +3,7 @@ package com.braindocs.services.mappers;
 import com.braindocs.dto.documents.DocumentDTO;
 import com.braindocs.dto.documents.DocumentTypeNameDTO;
 import com.braindocs.dto.organization.OrganisationNameDTO;
+import com.braindocs.dto.tasks.TaskSubjectDTO;
 import com.braindocs.dto.users.UserNameDTO;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.files.FileModel;
@@ -19,8 +20,6 @@ import java.text.SimpleDateFormat;
 
 import java.sql.Date;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,7 +57,7 @@ public class DocumentMapper {
 
         DocumentModel docModel = new DocumentModel();
 
-        if (docDTO.getId() != null) {
+        if(docDTO.getId() != null) {
             docModel.setId(docDTO.getId());
         }
         docModel.setDocumentType(documentTypeService.findById(docDTO.getDocumentType().getId()));
@@ -75,7 +74,7 @@ public class DocumentMapper {
             docModel.setAuthor(userModel);
         }
         docModel.setFiles(new HashSet<FileModel>());
-        if (docDTO.getAuthor() != null) {
+        if (docDTO.getResponsible() != null) {
             userModel = userService.findById(docDTO.getResponsible().getId());
             docModel.setResponsible(userModel);
         }
@@ -98,6 +97,19 @@ public class DocumentMapper {
 //                        .peek(p->document.getFiles().add(p))
 //                        .collect(Collectors.toSet())
 //        );
+    }
+
+    public TaskSubjectDTO toSubjectDTO(DocumentModel docModel) {
+
+        TaskSubjectDTO dto = new TaskSubjectDTO();
+        dto.setId(docModel.getId());
+        dto.setSubjectType(docModel.getDocumentType().getName());
+        dto.setNumber(docModel.getNumber());
+        DateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
+        dto.setDate(dateFormat.format(docModel.getDocumentDate()));
+        dto.setName(docModel.getHeading());
+
+        return dto;
     }
 
 }
