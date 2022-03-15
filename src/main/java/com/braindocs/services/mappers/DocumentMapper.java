@@ -84,10 +84,7 @@ public class DocumentMapper {
     }
 
     public void moveChange(DocumentModel receiver, DocumentDTO sourceDTO) throws ParseException{
-
-
         DocumentModel source = this.toModel(sourceDTO);
-        receiver.setMarked(source.getMarked());
         receiver.setHeading(source.getHeading());
         receiver.setContent(source.getContent());
         if(source.getAuthor()!=null){
