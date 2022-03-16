@@ -109,12 +109,6 @@
 <!--			<version>6.1.2</version>-->
 <!--		</dependency>-->
 
-		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-base</artifactId>
-			<version>18-ea+7</version>
-		</dependency>
-
 	</dependencies>
 
 
