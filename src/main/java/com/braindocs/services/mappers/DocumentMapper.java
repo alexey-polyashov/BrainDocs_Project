@@ -3,6 +3,7 @@ package com.braindocs.services.mappers;
 import com.braindocs.dto.documents.DocumentDTO;
 import com.braindocs.dto.documents.DocumentTypeNameDTO;
 import com.braindocs.dto.organization.OrganisationNameDTO;
+import com.braindocs.dto.tasks.TaskSubjectDTO;
 import com.braindocs.dto.users.UserNameDTO;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.files.FileModel;
@@ -19,7 +20,6 @@ import java.text.SimpleDateFormat;
 
 import java.sql.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,14 +68,48 @@ public class DocumentMapper {
         docModel.setContent(docDTO.getContent());
         OrganisationModel orgModel = organisationService.findById(docDTO.getOrganisation().getId());
         docModel.setOrganisation(orgModel);
-        UserModel userModel = userService.findById(docDTO.getAuthor().getId());
-        docModel.setAuthor(userModel);
+        UserModel userModel = null;
+        if (docDTO.getAuthor() != null) {
+            userModel = userService.findById(docDTO.getAuthor().getId());
+            docModel.setAuthor(userModel);
+        }
         docModel.setFiles(new HashSet<FileModel>());
-        userModel = userService.findById(docDTO.getResponsible().getId());
-        docModel.setResponsible(userModel);
+        if (docDTO.getResponsible() != null) {
+            userModel = userService.findById(docDTO.getResponsible().getId());
+            docModel.setResponsible(userModel);
+        }
 
         return docModel;
     }
 
+    public void moveChange(DocumentModel receiver, DocumentDTO sourceDTO) throws ParseException{
+        DocumentModel source = this.toModel(sourceDTO);
+        receiver.setHeading(source.getHeading());
+        receiver.setContent(source.getContent());
+        if(source.getAuthor()!=null){
+            receiver.setAuthor(source.getAuthor());}
+        if(source.getResponsible()!=null){
+            receiver.setAuthor(source.getResponsible());}
+        receiver.setOrganisation(source.getOrganisation());
+//        receiver.setFiles(
+//                oldDoc.getFiles().stream()
+//                        .filter(Objects::nonNull)
+//                        .peek(p->document.getFiles().add(p))
+//                        .collect(Collectors.toSet())
+//        );
+    }
+
+    public TaskSubjectDTO toSubjectDTO(DocumentModel docModel) {
+
+        TaskSubjectDTO dto = new TaskSubjectDTO();
+        dto.setId(docModel.getId());
+        dto.setSubjectType(docModel.getDocumentType().getName());
+        dto.setNumber(docModel.getNumber());
+        DateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
+        dto.setDate(dateFormat.format(docModel.getDocumentDate()));
+        dto.setName(docModel.getHeading());
+
+        return dto;
+    }
 
 }

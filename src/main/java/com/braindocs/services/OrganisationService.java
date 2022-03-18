@@ -36,8 +36,15 @@ public class OrganisationService {
         return organisationRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Организаия '" + id + "' не найдена"));
     }
 
+    @Transactional
     public Long add(OrganisationModel organisation) {
         OrganisationModel newOrganisation = organisationRepository.save(organisation);
+        newOrganisation.getContacts()
+                .stream()
+                .forEach(p-> {
+                    p.setOrganisation(newOrganisation.getId());
+                    orgContactsRepository.save(p);
+                });
         return newOrganisation.getId();
     }
 
@@ -49,11 +56,16 @@ public class OrganisationService {
         oldOrganisation.setKpp(organisation.getKpp());
         List<OrganisationContactsModel> orgContacts = organisation.getContacts();
         orgContactsRepository.deleteByOrganisation(orgid);
-        if(orgContacts!=null){
-            for (OrganisationContactsModel orgContact: orgContacts) {
-                orgContactsRepository.save(orgContact);
-            }
-        }
+//        if(orgContacts!=null){
+//            for (OrganisationContactsModel orgContact: orgContacts) {
+//                orgContactsRepository.save(orgContact);
+//            }
+//        }
+        orgContacts.stream()
+                .forEach(p-> {
+                    p.setOrganisation(oldOrganisation.getId());
+                    orgContactsRepository.save(p);
+                });
         return oldOrganisation.getId();
     }
 

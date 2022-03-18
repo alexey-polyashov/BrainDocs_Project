@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.security.Principal;
 import java.text.ParseException;
 import java.util.*;
 
@@ -70,13 +71,14 @@ public class DocumentController {
     }
 
     @PostMapping(value="")
-    public Long addDocument(@Valid @RequestBody DocumentDTO documentDTO) throws ParseException {
+    @ResponseBody
+    public Long addDocument(Principal principal, @Valid @RequestBody DocumentDTO documentDTO) throws ParseException {
         log.info("DocumentController: add");
         if(documentDTO.getId()!=null && (documentDTO.getId()!=0)){
             throw new BadRequestException("При добавлении нового объекта id должен быть пустым");
         }
         DocumentModel docModel = documentMapper.toModel(documentDTO);
-        Long docId = documentsService.addDocument(docModel);
+        Long docId = documentsService.addDocument(docModel, principal);
         log.info("DocumentController: add (return id {})", docId);
         return docId;
     }
@@ -87,9 +89,8 @@ public class DocumentController {
         if(id==0){
             throw new BadRequestException("id не должен быть пустым");
         }
-        DocumentModel docModel = documentMapper.toModel(documentDTO);
-        docModel.setId(id);
-        Long docId = documentsService.saveDocument(docModel);
+        documentDTO.setId(id);
+        Long docId = documentsService.saveDocument(documentDTO);
         log.info("DocumentController: add (saveDocument id {})", docId);
         return docId;
     }

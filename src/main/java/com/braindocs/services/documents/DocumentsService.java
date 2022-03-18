@@ -11,6 +11,7 @@ import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.files.FileModel;
+import com.braindocs.models.users.UserModel;
 import com.braindocs.repositories.documents.DocumentsRepository;
 import com.braindocs.repositories.specifications.DocumentSpecificationBuilder;
 import com.braindocs.services.FilesService;
@@ -27,10 +28,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
+import java.security.Principal;
+import java.text.ParseException;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
 
@@ -49,32 +49,34 @@ public class DocumentsService {
     private final Options options;
 
     //получение документа по id
-    private DocumentModel getDocument(Long docId){
+    public DocumentModel getDocument(Long docId){
         return documentsRepository.findById(docId)
                 .orElseThrow(()->new ResourceNotFoundException("Документ с id-'" + docId + "' не найден"));
     }
 
     //добавление документа без файлов
-    public Long addDocument(DocumentModel document){
+    public Long addDocument(DocumentModel document, Principal author){
+        if(document.getAuthor()==null){
+            if(author==null){
+                throw new BadRequestException("Автор документа не может быть определен");
+            }
+            UserModel user = userService.findByUsername(
+                    author.getName()).orElseThrow(()->new ResourceNotFoundException("Пользователь по имени '" + author.getName() + "' не определен"));
+            document.setAuthor(user);
+        }
+        if(document.getResponsible()==null){
+            document.setResponsible(document.getAuthor());
+        }
         document.setMarked(false);
         DocumentModel doc = documentsRepository.save(document);
         return doc.getId();
     }
 
     @Transactional
-    public Long saveDocument(DocumentModel document){
-        DocumentModel oldDoc = getDocumentById(document.getId());
-        //чтение данных для добавления файлов в модель, которые уже загружены
-        //при изменении документа в DTO нет списка файлов
-        document.setFiles(
-                oldDoc.getFiles().stream()
-                        .filter(Objects::nonNull)
-                        .peek(p->document.getFiles().add(p))
-                        .collect(Collectors.toSet())
-        );
-        document.setMarked(oldDoc.getMarked());
-        DocumentModel doc = documentsRepository.save(document);
-        return doc.getId();
+    public Long saveDocument(DocumentDTO documentDTO) throws ParseException {
+        DocumentModel oldDoc = getDocumentById(documentDTO.getId());
+        documentMapper.moveChange(oldDoc, documentDTO);
+        return oldDoc.getId();
     }
 
     public void deleteDocument(Long id){
