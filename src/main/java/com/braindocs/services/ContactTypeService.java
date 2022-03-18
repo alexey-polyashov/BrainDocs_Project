@@ -15,13 +15,13 @@ import java.util.List;
 public class ContactTypeService {
     private final ContactTypeRepository contactTypeRepository;
 
-    public ContactTypeModel findById(Long id){
-        return contactTypeRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Тип контакта '" + id + "' не найден"));
+    public ContactTypeModel findById(Long id) {
+        return contactTypeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Тип контакта '" + id + "' не найден"));
     }
 
     @Transactional
-    public List<ContactTypeModel> getTypes(MarkedRequestValue marked){
-        switch(marked){
+    public List<ContactTypeModel> getTypes(MarkedRequestValue marked) {
+        switch (marked) {
             case ON:
                 return contactTypeRepository.findByMarked(false);
             case ONLY:

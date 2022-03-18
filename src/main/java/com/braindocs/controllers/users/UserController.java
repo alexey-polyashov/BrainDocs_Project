@@ -35,11 +35,11 @@ public class UserController {
     @GetMapping(value = "/authorized")
     @ResponseBody
     public UserDTO getData(Principal principal) {
-        if(principal==null){
+        if (principal == null) {
             throw new BadRequestException("Пользователь не авторизован");
         }
         String userName = principal.getName();
-        UserModel user = userService.findByUsername(userName).orElseThrow(()->new ResourceNotFoundException("User with login '" + userName + "' not found!"));
+        UserModel user = userService.findByUsername(userName).orElseThrow(() -> new ResourceNotFoundException("User with login '" + userName + "' not found!"));
         return userMapper.toDTO(user);
     }
 

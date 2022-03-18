@@ -8,13 +8,13 @@ import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.*;
 
 @Entity
-@Table(name="task_types")
+@Table(name = "task_types")
 @Getter
 @Setter
 @NoArgsConstructor
 public class TaskTypeModel {
 
-    @Column(name="typename")
+    @Column(name = "typename")
     private String typeName;
 
     @Id

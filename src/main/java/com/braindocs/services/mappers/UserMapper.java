@@ -9,6 +9,7 @@ import com.braindocs.services.OptionService;
 import com.braindocs.services.OrganisationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -25,7 +26,7 @@ public class UserMapper {
     private final UserRoleMapper userRoleMapper;
     private final OptionService optionService;
 
-    public UserDTO toDTO(UserModel userModel){
+    public UserDTO toDTO(UserModel userModel) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(userModel.getId());
         userDTO.setLogin(userModel.getLogin());
@@ -33,20 +34,20 @@ public class UserMapper {
         userDTO.setFullname(userModel.getFullname());
         userDTO.setOrganisation(new OrganisationNameDTO(userModel.getOrganisation()));
         userDTO.setContacts(userModel.getContacts().stream().map(userContactMapper::toDTO).collect(Collectors.toList()));
-        if(userModel.getRoles()!=null) {
+        if (userModel.getRoles() != null) {
             userDTO.setRoles(userModel.getRoles().stream()
                     .filter(Objects::nonNull)
                     .map(userRoleMapper::toDTO)
                     .collect(Collectors.toList()));
-        }else{
+        } else {
             userDTO.setRoles(new ArrayList<RoleDTO>());
         }
         userDTO.setShortname(userModel.getShortname());
         userDTO.setMale(userModel.getMale());
-        if(userModel.getBirthday()!=null) {
+        if (userModel.getBirthday() != null) {
             DateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
             userDTO.setBirthday(dateFormat.format(userModel.getBirthday()));
-        }else{
+        } else {
             userDTO.setBirthday("0001-01-01");
         }
         userDTO.setConfirmed(userModel.getConfirmed());
@@ -63,10 +64,10 @@ public class UserMapper {
         user.setOrganisation(organisationService.findById(dto.getOrganisationId()));
         user.setShortname(dto.getShortname());
         user.setMale(dto.getMale());
-        if(dto.getBirthday()!=null) {
+        if (dto.getBirthday() != null) {
             SimpleDateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
             user.setBirthday(new Date(dateFormat.parse(dto.getBirthday()).getTime()));
-        }else{
+        } else {
             user.setBirthday(new Date(1L));
         }
         user.setConfirmed(false);
@@ -85,7 +86,7 @@ public class UserMapper {
                         dto.getOrganisation().getId()));
         user.setShortname(dto.getShortname());
         user.setMale(dto.getMale());
-        if(dto.getBirthday()!=null) {
+        if (dto.getBirthday() != null) {
             SimpleDateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
             user.setBirthday(new Date(dateFormat.parse(dto.getBirthday()).getTime()));
         }

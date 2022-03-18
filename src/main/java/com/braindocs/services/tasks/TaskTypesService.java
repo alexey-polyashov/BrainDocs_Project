@@ -18,7 +18,7 @@ public class TaskTypesService {
     private final TaskTypesRepository taskTypesRepository;
 
     public List<TaskTypeModel> getTypes(MarkedRequestValue marked) {
-        switch(marked){
+        switch (marked) {
             case ON:
                 return taskTypesRepository.findByMarked(false);
             case ONLY:
@@ -28,9 +28,9 @@ public class TaskTypesService {
         }
     }
 
-    public TaskTypeModel findById(Long id){
+    public TaskTypeModel findById(Long id) {
         return taskTypesRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Не найден тип задачи по id '" + id + "'"));
+                .orElseThrow(() -> new ResourceNotFoundException("Не найден тип задачи по id '" + id + "'"));
     }
 
 }

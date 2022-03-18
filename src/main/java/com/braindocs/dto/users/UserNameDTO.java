@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 public class UserNameDTO {
-   // @NotEmpty(message = "Не указан идентификатор пользователя")
+    // @NotEmpty(message = "Не указан идентификатор пользователя")
     private Long id;
     private String shortname;
 

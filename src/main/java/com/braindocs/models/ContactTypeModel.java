@@ -6,12 +6,11 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Entity;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="contacts_types")
+@Table(name = "contacts_types")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,9 +28,9 @@ public class ContactTypeModel {
     @Column(name = "marked")
     private Boolean marked = false;
     @CreationTimestamp
-    @Column(name="created_at")
+    @Column(name = "created_at")
     private LocalDateTime createTime;
     @UpdateTimestamp
-    @Column(name="updated_at")
+    @Column(name = "updated_at")
     private LocalDateTime updateTime;
 }

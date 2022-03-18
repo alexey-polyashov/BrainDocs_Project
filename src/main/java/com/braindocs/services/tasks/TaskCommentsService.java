@@ -14,9 +14,9 @@ public class TaskCommentsService {
 
     private final TaskCommentsRepository taskCommentsRepository;
 
-    public TaskCommentModel findById(Long id){
+    public TaskCommentModel findById(Long id) {
         return taskCommentsRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Не найден комментарий по id '" + id + "'"));
+                .orElseThrow(() -> new ResourceNotFoundException("Не найден комментарий по id '" + id + "'"));
     }
 
 }

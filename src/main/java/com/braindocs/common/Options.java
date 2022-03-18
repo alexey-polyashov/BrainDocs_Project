@@ -22,7 +22,7 @@ public class Options {
     @Autowired
     public Options(OptionService optionService) {
         Optional<OptionModel> options = optionService.readOptions();
-        if(options.isPresent()){
+        if (options.isPresent()) {
             OptionModel opt = options.get();
             this.fileStorageType = opt.getFileStorageType();
             this.dateFormat = optionService.getDateFormat();

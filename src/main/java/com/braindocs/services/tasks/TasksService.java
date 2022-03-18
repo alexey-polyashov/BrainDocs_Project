@@ -54,25 +54,25 @@ public class TasksService {
     private final TaskCommentMapper taskCommentMapper;
 
     @Transactional
-    public Page<TaskModel> getTasksByFields(int pageNumber, int pageSize, List<SearchCriteriaDTO> filter){
+    public Page<TaskModel> getTasksByFields(int pageNumber, int pageSize, List<SearchCriteriaDTO> filter) {
 
         List<SearchCriteriaDTO> markedCriteria = filter.stream()
-                .filter(p->p.getKey().equals("marked"))
+                .filter(p -> p.getKey().equals("marked"))
                 .collect(Collectors.toList());
 
-        if(markedCriteria.isEmpty()){
+        if (markedCriteria.isEmpty()) {
             filter.add(new SearchCriteriaDTO("marked", ":", "OFF"));
-        }else{
-            if(!Utils.isValidEnum(MarkedRequestValue.class,
+        } else {
+            if (!Utils.isValidEnum(MarkedRequestValue.class,
                     markedCriteria.get(0)
                             .getValue()
-                            .toUpperCase(Locale.ROOT))){
+                            .toUpperCase(Locale.ROOT))) {
                 throw new BadRequestException("Недопустимое значение параметра marked");
             }
         }
 
         TaskSpecificationBuilder builder = new TaskSpecificationBuilder(userService, organisationService, taskTypesService, options);
-        for(SearchCriteriaDTO creteriaDTO: filter) {
+        for (SearchCriteriaDTO creteriaDTO : filter) {
             Object value = creteriaDTO.getValue();
             builder.with(creteriaDTO.getKey(), creteriaDTO.getOperation(), value);
         }
@@ -83,7 +83,7 @@ public class TasksService {
     }
 
     @Transactional
-    public Page<TaskExecutorModel> getExecutorsByFields(int pageNumber, int pageSize, List<SearchCriteriaDTO> filter){
+    public Page<TaskExecutorModel> getExecutorsByFields(int pageNumber, int pageSize, List<SearchCriteriaDTO> filter) {
 
 //        List<SearchCriteriaDTO> markedCriteria = filter.stream()
 //                .filter(p->p.getKey().equals("marked"))
@@ -101,7 +101,7 @@ public class TasksService {
 //        }
 
         TaskExecutorSpecificationBuilder builder = new TaskExecutorSpecificationBuilder(userService, organisationService, taskTypesService, options);
-        for(SearchCriteriaDTO creteriaDTO: filter) {
+        for (SearchCriteriaDTO creteriaDTO : filter) {
             Object value = creteriaDTO.getValue();
             builder.with(creteriaDTO.getKey(), creteriaDTO.getOperation(), value);
         }
@@ -123,21 +123,21 @@ public class TasksService {
     }
 
     public Long add(TaskModel taskModel, Principal author) {
-        if(taskModel.getAuthor()==null){
-            if(author==null){
+        if (taskModel.getAuthor() == null) {
+            if (author == null) {
                 throw new BadRequestException("Автор задачи не может быть определен");
             }
             UserModel user = userService.findByUsername(
-                    author.getName()).orElseThrow(()->new ResourceNotFoundException("Пользователь по имени '" + author.getName() + "' не определен"));
+                    author.getName()).orElseThrow(() -> new ResourceNotFoundException("Пользователь по имени '" + author.getName() + "' не определен"));
             taskModel.setAuthor(user);
         }
         taskModel = tasksRepository.save(taskModel);
         return taskModel.getId();
     }
 
-    public TaskModel findById(Long taskId){
+    public TaskModel findById(Long taskId) {
         return tasksRepository.findById(taskId)
-                .orElseThrow(()->new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
+                .orElseThrow(() -> new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
     }
 
     public Long saveTask(TaskDTO taskDTO) {
@@ -156,18 +156,18 @@ public class TasksService {
         Long entId = taskExecutorDTO.getId();
         TaskExecutorModel executor = taskExecutorsRepository.findById(
                         entId)
-                .orElseThrow(()->new ResourceNotFoundException("Не найден исполнитель по id '" + entId + "'"));
+                .orElseThrow(() -> new ResourceNotFoundException("Не найден исполнитель по id '" + entId + "'"));
         taskExecutorMapper.moveChanges(executor, taskExecutorDTO);
         return executor.getId();
     }
 
     public Long addComment(TaskCommentModel taskCommentModel, Principal author) {
-        if(taskCommentModel.getAuthor()==null){
-            if(author==null){
+        if (taskCommentModel.getAuthor() == null) {
+            if (author == null) {
                 throw new BadRequestException("Автор комментария не может быть определен");
             }
             UserModel user = userService.findByUsername(
-                    author.getName()).orElseThrow(()->new ResourceNotFoundException("Пользователь по имени '" + author.getName() + "' не определен"));
+                    author.getName()).orElseThrow(() -> new ResourceNotFoundException("Пользователь по имени '" + author.getName() + "' не определен"));
             taskCommentModel.setAuthor(user);
         }
         taskCommentModel = taskCommentsRepository.save(taskCommentModel);
@@ -179,7 +179,7 @@ public class TasksService {
         Long entId = taskCommentDTO.getId();
         TaskCommentModel taskComment = taskCommentsRepository.findById(
                         entId)
-                .orElseThrow(()->new ResourceNotFoundException("Комментарий не найден по id '" + entId + "'"));
+                .orElseThrow(() -> new ResourceNotFoundException("Комментарий не найден по id '" + entId + "'"));
         taskCommentMapper.moveChanges(taskComment, taskCommentDTO);
         return taskComment.getId();
     }
@@ -192,7 +192,7 @@ public class TasksService {
     public TaskExecutorModel getExecutor(Long taskId, Long exId) {
         TaskModel task = findById(taskId);
         return taskExecutorsRepository.findByTaskAndId(task, exId)
-                .orElseThrow(()->new ResourceNotFoundException("Исполнитель по id '" + exId + "' не найден"));
+                .orElseThrow(() -> new ResourceNotFoundException("Исполнитель по id '" + exId + "' не найден"));
     }
 
     public List<TaskCommentModel> getComments(Long taskId) {
@@ -203,41 +203,41 @@ public class TasksService {
     public TaskCommentModel getComment(Long taskId, Long commentId) {
         TaskModel task = findById(taskId);
         return taskCommentsRepository.findByTaskAndId(task, commentId)
-                .orElseThrow(()->new ResourceNotFoundException("Комментарий по id '" + commentId + "' не найден"));
+                .orElseThrow(() -> new ResourceNotFoundException("Комментарий по id '" + commentId + "' не найден"));
     }
 
     @Transactional
     public void deleteTask(Long taskId) {
         TaskModel task = tasksRepository.findById(taskId)
-                .orElseThrow(()->new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
+                .orElseThrow(() -> new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
         tasksRepository.delete(task);
     }
 
     @Transactional
     public void markTask(Long taskId) {
         TaskModel task = tasksRepository.findById(taskId)
-                .orElseThrow(()->new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
+                .orElseThrow(() -> new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
         task.setMarked(true);
     }
 
     @Transactional
     public void unMarkTask(Long taskId) {
         TaskModel task = tasksRepository.findById(taskId)
-                .orElseThrow(()->new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
+                .orElseThrow(() -> new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
         task.setMarked(false);
     }
 
     @Transactional
     public void deleteComment(Long taskId, Long commentId) {
         TaskModel task = tasksRepository.findById(taskId)
-                .orElseThrow(()->new ResourceNotFoundException("Не найден задача по id '" + taskId + "'"));
+                .orElseThrow(() -> new ResourceNotFoundException("Не найден задача по id '" + taskId + "'"));
         taskCommentsRepository.deleteByTaskAndId(task, commentId);
     }
 
     @Transactional
     public void deleteExecutor(Long taskId, Long exId) {
         TaskModel task = tasksRepository.findById(taskId)
-                .orElseThrow(()->new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
+                .orElseThrow(() -> new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
         taskExecutorsRepository.deleteByTaskAndId(task, exId);
     }
 

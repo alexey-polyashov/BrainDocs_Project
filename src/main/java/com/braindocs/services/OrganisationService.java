@@ -32,8 +32,8 @@ public class OrganisationService {
     private final Options options;
     private final UserService userService;
 
-    public OrganisationModel findById(Long id){
-        return organisationRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Организаия '" + id + "' не найдена"));
+    public OrganisationModel findById(Long id) {
+        return organisationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Организаия '" + id + "' не найдена"));
     }
 
     @Transactional
@@ -41,7 +41,7 @@ public class OrganisationService {
         OrganisationModel newOrganisation = organisationRepository.save(organisation);
         newOrganisation.getContacts()
                 .stream()
-                .forEach(p-> {
+                .forEach(p -> {
                     p.setOrganisation(newOrganisation.getId());
                     orgContactsRepository.save(p);
                 });
@@ -50,7 +50,7 @@ public class OrganisationService {
 
     @Transactional
     public Long change(Long orgid, OrganisationModel organisation) {
-        OrganisationModel oldOrganisation = organisationRepository.findById(orgid).orElseThrow(()->new ResourceNotFoundException("Организаия с id '" + orgid + "' не найдена"));
+        OrganisationModel oldOrganisation = organisationRepository.findById(orgid).orElseThrow(() -> new ResourceNotFoundException("Организаия с id '" + orgid + "' не найдена"));
         oldOrganisation.setName(organisation.getName());
         oldOrganisation.setInn(organisation.getInn());
         oldOrganisation.setKpp(organisation.getKpp());
@@ -62,7 +62,7 @@ public class OrganisationService {
 //            }
 //        }
         orgContacts.stream()
-                .forEach(p-> {
+                .forEach(p -> {
                     p.setOrganisation(oldOrganisation.getId());
                     orgContactsRepository.save(p);
                 });
@@ -72,16 +72,16 @@ public class OrganisationService {
     public Page<OrganisationModel> getOrganisationByFields(Integer page, Integer recordsOnPage, List<SearchCriteriaDTO> filter) {
 
         List<SearchCriteriaDTO> markedCriteria = filter.stream()
-                .filter(p->p.getKey().equals("marked"))
+                .filter(p -> p.getKey().equals("marked"))
                 .collect(Collectors.toList());
 
-        if(markedCriteria.isEmpty()){
+        if (markedCriteria.isEmpty()) {
             filter.add(new SearchCriteriaDTO("marked", ":", "OFF"));
-        }else{
-            if(!Utils.isValidEnum(MarkedRequestValue.class,
+        } else {
+            if (!Utils.isValidEnum(MarkedRequestValue.class,
                     markedCriteria.get(0)
                             .getValue()
-                            .toUpperCase(Locale.ROOT))){
+                            .toUpperCase(Locale.ROOT))) {
                 throw new BadRequestException("Недопустимое значение параметра marked");
             }
         }
@@ -90,7 +90,7 @@ public class OrganisationService {
                 new OrganisationSpecificationBuilder(
                         userService,
                         options);
-        for(SearchCriteriaDTO creteriaDTO: filter) {
+        for (SearchCriteriaDTO creteriaDTO : filter) {
             Object value = creteriaDTO.getValue();
             builder.with(creteriaDTO.getKey(), creteriaDTO.getOperation(), value);
         }
@@ -105,13 +105,13 @@ public class OrganisationService {
 
     public void setMark(Long orgid, Boolean mark) {
         OrganisationModel org = organisationRepository.findById(orgid)
-                .orElseThrow(()->new ResourceNotFoundException("Организация с id '" + orgid + "' не найдена"));
+                .orElseThrow(() -> new ResourceNotFoundException("Организация с id '" + orgid + "' не найдена"));
         org.setMarked(mark);
         organisationRepository.save(org);
     }
 
     public List<OrganisationModel> findAll(MarkedRequestValue marked) {
-        switch(marked){
+        switch (marked) {
             case OFF:
                 return organisationRepository.findByMarked(false);
             case ONLY:

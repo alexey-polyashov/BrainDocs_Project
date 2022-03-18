@@ -7,6 +7,7 @@ import com.braindocs.exceptions.Violation;
 import com.braindocs.models.documents.DocumentModel;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
+
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
@@ -35,7 +36,7 @@ public class DocumentTypeSpecification implements Specification<DocumentModel> {
         Class valueClass = root.get(criteria.getKey()).getJavaType();
         Object value = criteria.getValue();
 
-        if(valueClass == java.sql.Date.class){
+        if (valueClass == java.sql.Date.class) {
             SimpleDateFormat sdf = new SimpleDateFormat(options.getDateFormat());
             try {
                 value = new Date(sdf.parse(value.toString()).getTime());
@@ -48,38 +49,36 @@ public class DocumentTypeSpecification implements Specification<DocumentModel> {
     }
 
     private Predicate getPredicate(Root<DocumentModel> root, CriteriaBuilder builder, Object value) {
-        if(criteria.getKey().equals("marked")){
+        if (criteria.getKey().equals("marked")) {
             MarkedRequestValue marked = MarkedRequestValue.valueOf(
                     criteria.getValue().toString().toUpperCase(Locale.ROOT));
-            if(marked == MarkedRequestValue.ONLY){
+            if (marked == MarkedRequestValue.ONLY) {
                 return builder.equal(root.get(criteria.getKey()), true);
-            }else if(marked == MarkedRequestValue.OFF){
+            } else if (marked == MarkedRequestValue.OFF) {
                 return builder.equal(root.get(criteria.getKey()), false);
-            }else{
+            } else {
                 return null;
             }
-        }else if (criteria.getOperation().equalsIgnoreCase(">")) {
-            if(value instanceof Date) {
+        } else if (criteria.getOperation().equalsIgnoreCase(">")) {
+            if (value instanceof Date) {
                 return builder.greaterThanOrEqualTo(
-                        root.<Date>get(criteria.getKey()), (Date) value);
-            }else{
+                        root.get(criteria.getKey()), (Date) value);
+            } else {
                 return builder.greaterThanOrEqualTo(
-                        root.<String>get(criteria.getKey()), value.toString());
+                        root.get(criteria.getKey()), value.toString());
             }
-        }
-        else if (criteria.getOperation().equalsIgnoreCase("<")) {
-            if(value instanceof Date) {
+        } else if (criteria.getOperation().equalsIgnoreCase("<")) {
+            if (value instanceof Date) {
                 return builder.lessThanOrEqualTo(
-                        root.<Date>get(criteria.getKey()), (Date) value);
-            }else{
+                        root.get(criteria.getKey()), (Date) value);
+            } else {
                 return builder.lessThanOrEqualTo(
-                        root.<String>get(criteria.getKey()), value.toString());
+                        root.get(criteria.getKey()), value.toString());
             }
-        }
-        else if (criteria.getOperation().equalsIgnoreCase(":")) {
+        } else if (criteria.getOperation().equalsIgnoreCase(":")) {
             if (root.get(criteria.getKey()).getJavaType() == String.class) {
                 return builder.like(
-                        builder.lower(root.<String>get(criteria.getKey())),
+                        builder.lower(root.get(criteria.getKey())),
                         "%" + value + "%");
             } else {
                 return builder.equal(root.get(criteria.getKey()), value);

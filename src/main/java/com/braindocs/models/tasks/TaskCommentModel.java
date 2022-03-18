@@ -10,21 +10,21 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="task_comments")
+@Table(name = "task_comments")
 @Getter
 @Setter
 @NoArgsConstructor
 public class TaskCommentModel {
 
     @ManyToOne
-    @JoinColumn(name="task_id")
+    @JoinColumn(name = "task_id")
     private TaskModel task;
 
     @ManyToOne
-    @JoinColumn(name="author_id")
+    @JoinColumn(name = "author_id")
     private UserModel author;
 
-    @Column(name="comment")
+    @Column(name = "comment")
     private String comment;
 
     @Id
@@ -32,7 +32,7 @@ public class TaskCommentModel {
     @Column(name = "id")
     private Long id;
     @CreationTimestamp
-    @Column(name="created_at")
+    @Column(name = "created_at")
     private LocalDateTime createTime;
 
 }

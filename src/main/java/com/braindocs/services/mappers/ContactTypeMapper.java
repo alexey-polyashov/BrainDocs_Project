@@ -12,7 +12,7 @@ public class ContactTypeMapper {
 
     private final ModelMapper modelMapper;
 
-    public ContactTypeDTO toDTO(ContactTypeModel model){
+    public ContactTypeDTO toDTO(ContactTypeModel model) {
         return modelMapper.map(model, ContactTypeDTO.class);
     }
 

@@ -50,18 +50,18 @@ public class TaskSpecification implements Specification<TaskModel> {
         Class valueClass = root.get(criteria.getKey()).getJavaType();
         Object value = criteria.getValue();
 
-        if(valueClass == java.sql.Date.class){
+        if (valueClass == java.sql.Date.class) {
             SimpleDateFormat sdf = new SimpleDateFormat(options.getDateFormat());
             try {
                 value = new Date(sdf.parse(value.toString()).getTime());
             } catch (ParseException e) {
-                throw new BadRequestException( "Не корректный формат даты в поле - " + criteria.getKey());
+                throw new BadRequestException("Не корректный формат даты в поле - " + criteria.getKey());
             }
-        }else if(valueClass == UserModel.class){
+        } else if (valueClass == UserModel.class) {
             value = userService.findById(Long.valueOf(value.toString()));
-        }else if(valueClass == OrganisationModel.class){
+        } else if (valueClass == OrganisationModel.class) {
             value = organisationService.findById(Long.valueOf(value.toString()));
-        }else if(valueClass == TaskTypeModel.class){
+        } else if (valueClass == TaskTypeModel.class) {
             value = taskTypesService.findById(Long.valueOf(value.toString()));
         }
 
@@ -69,36 +69,34 @@ public class TaskSpecification implements Specification<TaskModel> {
     }
 
     private Predicate getPredicate(Root<TaskModel> root, CriteriaBuilder builder, Object value) {
-        if(criteria.getKey().equals("marked")){
+        if (criteria.getKey().equals("marked")) {
             MarkedRequestValue marked = MarkedRequestValue.valueOf(
                     criteria.getValue().toString().toUpperCase(Locale.ROOT));
-            if(marked == MarkedRequestValue.ONLY){
+            if (marked == MarkedRequestValue.ONLY) {
                 return builder.equal(root.get(criteria.getKey()), true);
-            }else if(marked == MarkedRequestValue.OFF){
+            } else if (marked == MarkedRequestValue.OFF) {
                 return builder.equal(root.get(criteria.getKey()), false);
             }
         } else if (criteria.getOperation().equalsIgnoreCase(">")) {
-            if(value instanceof Date) {
+            if (value instanceof Date) {
                 return builder.greaterThanOrEqualTo(
-                        root.<Date>get(criteria.getKey()), (Date) value);
-            }else{
+                        root.get(criteria.getKey()), (Date) value);
+            } else {
                 return builder.greaterThanOrEqualTo(
-                        root.<String>get(criteria.getKey()), value.toString());
+                        root.get(criteria.getKey()), value.toString());
             }
-        }
-        else if (criteria.getOperation().equalsIgnoreCase("<")) {
-            if(value instanceof Date) {
+        } else if (criteria.getOperation().equalsIgnoreCase("<")) {
+            if (value instanceof Date) {
                 return builder.lessThanOrEqualTo(
-                        root.<Date>get(criteria.getKey()), (Date) value);
-            }else{
+                        root.get(criteria.getKey()), (Date) value);
+            } else {
                 return builder.lessThanOrEqualTo(
-                        root.<String>get(criteria.getKey()), value.toString());
+                        root.get(criteria.getKey()), value.toString());
             }
-        }
-        else if (criteria.getOperation().equalsIgnoreCase(":")) {
+        } else if (criteria.getOperation().equalsIgnoreCase(":")) {
             if (root.get(criteria.getKey()).getJavaType() == String.class) {
                 return builder.like(
-                        builder.lower(root.<String>get(criteria.getKey())),
+                        builder.lower(root.get(criteria.getKey())),
                         "%" + value + "%");
             } else {
                 return builder.equal(root.get(criteria.getKey()), value);

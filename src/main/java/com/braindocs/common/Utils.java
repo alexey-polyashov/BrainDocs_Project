@@ -10,7 +10,7 @@ public class Utils {
 
     public static final Collection EMPTY_COLLECTION = new ArrayList();
 
-    public static <E extends Enum<E>> boolean isValidEnum(Class<E> enumClass, String enumName){
+    public static <E extends Enum<E>> boolean isValidEnum(Class<E> enumClass, String enumName) {
         if (enumName == null) {
             return false;
         } else {

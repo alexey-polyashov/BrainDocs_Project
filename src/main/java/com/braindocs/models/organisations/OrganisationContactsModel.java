@@ -8,19 +8,19 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@Table(name="organisation_contacts")
+@Table(name = "organisation_contacts")
 @Data
 @NoArgsConstructor
 public class OrganisationContactsModel {
 
-    @Column(name="organisation")
+    @Column(name = "organisation")
     private Long organisation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="type")
+    @JoinColumn(name = "type")
     private ContactTypeModel type;
 
-    @Column(name="present")
+    @Column(name = "present")
     private String present;
 
     @Id

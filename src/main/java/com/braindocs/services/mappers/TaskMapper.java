@@ -65,7 +65,7 @@ public class TaskMapper {
 
         model.setSubjects(Utils.emptyIfNull(dto.getSubjects())
                 .stream()
-                .map(p->documentsService.getDocument(p.getId()))
+                .map(p -> documentsService.getDocument(p.getId()))
                 .collect(Collectors.toSet()));
 
         return model;
@@ -74,7 +74,7 @@ public class TaskMapper {
 
     public TaskModel moveChanges(TaskModel receiver, TaskDTO source) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        receiver.setCreateTime(LocalDateTime.parse(source.getCreateTime(),dtf));
+        receiver.setCreateTime(LocalDateTime.parse(source.getCreateTime(), dtf));
         receiver.setType(
                 taskTypesService.findById(source.getTaskType().getId()));
         receiver.setHeading(source.getHeading());

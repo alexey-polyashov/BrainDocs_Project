@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 
 @Entity
-@Table(name="roles")
+@Table(name = "roles")
 @Data
 @NoArgsConstructor
 public class UserRoleModel {
@@ -27,9 +27,9 @@ public class UserRoleModel {
     @ColumnDefault("false")
     private Boolean marked = false;
     @CreationTimestamp
-    @Column(name="created_at")
+    @Column(name = "created_at")
     private LocalDateTime createTime;
     @UpdateTimestamp
-    @Column(name="updated_at")
+    @Column(name = "updated_at")
     private LocalDateTime updateTime;
 }

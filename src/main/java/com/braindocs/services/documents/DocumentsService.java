@@ -27,11 +27,14 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.security.Principal;
 import java.text.ParseException;
-import java.util.*;
-import java.util.function.*;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,22 +52,22 @@ public class DocumentsService {
     private final Options options;
 
     //получение документа по id
-    public DocumentModel getDocument(Long docId){
+    public DocumentModel getDocument(Long docId) {
         return documentsRepository.findById(docId)
-                .orElseThrow(()->new ResourceNotFoundException("Документ с id-'" + docId + "' не найден"));
+                .orElseThrow(() -> new ResourceNotFoundException("Документ с id-'" + docId + "' не найден"));
     }
 
     //добавление документа без файлов
-    public Long addDocument(DocumentModel document, Principal author){
-        if(document.getAuthor()==null){
-            if(author==null){
+    public Long addDocument(DocumentModel document, Principal author) {
+        if (document.getAuthor() == null) {
+            if (author == null) {
                 throw new BadRequestException("Автор документа не может быть определен");
             }
             UserModel user = userService.findByUsername(
-                    author.getName()).orElseThrow(()->new ResourceNotFoundException("Пользователь по имени '" + author.getName() + "' не определен"));
+                    author.getName()).orElseThrow(() -> new ResourceNotFoundException("Пользователь по имени '" + author.getName() + "' не определен"));
             document.setAuthor(user);
         }
-        if(document.getResponsible()==null){
+        if (document.getResponsible() == null) {
             document.setResponsible(document.getAuthor());
         }
         document.setMarked(false);
@@ -79,44 +82,44 @@ public class DocumentsService {
         return oldDoc.getId();
     }
 
-    public void deleteDocument(Long id){
+    public void deleteDocument(Long id) {
         documentsRepository.deleteById(id);
     }
 
     @Transactional
-    public DocumentModel getDocumentById(Long documentId){
-        return documentsRepository.findById(documentId).orElseThrow(()->new ResourceNotFoundException("Документ с id '" + documentId + "' не найден"));
+    public DocumentModel getDocumentById(Long documentId) {
+        return documentsRepository.findById(documentId).orElseThrow(() -> new ResourceNotFoundException("Документ с id '" + documentId + "' не найден"));
     }
 
     @Transactional
-    public DocumentDTO getDocumentDTOById(Long documentId){
+    public DocumentDTO getDocumentDTOById(Long documentId) {
         return documentMapper.toDTO(
                 documentsRepository
                         .findById(documentId)
-                        .orElseThrow(()->new ResourceNotFoundException("Документ с id '" + documentId + "' не найден"))
+                        .orElseThrow(() -> new ResourceNotFoundException("Документ с id '" + documentId + "' не найден"))
         );
     }
 
     @Transactional
-    public Page<DocumentModel> getDocumentsByFields(int pageNumber, int pageSize, List<SearchCriteriaDTO> filter){
+    public Page<DocumentModel> getDocumentsByFields(int pageNumber, int pageSize, List<SearchCriteriaDTO> filter) {
 
         List<SearchCriteriaDTO> markedCriteria = filter.stream()
-                .filter(p->p.getKey().equals("marked"))
+                .filter(p -> p.getKey().equals("marked"))
                 .collect(Collectors.toList());
 
-        if(markedCriteria.isEmpty()){
+        if (markedCriteria.isEmpty()) {
             filter.add(new SearchCriteriaDTO("marked", ":", "OFF"));
-        }else{
-            if(!Utils.isValidEnum(MarkedRequestValue.class,
+        } else {
+            if (!Utils.isValidEnum(MarkedRequestValue.class,
                     markedCriteria.get(0)
                             .getValue()
-                            .toUpperCase(Locale.ROOT))){
+                            .toUpperCase(Locale.ROOT))) {
                 throw new BadRequestException("Недопустимое значение параметра marked");
             }
         }
 
         DocumentSpecificationBuilder builder = new DocumentSpecificationBuilder(userService, organisationService, documentTypeService, options);
-        for(SearchCriteriaDTO creteriaDTO: filter) {
+        for (SearchCriteriaDTO creteriaDTO : filter) {
             Object value = creteriaDTO.getValue();
             builder.with(creteriaDTO.getKey(), creteriaDTO.getOperation(), value);
         }
@@ -127,14 +130,14 @@ public class DocumentsService {
     }
 
     @Transactional
-    public Page<DocumentDTO> getDocumentsDTOByFields(int page, int recordsOnPage, List<SearchCriteriaDTO> filter){
+    public Page<DocumentDTO> getDocumentsDTOByFields(int page, int recordsOnPage, List<SearchCriteriaDTO> filter) {
         Page<DocumentModel> documents = getDocumentsByFields(page, recordsOnPage, filter);
         return documents.map(documentMapper::toDTO);
     }
 
     @Transactional
-    public Page<DocumentModel> getDocuments(int pageNumber, int pageSize, MarkedRequestValue marked){
-        switch(marked){
+    public Page<DocumentModel> getDocuments(int pageNumber, int pageSize, MarkedRequestValue marked) {
+        switch (marked) {
             case ON:
                 return documentsRepository.findByMarked(false, PageRequest.of(pageNumber, pageSize));
             case ONLY:
@@ -148,33 +151,33 @@ public class DocumentsService {
     public Page<DocumentDTO> getDocumentsDTO(int pageNumber, int pageSize, MarkedRequestValue marked, BiConsumer<FileDTO, Long> setLink) {
         Page<DocumentModel> documents = getDocuments(pageNumber, pageSize, marked);
         return documents.map(
-                docModel->{
+                docModel -> {
                     DocumentDTO docDto = documentMapper.toDTO(docModel);
                     docDto.getFiles()
-                            .stream().forEach(p->setLink.accept(p, p.getId()));
+                            .stream().forEach(p -> setLink.accept(p, p.getId()));
                     return docDto;
                 });
     }
 
     public void setMark(Long id, Boolean mark) {
         DocumentModel doc = documentsRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Документ с id '" + id + "' не найден"));
+                .orElseThrow(() -> new ResourceNotFoundException("Документ с id '" + id + "' не найден"));
         doc.setMarked(mark);
         documentsRepository.save(doc);
     }
 
     //получение файла по id
     @Transactional
-    public FileModel getDocumentFile(Long docId, Long fileId){
+    public FileModel getDocumentFile(Long docId, Long fileId) {
         DocumentModel documentModel = getDocument(docId);
         FileModel fileModel = null;
-        for (FileModel file: documentModel.getFiles()) {
-            if(file.getId().equals(fileId)){
+        for (FileModel file : documentModel.getFiles()) {
+            if (file.getId().equals(fileId)) {
                 fileModel = file;
                 break;
             }
         }
-        if(fileModel==null){
+        if (fileModel == null) {
             throw new ResourceNotFoundException("Файл с id-'" + fileId + "' не принадлежит документу с id-'" + docId + "'");
         }
         return fileModel;
@@ -183,7 +186,7 @@ public class DocumentsService {
     //добавление одного файла
     @Transactional
     public FileDTO addFile(Long docId, FileModel file, MultipartFile fileData) throws IOException {
-        if(file.getId()!=0){
+        if (file.getId() != 0) {
             log.error("file id is not empty");
             throw new BadRequestException("Id файла должен быть пустым");
         }
@@ -195,31 +198,32 @@ public class DocumentsService {
     }
 
     @Transactional
-    public Set<FileModel> getFilesList(Long docId){
+    public Set<FileModel> getFilesList(Long docId) {
         DocumentModel documentModel = getDocument(docId);
         return documentModel.getFiles();
     }
 
     @Transactional
-    public Set<FileDTO> getFilesDTOList(Long docId, BiConsumer<FileDTO, Long> setLink){
+    public Set<FileDTO> getFilesDTOList(Long docId, BiConsumer<FileDTO, Long> setLink) {
         DocumentModel documentModel = getDocument(docId);
         return documentModel.getFiles().stream().map(
-                p->{
+                p -> {
                     FileDTO res = fileMapper.toDTO(p);
                     setLink.accept(res, docId);
                     return res;
                 }
         ).collect(Collectors.toSet());
     }
+
     //получение описания файла по id
     @Transactional
-    public FileModel getFileDescribe(Long docId, Long fileId){
+    public FileModel getFileDescribe(Long docId, Long fileId) {
         getDocumentFile(docId, fileId);
         return filesService.findById(fileId);
     }
 
     @Transactional
-    public FileDTO getFileDTODescribe(Long docId, Long fileId, BiConsumer<FileDTO, Long> setLink){
+    public FileDTO getFileDTODescribe(Long docId, Long fileId, BiConsumer<FileDTO, Long> setLink) {
         FileDTO fDTO = fileMapper.toDTO(filesService.findById(fileId));
         setLink.accept(fDTO, docId);
         return fDTO;
@@ -227,7 +231,7 @@ public class DocumentsService {
 
     //получение данных файла по id
     @Transactional
-    public FileDataDTO getFileData(Long docId, Long fileId){
+    public FileDataDTO getFileData(Long docId, Long fileId) {
         getDocumentFile(docId, fileId);
         return fileMapper.toDTOwithData(
                 filesService.getFileData(fileId)
@@ -237,15 +241,15 @@ public class DocumentsService {
     //добавление одного файла
     @Transactional
     public FileDTO changeFile(Long docId, FileModel file, MultipartFile fileData) throws IOException {
-        if(file.getId()==null || file.getId()==0){
+        if (file.getId() == null || file.getId() == 0) {
             log.error("file 'id' is empty");
             throw new BadRequestException("Не определен 'id' изменяемого файла");
         }
         getDocumentFile(docId, file.getId()); //проверка существования файла
-        FileModel fileModel=null;
-        if(fileData==null || fileData.isEmpty()) {
+        FileModel fileModel = null;
+        if (fileData == null || fileData.isEmpty()) {
             fileModel = filesService.saveOnlyDescribe(file);
-        }else{
+        } else {
             fileModel = filesService.saveWithAllData(file, fileData);
         }
         return fileMapper.toDTO(fileModel);
@@ -253,7 +257,7 @@ public class DocumentsService {
 
     //удаление файла по id
     @Transactional
-    public void deleteFile(Long docId, Long fileId){
+    public void deleteFile(Long docId, Long fileId) {
         DocumentModel documentModel = getDocument(docId);
         FileModel fileModel = getDocumentFile(docId, fileId);
         filesService.delete(fileId);
@@ -263,9 +267,9 @@ public class DocumentsService {
 
     //удаление всех файлов
     @Transactional
-    public void clearFiles(Long docId){
+    public void clearFiles(Long docId) {
         DocumentModel documentModel = getDocument(docId);
-        for (FileModel file: documentModel.getFiles()) {
+        for (FileModel file : documentModel.getFiles()) {
             filesService.delete(file.getId());
         }
         documentModel.getFiles().clear();
