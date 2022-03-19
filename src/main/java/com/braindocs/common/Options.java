@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Component
@@ -19,6 +20,12 @@ public class Options {
     private Integer fileStorageType = 1;
     private String dateFormat;
 
+    public DateTimeFormatter getDateTimeFormatter() {
+        return dateTimeFormatter;
+    }
+
+    private DateTimeFormatter dateTimeFormatter;
+
     @Autowired
     public Options(OptionService optionService) {
         Optional<OptionModel> options = optionService.readOptions();
@@ -26,6 +33,7 @@ public class Options {
             OptionModel opt = options.get();
             this.fileStorageType = opt.getFileStorageType();
             this.dateFormat = optionService.getDateFormat();
+            this.dateTimeFormatter = DateTimeFormatter.ofPattern(dateFormat);
         }
     }
 
