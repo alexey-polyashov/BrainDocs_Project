@@ -1,3 +1,5 @@
+ALTER TABLE operations_history ALTER COLUMN created_at SET DEFAULT now();
+
 INSERT INTO operations_history (change_type, author_id)
 VALUES ('Document', 1),
        ('Document', 1),

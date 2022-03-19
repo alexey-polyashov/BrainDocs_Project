@@ -1,6 +1,8 @@
 package com.braindocs.services;
 
 import com.braindocs.common.history.HistoryOperationType;
+import com.braindocs.dto.HistoryStampDTO;
+import com.braindocs.dto.users.UserNameDTO;
 import com.braindocs.models.HistoryStampModel;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.repositories.HistoryRepository;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,5 +51,14 @@ public class HistoryService {
 
     public List<HistoryStampModel> findAllByCreateTimeBetween(LocalDateTime since, LocalDateTime before) {
         return historyRepository.findAllByCreateTimeBetween(since, before);
+    }
+
+    public List<HistoryStampDTO> toDTOList(List<HistoryStampModel> models) {
+        return models.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    public HistoryStampDTO toDTO(HistoryStampModel model) {
+        UserNameDTO userDto = new UserNameDTO(model.getAuthor());
+        return new HistoryStampDTO(model.getId(), model.getChangeType(), userDto, model.getCreateTime().toLocalDate().toString());
     }
 }

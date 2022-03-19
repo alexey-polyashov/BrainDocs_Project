@@ -1,6 +1,7 @@
 package com.braindocs.controllers;
 
 import com.braindocs.common.Options;
+import com.braindocs.dto.HistoryStampDTO;
 import com.braindocs.models.HistoryStampModel;
 import com.braindocs.services.HistoryService;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +20,16 @@ public class HistoryController {
     private final Options options;
 
     @GetMapping("")
-    public List<HistoryStampModel> getAllStamps() {
-        return historyService.getAllStamps();
+    public List<HistoryStampDTO> getAllStamps() {
+        List<HistoryStampModel> allStamps = historyService.getAllStamps();
+        return historyService.toDTOList(allStamps);
     }
 
     @GetMapping("/search")
-    public List<HistoryStampModel> getAllStampsBetween(@RequestParam String since, @RequestParam String before) {
+    public List<HistoryStampDTO> getAllStampsBetween(@RequestParam String since, @RequestParam String before) {
         LocalDate sinceDate = LocalDate.parse(since, options.getDateTimeFormatter());
         LocalDate beforeDate = LocalDate.parse(before, options.getDateTimeFormatter());
-        return historyService.findAllByCreateTimeBetween(sinceDate.atStartOfDay(), beforeDate.atStartOfDay());
+        List<HistoryStampModel> allByCreateTimeBetween = historyService.findAllByCreateTimeBetween(sinceDate.atStartOfDay(), beforeDate.atStartOfDay());
+        return historyService.toDTOList(allByCreateTimeBetween);
     }
 }
