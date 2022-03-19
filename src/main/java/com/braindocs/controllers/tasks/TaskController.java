@@ -74,7 +74,7 @@ public class TaskController {
         return fieldsSet;
     }
 
-    @GetMapping(value = "/statuses/")
+    @GetMapping(value = "/statuses")
     public Map<Integer, String> getStatusList() {
         log.info("TaskController: getStatuslist ");
         return new HashMap<Integer, String>() {{
@@ -84,7 +84,7 @@ public class TaskController {
         }};
     }
 
-    @GetMapping(value = "/types/")
+    @GetMapping(value = "/types")
     public List<TaskTypeDTO> getTypesList(
             @RequestParam(name = "marked", defaultValue = "off", required = false) String marked) {
         log.info("TaskController: getTypesList, marked -{} ", marked);
@@ -184,7 +184,7 @@ public class TaskController {
         tasksService.deleteTask(taskId);
     }
 
-    @GetMapping(value = "{taskId}/executors/")
+    @GetMapping(value = "{taskId}/executors")
     public List<TaskExecutorDTO> getExecutors(@PathVariable("taskId") Long taskId) {
         log.info("TaskController: getExecutors");
         List<TaskExecutorModel> executors = tasksService.getExecutors(taskId);
@@ -203,7 +203,7 @@ public class TaskController {
         return taskExecutorMapper.toDTO(executor);
     }
 
-    @GetMapping(value = "{taskId}/comments/")
+    @GetMapping(value = "{taskId}/comments")
     public List<TaskCommentDTO> getComments(@PathVariable("taskId") Long taskId) {
         log.info("TaskController: addComments");
         List<TaskCommentModel> comments = tasksService.getComments(taskId);
@@ -222,7 +222,7 @@ public class TaskController {
         return taskCommentMapper.toDTO(comment);
     }
 
-    @PostMapping(value = "/{taskId}/executors/")
+    @PostMapping(value = "/{taskId}/executors")
     public Long addExecutor(@PathVariable("taskId") Long taskId,
                             @Valid @RequestBody TaskExecutorDTO executorDTO) {
         log.info("TaskController: addExecutor");
@@ -255,7 +255,7 @@ public class TaskController {
     }
 
 
-    @PostMapping(value = "/{taskId}/comments/")
+    @PostMapping(value = "/{taskId}/comments")
     public Long addComment(@PathVariable("taskId") Long taskId,
                            @Valid @RequestBody TaskCommentDTO commentDTO,
                            Principal principal) {
