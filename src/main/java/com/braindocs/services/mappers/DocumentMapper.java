@@ -9,16 +9,17 @@ import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.files.FileModel;
 import com.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.models.users.UserModel;
-import com.braindocs.services.*;
+import com.braindocs.services.OptionService;
+import com.braindocs.services.OrganisationService;
 import com.braindocs.services.documents.DocumentTypeService;
 import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.sql.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
-import java.sql.Date;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
@@ -57,7 +58,7 @@ public class DocumentMapper {
 
         DocumentModel docModel = new DocumentModel();
 
-        if(docDTO.getId() != null) {
+        if (docDTO.getId() != null) {
             docModel.setId(docDTO.getId());
         }
         docModel.setDocumentType(documentTypeService.findById(docDTO.getDocumentType().getId()));
@@ -82,14 +83,16 @@ public class DocumentMapper {
         return docModel;
     }
 
-    public void moveChange(DocumentModel receiver, DocumentDTO sourceDTO) throws ParseException{
+    public void moveChange(DocumentModel receiver, DocumentDTO sourceDTO) throws ParseException {
         DocumentModel source = this.toModel(sourceDTO);
         receiver.setHeading(source.getHeading());
         receiver.setContent(source.getContent());
-        if(source.getAuthor()!=null){
-            receiver.setAuthor(source.getAuthor());}
-        if(source.getResponsible()!=null){
-            receiver.setAuthor(source.getResponsible());}
+        if (source.getAuthor() != null) {
+            receiver.setAuthor(source.getAuthor());
+        }
+        if (source.getResponsible() != null) {
+            receiver.setAuthor(source.getResponsible());
+        }
         receiver.setOrganisation(source.getOrganisation());
 //        receiver.setFiles(
 //                oldDoc.getFiles().stream()

@@ -4,8 +4,8 @@ import com.braindocs.dto.validators.UniqUserEmail;
 import com.braindocs.dto.validators.UniqUserName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
 
 @NoArgsConstructor
@@ -36,7 +36,7 @@ public class NewUserDTO {
 
     private String male;
 
-//    @Past(message = "Дата рождения не может быть позже текущей даты")
+    //    @Past(message = "Дата рождения не может быть позже текущей даты")
     @Pattern(
             regexp = "^\\d{4}-\\d{2}-\\d{2}$",
             message = "Не корректная дата"

@@ -8,17 +8,17 @@ import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.*;
 
 @Entity
-@Table(name="task_results")
+@Table(name = "task_results")
 @Getter
 @Setter
 @NoArgsConstructor
 public class TaskResultsModel {
 
     @ManyToOne
-    @JoinColumn(name="task_type_id")
+    @JoinColumn(name = "task_type_id")
     private TaskTypeModel taskTypeId;
 
-    @Column(name="resultname")
+    @Column(name = "resultname")
     private String resultName;
 
     @Id

@@ -14,33 +14,33 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
-@Table(name="tasks")
+@Table(name = "tasks")
 @Getter
 @Setter
 @NoArgsConstructor
 public class TaskModel {
 
     @ManyToOne
-    @JoinColumn(name="type_id")
+    @JoinColumn(name = "type_id")
     private TaskTypeModel type;
 
-    @Column(name="heading")
+    @Column(name = "heading")
     private String heading;
 
-    @Column(name="content")
+    @Column(name = "content")
     private String content;
 
-    @Column(name="status")
+    @Column(name = "status")
     private Long status;
 
     @ManyToOne
-    @JoinColumn(name="author_id")
+    @JoinColumn(name = "author_id")
     private UserModel author;
 
     @ManyToMany
-    @JoinTable(name ="task_subjects",
+    @JoinTable(name = "task_subjects",
             joinColumns = @JoinColumn(name = "task_id", referencedColumnName = "id"),
-            inverseJoinColumns =  @JoinColumn(name="subject_id"))
+            inverseJoinColumns = @JoinColumn(name = "subject_id"))
     private Set<DocumentModel> subjects;
 
     @Id
@@ -51,10 +51,10 @@ public class TaskModel {
     @ColumnDefault("false")
     private Boolean marked = false;
     @CreationTimestamp
-    @Column(name="created_at")
+    @Column(name = "created_at")
     private LocalDateTime createTime;
     @UpdateTimestamp
-    @Column(name="updated_at")
+    @Column(name = "updated_at")
     private LocalDateTime updateTime;
 
 }

@@ -27,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.*;
 
@@ -36,24 +37,23 @@ import java.util.*;
 @Slf4j
 public class DocumentViewController {
 
+    private static final String STRING_TYPE = "String";
     private final DocumentTypeService documentTypeService;
     private final DocumentTypeMapper documentTypeMapper;
     private final FileMapper fileMapper;
 
-    private static final String STRING_TYPE = "String";
-
-    private void setLinkToFile(FileDTO fileDTO, Long typeId){
+    private void setLinkToFile(FileDTO fileDTO, Long typeId) {
         fileDTO.setLink("/api/v1/documents/types/" + typeId + "/files/" + fileDTO.getId() + "/data");
     }
 
-    @GetMapping(value="/fields")
+    @GetMapping(value = "/fields")
     //возвращает список доступных полей и операций с ними
     //операции: ">" (больше или равно), "<" (меньше или равно), ":" (для строковых полей модели - содержит, для других = )
     //типы полей могут быть любыми - это просто описание типа для правильного построения интерфейса
-    public Set<FieldsListDTO> getFields(){
+    public Set<FieldsListDTO> getFields() {
         log.info("DocumentViewController: getFields");
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
-        fieldsSet.add(new FieldsListDTO("Наименование вида документа", "name", "", Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Наименование", "name", "", Arrays.asList(":"), STRING_TYPE, false));
         log.info("DocumentController: getFields return {} elements", fieldsSet.size());
         return fieldsSet;
     }
@@ -68,32 +68,32 @@ public class DocumentViewController {
     @PostMapping("/{typeid}")
     public Long changeView(@PathVariable Long typeid, @RequestBody NewDocumentTypeDTO documentTypeDTO) {
         log.info("DocumentViewController: changeView");
-        if(typeid==0){
+        if (typeid == 0) {
             throw new BadRequestException("id должен быть отличен от 0");
         }
         return documentTypeService.changeDTOType(typeid, documentTypeMapper.toModel(documentTypeDTO));
     }
 
     @GetMapping("/{id}")
-    public DocumentTypeDTO findById(@PathVariable Long id){
+    public DocumentTypeDTO findById(@PathVariable Long id) {
         log.info("DocumentViewController: findById");
         return documentTypeService.findDTOById(id, this::setLinkToFile);
     }
 
     @DeleteMapping("/finally/{id}")
-    public void deleteView(@PathVariable Long id){
+    public void deleteView(@PathVariable Long id) {
         log.info("DocumentViewController: deleteView");
         documentTypeService.deleteById(id);
     }
 
     @DeleteMapping("/{id}")
-    public void markView(@PathVariable Long id){
+    public void markView(@PathVariable Long id) {
         log.info("DocumentViewController: markView");
         documentTypeService.setMark(id, true);
     }
 
     @PostMapping("/unmark/{id}")
-    public void unMarkView(@PathVariable Long id){
+    public void unMarkView(@PathVariable Long id) {
         log.info("DocumentViewController: markView");
         documentTypeService.setMark(id, false);
     }
@@ -101,7 +101,7 @@ public class DocumentViewController {
     @GetMapping("")
     public List<DocumentTypeDTO> findAll(@RequestParam(name = "marked", defaultValue = "off", required = false) String marked) {
         log.info("DocumentViewController: findAll");
-        if(!Utils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))){
+        if (!Utils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))) {
             throw new BadRequestException("Недопустимое значение параметра marked");
         }
         return documentTypeService.findAllDTO(MarkedRequestValue.valueOf(marked.toUpperCase(Locale.ROOT)),
@@ -127,7 +127,7 @@ public class DocumentViewController {
     public FileDTO uploadFile(@PathVariable("typeid") Long typeid, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart("file") MultipartFile fileData) throws IOException {
         log.info("DocumentController: uploadfile");
         NewFileDTO fileDescribe = new ObjectMapper().readValue(jsonDescribe, NewFileDTO.class);
-        if(fileData.isEmpty()){
+        if (fileData.isEmpty()) {
             log.info("Нет данных файла");
             throw new BadRequestException("Нет данных файла");
         }
@@ -147,7 +147,7 @@ public class DocumentViewController {
             consumes = {"multipart/form-data"})
     public FileDTO changeFile(@PathVariable("typeid") Long typeid, @PathVariable("fileid") Long fileId, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart("file") MultipartFile fileData) throws IOException {
         log.info("DocumentController: changeFile, docid-{}, fileDescribe{}", typeid, jsonDescribe);
-        if(fileId==0){
+        if (fileId == 0) {
             throw new BadRequestException("id файла не должен быть пустым");
         }
         NewFileDTO fileDescribe = new ObjectMapper().readValue(jsonDescribe, NewFileDTO.class);
@@ -165,19 +165,19 @@ public class DocumentViewController {
         return fileDTO;
     }
 
-    @GetMapping(value="/{typeid}/files/{fileid}/data")
+    @GetMapping(value = "/{typeid}/files/{fileid}/data")
     @ResponseBody
-    public ResponseEntity<byte[]> getFileData(@PathVariable("typeid") Long typeid, @PathVariable("fileid") Long fileid){
+    public ResponseEntity<byte[]> getFileData(@PathVariable("typeid") Long typeid, @PathVariable("fileid") Long fileid) {
         log.info("DocumentController: getFileData");
         FileDataDTO fileData = documentTypeService.getFileData(typeid, fileid);
         MediaType mt = MediaType.valueOf(fileData.getContentType());
         return ResponseEntity.ok().contentType(mt).body(fileData.getFileData());
     }
 
-    @GetMapping(value={"/{typeid}/files/{fileid}/download", "/{typeid}/files/{fileid}/download/{filename}"},
+    @GetMapping(value = {"/{typeid}/files/{fileid}/download", "/{typeid}/files/{fileid}/download/{filename}"},
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseBody
-    public ResponseEntity<byte[]> getFileDataForDownload(@PathVariable("typeid") Long typeid, @PathVariable(name = "filename", required = false) Optional<String> reqFilename, @PathVariable("fileid") Long fileid){
+    public ResponseEntity<byte[]> getFileDataForDownload(@PathVariable("typeid") Long typeid, @PathVariable(name = "filename", required = false) Optional<String> reqFilename, @PathVariable("fileid") Long fileid) {
         log.info("DocumentController: getFileDataForDownload");
         FileDataDTO fileData = documentTypeService.getFileData(typeid, fileid);
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -187,28 +187,28 @@ public class DocumentViewController {
         return ResponseEntity.ok().headers(httpHeaders).body(fileData.getFileData());
     }
 
-    @GetMapping(value="/{typeid}/files")
-    public Set<FileDTO> getFiles(@PathVariable("typeid") Long typeid){
+    @GetMapping(value = "/{typeid}/files")
+    public Set<FileDTO> getFiles(@PathVariable("typeid") Long typeid) {
         log.info("DocumentController: getFileslist");
         return documentTypeService.getFilesDTOList(typeid, this::setLinkToFile);
     }
 
-    @GetMapping(value="/{typeid}/files/{fileid}")
-    public FileDTO getFileDescribe(@PathVariable("docid") Long typeid, @PathVariable("fileid") Long fileid){
+    @GetMapping(value = "/{typeid}/files/{fileid}")
+    public FileDTO getFileDescribe(@PathVariable("docid") Long typeid, @PathVariable("fileid") Long fileid) {
         log.info("DocumentController: getFileDescribe, docid-{}, fileid{}", typeid, fileid);
         return documentTypeService.getFileDTODescribe(
                 typeid, fileid, this::setLinkToFile);
     }
 
-    @DeleteMapping(value="/{typeid}/files/{fileid}")
-    public void deleteFile(@PathVariable("docid") Long typeid, @PathVariable("fileid") Long fileid){
+    @DeleteMapping(value = "/{typeid}/files/{fileid}")
+    public void deleteFile(@PathVariable("docid") Long typeid, @PathVariable("fileid") Long fileid) {
         log.info("DocumentController: deleteFile, docid-{}, fileid{}", typeid, fileid);
         documentTypeService.deleteFile(typeid, fileid);
         log.info("DocumentController: deleteFile - deleted, docid-{}, fileid{}", typeid, fileid);
     }
 
-    @DeleteMapping(value="/{typeid}/files/clear")
-    public void clearFiles(@PathVariable("typeid") Long typeid){
+    @DeleteMapping(value = "/{typeid}/files/clear")
+    public void clearFiles(@PathVariable("typeid") Long typeid) {
         log.info("DocumentController: clearFiles, docid-{}", typeid);
         documentTypeService.clearFiles(typeid);
         log.info("DocumentController: clearFiles - done, docid-{}", typeid);

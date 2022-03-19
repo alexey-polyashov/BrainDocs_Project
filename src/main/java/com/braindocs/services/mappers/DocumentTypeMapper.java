@@ -16,7 +16,7 @@ public class DocumentTypeMapper {
 
     private final FileMapper fileMapper;
 
-    public DocumentTypeDTO toDTO(DocumentTypeModel docTypeModel){
+    public DocumentTypeDTO toDTO(DocumentTypeModel docTypeModel) {
         DocumentTypeDTO dto = new DocumentTypeDTO();
         dto.setId(docTypeModel.getId());
         dto.setName(docTypeModel.getName());
@@ -27,14 +27,14 @@ public class DocumentTypeMapper {
         return dto;
     }
 
-    public DocumentTypeModel toModel(DocumentTypeDTO docTypeDTO){
+    public DocumentTypeModel toModel(DocumentTypeDTO docTypeDTO) {
         DocumentTypeModel docTypeModel = new DocumentTypeModel();
         docTypeModel.setId(docTypeDTO.getId());
         docTypeModel.setName(docTypeDTO.getName());
         return docTypeModel;
     }
 
-    public DocumentTypeModel toModel(NewDocumentTypeDTO docTypeDTO){
+    public DocumentTypeModel toModel(NewDocumentTypeDTO docTypeDTO) {
         DocumentTypeModel docTypeModel = new DocumentTypeModel();
         docTypeModel.setName(docTypeDTO.getName());
         docTypeModel.setMarked(false);

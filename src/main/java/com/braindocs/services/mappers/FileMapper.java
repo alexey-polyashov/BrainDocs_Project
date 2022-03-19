@@ -1,10 +1,10 @@
 package com.braindocs.services.mappers;
 
+import com.braindocs.common.Options;
 import com.braindocs.dto.files.FileDTO;
 import com.braindocs.dto.files.FileDataDTO;
 import com.braindocs.dto.files.NewFileDTO;
 import com.braindocs.dto.users.UserNameDTO;
-import com.braindocs.common.Options;
 import com.braindocs.models.files.FileModel;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.services.FilesService;
@@ -23,7 +23,7 @@ public class FileMapper {
     private final FilesService filesService;
     private final Options options;
 
-    public FileModel toModel(FileDTO fileDTO){
+    public FileModel toModel(FileDTO fileDTO) {
         FileModel file = new FileModel();
         file.setName(fileDTO.getName());
         file.setStorageType(fileDTO.getStorageType());
@@ -36,7 +36,7 @@ public class FileMapper {
         return file;
     }
 
-    public FileDTO toDTO(FileModel fileModel){
+    public FileDTO toDTO(FileModel fileModel) {
         FileDTO dto = new FileDTO();
         dto.setId(fileModel.getId());
         dto.setName(fileModel.getName());
@@ -49,7 +49,7 @@ public class FileMapper {
         return dto;
     }
 
-    public FileDataDTO toDTOwithData(FileModel fileModel){
+    public FileDataDTO toDTOwithData(FileModel fileModel) {
         FileDataDTO dto = new FileDataDTO();
         dto.setId(fileModel.getId());
         dto.setName(fileModel.getName());
@@ -68,7 +68,7 @@ public class FileMapper {
         file.setFileType(fileData.getFileType());
         UserModel userModel = userService.findById(fileData.getAuthor().getId());
         file.setAuthor(userModel);
-        if(mpf!=null) {
+        if (mpf != null) {
             file.setFileSize(mpf.getSize());
             file.setFileData(mpf.getBytes());
             file.setContentType(mpf.getContentType());

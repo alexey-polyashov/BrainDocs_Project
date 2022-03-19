@@ -12,11 +12,11 @@ public class TaskTypeMapper {
 
     private final ModelMapper modelMapper;
 
-    public TaskTypeDTO toDTO(TaskTypeModel model){
+    public TaskTypeDTO toDTO(TaskTypeModel model) {
         return modelMapper.map(model, TaskTypeDTO.class);
     }
 
-    public TaskTypeModel toModel(TaskTypeDTO dto){
+    public TaskTypeModel toModel(TaskTypeDTO dto) {
         return modelMapper.map(dto, TaskTypeModel.class);
     }
 }

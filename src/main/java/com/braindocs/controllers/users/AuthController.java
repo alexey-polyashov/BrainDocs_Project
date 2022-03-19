@@ -1,9 +1,11 @@
 package com.braindocs.controllers.users;
 
-import com.braindocs.dto.users.*;
 import com.braindocs.configs.JwtTokenUtil;
+import com.braindocs.dto.users.JwtRequestDTO;
+import com.braindocs.dto.users.JwtResponseDTO;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.exceptions.Violation;
+import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -12,8 +14,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.*;
-import com.braindocs.services.users.UserService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -31,10 +35,10 @@ public class AuthController {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         } catch (BadCredentialsException ex) {
             log.info("createAuthToken, Incorrect username or password for user {}", authRequest.getUsername());
-            return new ResponseEntity<>(new Violation("","Incorrect username or password"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new Violation("", "Incorrect username or password"), HttpStatus.UNAUTHORIZED);
         }
         if (Boolean.TRUE.equals(userService.findByLogin(
-                authRequest.getUsername())
+                        authRequest.getUsername())
                 .get()
                 .getConfirmed())) {
             UserDetails userDetails = userService.loadUserByUsername(authRequest.getUsername());

@@ -4,6 +4,7 @@ import com.braindocs.dto.organization.OrganisationDTO;
 import com.braindocs.models.organisations.OrganisationModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -12,7 +13,7 @@ public class OrganisationMapper {
 
     private final OrganisationContactMapper organisationContactMapper;
 
-    public OrganisationDTO toDTO(OrganisationModel organisationModel){
+    public OrganisationDTO toDTO(OrganisationModel organisationModel) {
         OrganisationDTO dto = new OrganisationDTO();
         dto.setId(organisationModel.getId());
         dto.setInn(organisationModel.getInn());

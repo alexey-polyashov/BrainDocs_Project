@@ -26,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
 import javax.validation.Valid;
 import java.io.IOException;
 import java.security.Principal;
@@ -34,47 +35,45 @@ import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value="/api/v1/documents")
+@RequestMapping(value = "/api/v1/documents")
 @Slf4j
 @Api(value = "DocumentController", tags = "Контролер документов")
 public class DocumentController {
 
+    private static final String STRING_TYPE = "String";
+    private static final String LONG_TYPE = "Long";
+    private static final String DATE_TYPE = "Date";
     private final DocumentsService documentsService;
     private final DocumentMapper documentMapper;
     private final FileMapper fileMapper;
 
-    private static final String STRING_TYPE = "String";
-    private static final String LONG_TYPE = "Long";
-    private static final String DATE_TYPE = "Date";
-
-    private void setLinkToFile(FileDTO fileDTO, Long docId){
+    private void setLinkToFile(FileDTO fileDTO, Long docId) {
         fileDTO.setLink("/api/v1/documents/" + docId + "/files/" + fileDTO.getId() + "/data");
     }
 
-    @GetMapping(value="/fields")
+    @GetMapping(value = "/fields")
     //возвращает список доступных полей и операций с ними
     //операции: ">" (больше или равно), "<" (меньше или равно), ":" (для строковых полей модели - содержит, для других = )
     //типы полей могут быть любыми - это просто описание типа для правильного построения интерфейса
-    public Set<FieldsListDTO> getFields(){
+    public Set<FieldsListDTO> getFields() {
         log.info("DocumentController: getFields");
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
-        fieldsSet.add(new FieldsListDTO("Вид документа", "documentType", "/api/v1/documents/types", Arrays.asList(":"), LONG_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Номер докуемнта","number", "", Arrays.asList(":"), STRING_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Дата документа","documentDate","", Arrays.asList("<",">"), DATE_TYPE, true));
-        fieldsSet.add(new FieldsListDTO("Заголовок документа", "heading","", Arrays.asList(":"), STRING_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Содержание", "content","", Arrays.asList(":"), STRING_TYPE, true));
-        fieldsSet.add(new FieldsListDTO("Автор документа", "author","/api/v1/users", Arrays.asList(":"), LONG_TYPE, true));
-        fieldsSet.add(new FieldsListDTO("Ответственный за документ", "responsible","/api/v1/users", Arrays.asList(":"), LONG_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Организация", "organisation","/api/v1//organisations", Arrays.asList(":"), LONG_TYPE, true));
+        fieldsSet.add(new FieldsListDTO("Номер", "number", "", Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Дата", "documentDate", "", Arrays.asList("<", ">"), DATE_TYPE, true));
+        fieldsSet.add(new FieldsListDTO("Заголовок", "heading", "", Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Содержание", "content", "", Arrays.asList(":"), STRING_TYPE, true));
+        fieldsSet.add(new FieldsListDTO("Автор", "author", "users", Arrays.asList(":"), LONG_TYPE, true));
+        fieldsSet.add(new FieldsListDTO("Ответственный", "responsible", "users", Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Организация", "organisation", "organisations", Arrays.asList(":"), LONG_TYPE, true));
         log.info("DocumentController: getFields return {} elements", fieldsSet.size());
         return fieldsSet;
     }
 
-    @PostMapping(value="")
+    @PostMapping(value = "")
     @ResponseBody
     public Long addDocument(Principal principal, @Valid @RequestBody DocumentDTO documentDTO) throws ParseException {
         log.info("DocumentController: add");
-        if(documentDTO.getId()!=null && (documentDTO.getId()!=0)){
+        if (documentDTO.getId() != null && (documentDTO.getId() != 0)) {
             throw new BadRequestException("При добавлении нового объекта id должен быть пустым");
         }
         DocumentModel docModel = documentMapper.toModel(documentDTO);
@@ -83,10 +82,10 @@ public class DocumentController {
         return docId;
     }
 
-    @PostMapping(value="/{id}")
+    @PostMapping(value = "/{id}")
     public Long saveDocument(@PathVariable("id") Long id, @Valid @RequestBody DocumentDTO documentDTO) throws ParseException {
         log.info("DocumentController: saveDocument");
-        if(id==0){
+        if (id == 0) {
             throw new BadRequestException("id не должен быть пустым");
         }
         documentDTO.setId(id);
@@ -95,34 +94,34 @@ public class DocumentController {
         return docId;
     }
 
-    @DeleteMapping(value="/finally/{id}")
-    public void deleteDocument(@PathVariable("id") Long id){
+    @DeleteMapping(value = "/finally/{id}")
+    public void deleteDocument(@PathVariable("id") Long id) {
         log.info("DocumentController: deleteDocument, id-{}", id);
         documentsService.deleteDocument(id);
         log.info("DocumentController: deleteDocument - ok");
     }
 
-    @DeleteMapping(value="/{id}")
-    public void markDocument(@PathVariable("id") Long id){
+    @DeleteMapping(value = "/{id}")
+    public void markDocument(@PathVariable("id") Long id) {
         log.info("DocumentController: markDocument, id-{}", id);
         documentsService.setMark(id, true);
         log.info("DocumentController: markDocument - ok");
     }
 
-    @PostMapping(value="/unmark/{id}")
-    public void unMarkDocument(@PathVariable("id") Long id){
+    @PostMapping(value = "/unmark/{id}")
+    public void unMarkDocument(@PathVariable("id") Long id) {
         log.info("DocumentController: markDocument, id-{}", id);
         documentsService.setMark(id, false);
         log.info("DocumentController: markDocument - ok");
     }
 
-    @GetMapping(value="")
-    public Page<DocumentDTO> getDocuments(@RequestParam( name = "pagenumber", defaultValue = "0") int pageNumber,
+    @GetMapping(value = "")
+    public Page<DocumentDTO> getDocuments(@RequestParam(name = "pagenumber", defaultValue = "0") int pageNumber,
                                           @RequestParam(name = "pagesize", defaultValue = "10") int pageSize,
                                           @RequestParam(name = "marked", defaultValue = "off", required = false) String marked
-    ){
+    ) {
         log.info("DocumentController: getDocuments, pagenumber-{}, pagesize-{}, marked -{} ", pageNumber, pageSize, marked);
-        if(!Utils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))){
+        if (!Utils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))) {
             throw new BadRequestException("Недопустимое значение параметра marked");
         }
         Page<DocumentDTO> docDtoPage = documentsService.getDocumentsDTO(
@@ -134,11 +133,11 @@ public class DocumentController {
         return docDtoPage;
     }
 
-    @GetMapping(value="{id}")
-    public DocumentDTO getDocumentById(@PathVariable("id") Long id){
+    @GetMapping(value = "{id}")
+    public DocumentDTO getDocumentById(@PathVariable("id") Long id) {
         log.info("DocumentController: getDocumentById");
         DocumentDTO docDTO = documentsService.getDocumentDTOById(id);
-        if(docDTO.getFiles()!=null) {
+        if (docDTO.getFiles() != null) {
             for (FileDTO fileDTO : docDTO.getFiles()) {
                 setLinkToFile(fileDTO, id);
             }
@@ -147,8 +146,8 @@ public class DocumentController {
         return docDTO;
     }
 
-    @PostMapping(value="/search")
-    public Page<DocumentDTO>  getDocumentsByFilter(@RequestBody SearchCriteriaListDTO requestDTO){
+    @PostMapping(value = "/search")
+    public Page<DocumentDTO> getDocumentsByFilter(@RequestBody SearchCriteriaListDTO requestDTO) {
         log.info("DocumentController: getDocumentsByFilter");
         List<SearchCriteriaDTO> filter = requestDTO.getFilter();
         Integer page = requestDTO.getPage();
@@ -167,7 +166,7 @@ public class DocumentController {
     public FileDTO uploadFile(@PathVariable("docid") Long docid, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart("file") MultipartFile fileData) throws IOException {
         log.info("DocumentController: uploadfile");
         NewFileDTO fileDescribe = new ObjectMapper().readValue(jsonDescribe, NewFileDTO.class);
-        if(fileData.isEmpty()){
+        if (fileData.isEmpty()) {
             log.info("Нет данных файла");
             throw new BadRequestException("Нет данных файла");
         }
@@ -185,9 +184,9 @@ public class DocumentController {
 
     @PostMapping(value = "/{docid}/files/{fileid}",
             consumes = {"multipart/form-data"})
-    public FileDTO changeFile(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileId, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart(name="file", required = false) MultipartFile fileData) throws IOException {
+    public FileDTO changeFile(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileId, @RequestPart("fileDescribe") String jsonDescribe, @RequestPart(name = "file", required = false) MultipartFile fileData) throws IOException {
         log.info("DocumentController: changeFile, docid-{}, fileDescribe{}", docid, jsonDescribe);
-        if(fileId==0){
+        if (fileId == 0) {
             throw new BadRequestException("id файла не должен быть пустым");
         }
         NewFileDTO fileDescribe = new ObjectMapper().readValue(jsonDescribe, NewFileDTO.class);
@@ -205,10 +204,10 @@ public class DocumentController {
         return fileDTO;
     }
 
-    @GetMapping(value={"/{docid}/files/{fileid}/download", "/{docid}/files/{fileid}/download/{filename}"},
+    @GetMapping(value = {"/{docid}/files/{fileid}/download", "/{docid}/files/{fileid}/download/{filename}"},
             produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
     @ResponseBody
-    public ResponseEntity<byte[]> getFileDataForDownload(@PathVariable("docid") Long docid, @PathVariable(name = "filename", required = false) Optional<String> reqFilename, @PathVariable(name="fileid") Long fileid){
+    public ResponseEntity<byte[]> getFileDataForDownload(@PathVariable("docid") Long docid, @PathVariable(name = "filename", required = false) Optional<String> reqFilename, @PathVariable(name = "fileid") Long fileid) {
         log.info("DocumentController: getFileDataForDownload");
         FileDataDTO fileData = documentsService.getFileData(docid, fileid);
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -218,37 +217,37 @@ public class DocumentController {
         return ResponseEntity.ok().headers(httpHeaders).body(fileData.getFileData());
     }
 
-    @GetMapping(value="/{docid}/files/{fileid}/data")
+    @GetMapping(value = "/{docid}/files/{fileid}/data")
     @ResponseBody
-    public ResponseEntity<byte[]> getFileData(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
+    public ResponseEntity<byte[]> getFileData(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid) {
         log.info("DocumentController: getFileData");
         FileDataDTO fileData = documentsService.getFileData(docid, fileid);
         MediaType mt = MediaType.valueOf(fileData.getContentType());
         return ResponseEntity.ok().contentType(mt).body(fileData.getFileData());
     }
 
-    @GetMapping(value="/{docid}/files")
-    public Set<FileDTO> getFiles(@PathVariable("docid") Long docid){
+    @GetMapping(value = "/{docid}/files")
+    public Set<FileDTO> getFiles(@PathVariable("docid") Long docid) {
         log.info("DocumentController: getFileslist");
         return documentsService.getFilesDTOList(docid, this::setLinkToFile);
     }
 
-    @GetMapping(value="/{docid}/files/{fileid}")
-    public FileDTO getFileDescribe(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
+    @GetMapping(value = "/{docid}/files/{fileid}")
+    public FileDTO getFileDescribe(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid) {
         log.info("DocumentController: getFileDescribe, docid-{}, fileid{}", docid, fileid);
         return documentsService.getFileDTODescribe(
                 docid, fileid, this::setLinkToFile);
     }
 
-    @DeleteMapping(value="/{docid}/files/{fileid}")
-    public void deleteFile(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid){
+    @DeleteMapping(value = "/{docid}/files/{fileid}")
+    public void deleteFile(@PathVariable("docid") Long docid, @PathVariable("fileid") Long fileid) {
         log.info("DocumentController: deleteFile, docid-{}, fileid{}", docid, fileid);
         documentsService.deleteFile(docid, fileid);
         log.info("DocumentController: deleteFile - deleted, docid-{}, fileid{}", docid, fileid);
     }
 
-    @DeleteMapping(value="/{docid}/files/clear")
-    public void clearFiles(@PathVariable("docid") Long docid){
+    @DeleteMapping(value = "/{docid}/files/clear")
+    public void clearFiles(@PathVariable("docid") Long docid) {
         log.info("DocumentController: clearFiles, docid-{}", docid);
         documentsService.clearFiles(docid);
         log.info("DocumentController: clearFiles - done, docid-{}", docid);

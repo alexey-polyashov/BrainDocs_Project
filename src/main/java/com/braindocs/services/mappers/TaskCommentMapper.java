@@ -16,9 +16,9 @@ import java.time.format.DateTimeFormatter;
 @Service
 public class TaskCommentMapper {
 
-    private UserService userService;
-    private OptionService optionService;
-    private TasksService tasksService;
+    private final UserService userService;
+    private final OptionService optionService;
+    private final TasksService tasksService;
 
 
     @Autowired

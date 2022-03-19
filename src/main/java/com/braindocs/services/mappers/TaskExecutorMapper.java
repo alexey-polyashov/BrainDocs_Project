@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -23,11 +22,11 @@ import java.util.Optional;
 @Service
 public class TaskExecutorMapper {
 
-    private UserService userService;
-    private OptionService optionService;
-    private TasksService tasksService;
-    private TaskResultsRepository taskResultsRepository;
-    private TaskMapper taskMapper;
+    private final UserService userService;
+    private final OptionService optionService;
+    private final TasksService tasksService;
+    private final TaskResultsRepository taskResultsRepository;
+    private final TaskMapper taskMapper;
 
     @Autowired
     public TaskExecutorMapper(UserService userService,
@@ -73,7 +72,7 @@ public class TaskExecutorMapper {
         dto.setDateOfCompletion(dateFormatter.format(model.getDateOfComletion()));
         dto.setComment(model.getComment());
         TaskResultsModel taskResult = model.getResult();
-        if(taskResult!=null) {
+        if (taskResult != null) {
             dto.setResult(new TaskResultDTO(
                     taskResult.getId(),
                     taskResult.getResultName(),
@@ -93,15 +92,15 @@ public class TaskExecutorMapper {
                 userService.findById(dto.getExecutor().getId()));
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
         model.setPlanedDate(LocalDateTime.parse(dto.getCreatedAt(), dtf));
-        if(!dto.getCreatedAt().isEmpty()){
+        if (!dto.getCreatedAt().isEmpty()) {
             model.setDateOfComletion(LocalDateTime.parse(dto.getDateOfCompletion(), dtf));
         }
         model.setComment(dto.getComment());
-        if(dto.getResult()!=null) {
+        if (dto.getResult() != null) {
             Long resId = dto.getResult().getId();
             Optional<TaskResultsModel> taskResult = taskResultsRepository.findById(resId);
             model.setResult(taskResult.orElseThrow(
-                    ()->new ResourceNotFoundException("Не найден результат выполнения задачи с id '" + resId + "'"))
+                    () -> new ResourceNotFoundException("Не найден результат выполнения задачи с id '" + resId + "'"))
             );
         }
         model.setStatus(dto.getStatus());
@@ -118,7 +117,7 @@ public class TaskExecutorMapper {
         Long resId = source.getResult().getId();
         Optional<TaskResultsModel> taskResult = taskResultsRepository.findById(resId);
         receiver.setResult(taskResult.orElseThrow(
-                ()->new ResourceNotFoundException("Не найден результат выполнения задачи с id '" + resId + "'"))
+                () -> new ResourceNotFoundException("Не найден результат выполнения задачи с id '" + resId + "'"))
         );
         receiver.setStatus(source.getStatus());
         return receiver;

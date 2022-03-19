@@ -14,15 +14,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value="/api/v1/contacts")
+@RequestMapping(value = "/api/v1/contacts")
 @Slf4j
-@Api(value="Contacts controller", tags="Контроллер контактов")
+@Api(value = "Contacts controller", tags = "Контроллер контактов")
 public class ContactController {
 
     private final ContactTypeMapper contactTypeMapper;
@@ -30,9 +31,9 @@ public class ContactController {
 
     @GetMapping("/types")
     public List<ContactTypeDTO> getTypes(
-            @RequestParam(name = "marked", defaultValue = "off", required = false) String marked){
+            @RequestParam(name = "marked", defaultValue = "off", required = false) String marked) {
         log.info("ContactController: getTypes, marked -{} ", marked);
-        if(!Utils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))){
+        if (!Utils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))) {
             throw new BadRequestException("Недопустимое значение параметра marked");
         }
         List<ContactTypeModel> typeModels = contactTypeService.findAll(MarkedRequestValue.valueOf(marked.toUpperCase(Locale.ROOT)));

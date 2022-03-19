@@ -3,6 +3,7 @@ package com.braindocs.dto.users;
 import com.braindocs.dto.organization.OrganisationNameDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 @Data

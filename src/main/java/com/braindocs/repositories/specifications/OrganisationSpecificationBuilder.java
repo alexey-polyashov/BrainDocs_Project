@@ -13,18 +13,18 @@ import java.util.stream.Collectors;
 public class OrganisationSpecificationBuilder {
 
     private final List<SearchCriteria> params;
-    private UserService userService;
+    private final UserService userService;
     private final Options options;
-
-    public OrganisationSpecificationBuilder with(String key, String operation, Object value) {
-        params.add(new SearchCriteria(key, operation, value));
-        return this;
-    }
 
     public OrganisationSpecificationBuilder(UserService userService, Options options) {
         this.options = options;
         this.params = new ArrayList<SearchCriteria>();
         this.userService = userService;
+    }
+
+    public OrganisationSpecificationBuilder with(String key, String operation, Object value) {
+        params.add(new SearchCriteria(key, operation, value));
+        return this;
     }
 
     public Specification<OrganisationModel> build() {
@@ -33,7 +33,7 @@ public class OrganisationSpecificationBuilder {
         }
 
         List<Specification> specs = params.stream()
-                .map(p->new OrganisationSpecification(p, userService, options))
+                .map(p -> new OrganisationSpecification(p, userService, options))
                 .collect(Collectors.toList());
 
         Specification<OrganisationModel> result = specs.get(0);

@@ -23,6 +23,7 @@ public class OptionService {
     public String getDateFormat() {
         return dateFormat;
     }
+
     public String getDateTimeFormat() {
         return dateTimeFormat;
     }

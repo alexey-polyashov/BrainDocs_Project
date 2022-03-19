@@ -2,7 +2,11 @@ package com.braindocs.services.users;
 
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.users.UserContactModel;
+import com.braindocs.models.users.UserModel;
+import com.braindocs.models.users.UserRoleModel;
+import com.braindocs.repositories.users.RoleRepository;
 import com.braindocs.repositories.users.UserContactRepository;
+import com.braindocs.repositories.users.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -11,10 +15,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.braindocs.models.users.UserRoleModel;
-import com.braindocs.models.users.UserModel;
-import com.braindocs.repositories.users.RoleRepository;
-import com.braindocs.repositories.users.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 @Service(value = "UserServiceV1")
 @RequiredArgsConstructor
-public class UserService  implements UserDetailsService {
+public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserContactRepository userContactsRepository;
     private final RoleRepository roleRepository;
@@ -51,14 +51,14 @@ public class UserService  implements UserDetailsService {
     }
 
     public UserModel changePassword(Long userId, String oldPassword, String newPassword) {
-        UserModel user = userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("Пользователь с id '" + userId + "'"));
+        UserModel user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("Пользователь с id '" + userId + "'"));
         if (user.getPassword().equals(passwordEncoder.encode(oldPassword)))
             user.setPassword(passwordEncoder.encode(newPassword));
         return userRepository.save(user);
     }
 
     public UserModel restorePassword(String email, String newPassword) {
-        UserModel user = userRepository.findByEmail(email).orElseThrow(()->new ResourceNotFoundException("Пользователь с логином '" + email + "'"));
+        UserModel user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Пользователь с логином '" + email + "'"));
         user.setPassword(passwordEncoder.encode(newPassword));
         return userRepository.save(user);
     }
@@ -68,7 +68,7 @@ public class UserService  implements UserDetailsService {
     }
 
     public UserModel findByLoginAndPassword(String email, String password) {
-        UserModel userEntity = findByEmail(email).orElseThrow(()->new ResourceNotFoundException("Пользователь с логином '" + email + "'"));
+        UserModel userEntity = findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Пользователь с логином '" + email + "'"));
         if (userEntity != null) {
             if (passwordEncoder.matches(password, userEntity.getPassword())) {
                 return userEntity;
@@ -81,18 +81,18 @@ public class UserService  implements UserDetailsService {
         return userRepository.findByLogin(login);
     }
 
-    public UserModel findById(Long id){
+    public UserModel findById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Пользователь по id '" + id + "' не найден"));
+                .orElseThrow(() -> new ResourceNotFoundException("Пользователь по id '" + id + "' не найден"));
     }
 
-    public List<UserModel> findByConfirmed(Boolean confirmed){
+    public List<UserModel> findByConfirmed(Boolean confirmed) {
         return userRepository.findByConfirmed(confirmed);
     }
 
     public UserModel confirmUser(Long id) {
         UserModel user = userRepository.findById(id)
-                .orElseThrow(()->new ResourceNotFoundException("Пользователь с логином " + id + ""));
+                .orElseThrow(() -> new ResourceNotFoundException("Пользователь с логином " + id + ""));
         user.setConfirmed(true);
         return userRepository.save(user);
     }
@@ -101,7 +101,7 @@ public class UserService  implements UserDetailsService {
     public UserModel update(UserModel user) {
         UserModel oldUser = userRepository.findById(
                         user.getId())
-                .orElseThrow(()->new ResourceNotFoundException("Пользователь с ID " + user.getId() + ""));
+                .orElseThrow(() -> new ResourceNotFoundException("Пользователь с ID " + user.getId() + ""));
         oldUser.setBirthday(user.getBirthday());
         oldUser.setEmail(user.getEmail());
         oldUser.setFullname(user.getFullname());
@@ -112,7 +112,7 @@ public class UserService  implements UserDetailsService {
         List<UserContactModel> userContacts = user.getContacts();
         userContactsRepository.deleteByUserid(user.getId());
         userContacts.stream()
-                .forEach(p-> {
+                .forEach(p -> {
                     p.setUserid(oldUser.getId());
                     userContactsRepository.save(p);
                 });

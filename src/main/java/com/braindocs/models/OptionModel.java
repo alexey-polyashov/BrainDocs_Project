@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="options")
+@Table(name = "options")
 @Data
 @NoArgsConstructor
 public class OptionModel {
@@ -18,7 +18,7 @@ public class OptionModel {
     @Column(name = "id")
     private final Integer id = 1;
 
-    @Column(name="file_storage_type")
+    @Column(name = "file_storage_type")
     private Integer fileStorageType;
 
 }

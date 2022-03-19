@@ -12,7 +12,7 @@ public class OrganisationContactMapper {
 
     private final ContactTypeService contactTypeService;
 
-    public OrganisationContactsDTO toDTO(OrganisationContactsModel organisationContactsModel){
+    public OrganisationContactsDTO toDTO(OrganisationContactsModel organisationContactsModel) {
         OrganisationContactsDTO dto = new OrganisationContactsDTO();
         dto.setId(organisationContactsModel.getId());
         dto.setTypeId(organisationContactsModel.getType().getId());
@@ -22,7 +22,7 @@ public class OrganisationContactMapper {
         return dto;
     }
 
-    public OrganisationContactsModel toModel(OrganisationContactsDTO organisationContactsDTO){
+    public OrganisationContactsModel toModel(OrganisationContactsDTO organisationContactsDTO) {
         OrganisationContactsModel model = new OrganisationContactsModel();
         model.setId(organisationContactsDTO.getId());
         model.setType(contactTypeService.findById(organisationContactsDTO.getTypeId()));

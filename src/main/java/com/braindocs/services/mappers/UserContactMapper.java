@@ -12,7 +12,7 @@ public class UserContactMapper {
 
     private final ContactTypeService contactTypeService;
 
-    public UserContactDTO toDTO(UserContactModel userContactsModel){
+    public UserContactDTO toDTO(UserContactModel userContactsModel) {
         UserContactDTO dto = new UserContactDTO();
         dto.setId(userContactsModel.getId());
         dto.setTypeId(userContactsModel.getType().getId());
@@ -22,7 +22,7 @@ public class UserContactMapper {
         return dto;
     }
 
-    public UserContactModel toModel(UserContactDTO userContactsDTO){
+    public UserContactModel toModel(UserContactDTO userContactsDTO) {
         UserContactModel model = new UserContactModel();
         model.setId(userContactsDTO.getId());
         model.setType(contactTypeService.findById(userContactsDTO.getTypeId()));

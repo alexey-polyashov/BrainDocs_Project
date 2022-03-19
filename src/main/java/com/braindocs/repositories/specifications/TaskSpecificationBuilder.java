@@ -20,11 +20,6 @@ public class TaskSpecificationBuilder {
     private final TaskTypesService taskTypesService;
     private final Options options;
 
-    public TaskSpecificationBuilder with(String key, String operation, Object value) {
-        params.add(new SearchCriteria(key, operation, value));
-        return this;
-    }
-
     public TaskSpecificationBuilder(UserService userService,
                                     OrganisationService organisationService,
                                     TaskTypesService taskTypesService,
@@ -36,13 +31,18 @@ public class TaskSpecificationBuilder {
         this.options = options;
     }
 
+    public TaskSpecificationBuilder with(String key, String operation, Object value) {
+        params.add(new SearchCriteria(key, operation, value));
+        return this;
+    }
+
     public Specification<TaskModel> build() {
         if (params.isEmpty()) {
             return null;
         }
 
         List<Specification> specs = params.stream()
-                .map(p->new TaskSpecification(p, userService, organisationService, taskTypesService, options))
+                .map(p -> new TaskSpecification(p, userService, organisationService, taskTypesService, options))
                 .collect(Collectors.toList());
 
         Specification<TaskModel> result = specs.get(0);

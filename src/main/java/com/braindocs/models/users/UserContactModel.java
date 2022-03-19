@@ -7,18 +7,18 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@Table(name="user_contacts")
+@Table(name = "user_contacts")
 @Data
 @NoArgsConstructor
 public class UserContactModel {
-    @Column(name="userid")
+    @Column(name = "userid")
     private Long userid;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="type")
+    @JoinColumn(name = "type")
     private ContactTypeModel type;
 
-    @Column(name="present")
+    @Column(name = "present")
     private String present;
 
     @Id

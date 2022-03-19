@@ -24,26 +24,25 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/organisations")
 @Slf4j
-public class OrganisqtionController {
+public class OrganisationController {
 
+    private static final String STRING_TYPE = "String";
+    private static final String LONG_TYPE = "Long";
     private final OrganisationService organisationService;
     private final UserService userService;
     private final OrganisationMapper organisationMapper;
 
-    private static final String STRING_TYPE = "String";
-    private static final String LONG_TYPE = "Long";
-
-    @GetMapping(value="/fields")
+    @GetMapping(value = "/fields")
     //возвращает список доступных полей и операций с ними
     //операции: ">" (больше или равно), "<" (меньше или равно), ":" (для строковых полей модели - содержит, для других = )
     //типы полей могут быть любыми - это просто описание типа для правильного построения интерфейса
-    public Set<FieldsListDTO> getFields(){
+    public Set<FieldsListDTO> getFields() {
         log.info("OrganisqtionController: getFields");
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
-        fieldsSet.add(new FieldsListDTO("Наименование организации", "name", "", Arrays.asList(":"), STRING_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("ИНН организации", "inn", "", Arrays.asList(":"), STRING_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("КПП организации", "kpp", "", Arrays.asList(":"), STRING_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Руководитель", "manager", "/api/v1/users", Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Наименование", "name", "", Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("ИНН", "inn", "", Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("КПП", "kpp", "", Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Руководитель", "manager", "users", Arrays.asList(":"), LONG_TYPE, false));
         log.info("OrganisqtionController: getFields return {} elements", fieldsSet.size());
         return fieldsSet;
     }
@@ -57,14 +56,14 @@ public class OrganisqtionController {
 
     @PostMapping("/{orgid}")
     public Long change(@PathVariable Long orgid, @RequestBody OrganisationDTO organisationDTO) {
-        if(orgid==0){
+        if (orgid == 0) {
             throw new BadRequestException("id должен быть отличен от 0");
         }
         return organisationService.change(orgid, organisationMapper.toModel(organisationDTO));
     }
 
     @GetMapping("/{id}")
-    public OrganisationDTO findById(@PathVariable Long id){
+    public OrganisationDTO findById(@PathVariable Long id) {
         return organisationMapper.toDTO(organisationService.findById(id));
     }
 
@@ -76,8 +75,8 @@ public class OrganisqtionController {
         Integer recordsOnPage = requestDTO.getRecordsOnPage();
         Page<OrganisationModel> organisationPage =
                 organisationService.getOrganisationByFields(
-                    page,
-                    recordsOnPage,
+                        page,
+                        recordsOnPage,
                         filter);
         Page<OrganisationDTO> organisationDTOPage = organisationPage.map(organisationMapper::toDTO);
         log.info("OrganisqtionController: search return {} elements", organisationDTOPage.getSize());
@@ -85,26 +84,26 @@ public class OrganisqtionController {
     }
 
     @DeleteMapping("/finally/{orgid}")
-    public void delete(@PathVariable Long orgid){
+    public void delete(@PathVariable Long orgid) {
         log.info("OrganisqtionController: delete");
         organisationService.deleteById(orgid);
     }
 
     @DeleteMapping("/{orgid}")
-    public void mark(@PathVariable Long orgid){
+    public void mark(@PathVariable Long orgid) {
         log.info("OrganisqtionController: mark");
         organisationService.setMark(orgid, true);
     }
 
     @PostMapping("/unmark/{orgid}")
-    public void unMark(@PathVariable Long orgid){
+    public void unMark(@PathVariable Long orgid) {
         log.info("OrganisqtionController: unMark");
         organisationService.setMark(orgid, false);
     }
 
     @GetMapping("")
     public List<OrganisationDTO> findAll(@RequestParam(name = "marked", defaultValue = "off", required = false) String marked) {
-        if(!Utils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))){
+        if (!Utils.isValidEnum(MarkedRequestValue.class, marked.toUpperCase(Locale.ROOT))) {
             throw new BadRequestException("Недопустимое значение параметра marked");
         }
         return organisationService.findAll(MarkedRequestValue.valueOf(marked.toUpperCase(Locale.ROOT)))
