@@ -1,6 +1,9 @@
 package com.braindocs.controllers.documents;
 
+import com.braindocs.common.history.DoNotTrackHistory;
+import com.braindocs.common.history.HistoryOperationType;
 import com.braindocs.common.MarkedRequestValue;
+import com.braindocs.common.history.TrackHistory;
 import com.braindocs.common.Utils;
 import com.braindocs.dto.FieldsListDTO;
 import com.braindocs.dto.SearchCriteriaDTO;
@@ -38,6 +41,7 @@ import java.util.*;
 @RequestMapping(value = "/api/v1/documents")
 @Slf4j
 @Api(value = "DocumentController", tags = "Контролер документов")
+@TrackHistory(operation = HistoryOperationType.Document)
 public class DocumentController {
 
     private static final String STRING_TYPE = "String";
@@ -147,6 +151,7 @@ public class DocumentController {
     }
 
     @PostMapping(value = "/search")
+    @DoNotTrackHistory
     public Page<DocumentDTO> getDocumentsByFilter(@RequestBody SearchCriteriaListDTO requestDTO) {
         log.info("DocumentController: getDocumentsByFilter");
         List<SearchCriteriaDTO> filter = requestDTO.getFilter();

@@ -1,5 +1,7 @@
 package com.braindocs.services.users;
 
+import com.braindocs.configs.JwtTokenUtil;
+import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.users.UserContactModel;
 import com.braindocs.models.users.UserModel;
@@ -10,15 +12,21 @@ import com.braindocs.repositories.users.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -29,6 +37,7 @@ public class UserService implements UserDetailsService {
     private final UserContactRepository userContactsRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenUtil tokenUtil;
 
     @Override
     @Transactional
@@ -43,6 +52,10 @@ public class UserService implements UserDetailsService {
 
     public Optional<UserModel> findByUsername(String username) {
         return userRepository.findByLogin(username);
+    }
+
+    public UserModel findByUsernameOrThrow(String username) {
+        return findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("пользователь не может быть определен"));
     }
 
     public UserModel saveNewUser(UserModel user) {
