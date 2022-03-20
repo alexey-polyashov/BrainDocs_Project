@@ -81,7 +81,7 @@ public class TaskExecutorMapper {
             dto.setCreatedAt(dateFormatter.format(model.getCreateTime()));
         }
         if(model.getPlanedDate()!=null) {
-            dto.setCreatedAt(dateFormatter.format(model.getPlanedDate()));
+            dto.setPlanedDate(dateFormatter.format(model.getPlanedDate()));
         }
         if(model.getDateOfComletion()!=null) {
             dto.setDateOfCompletion(dateFormatter.format(model.getDateOfComletion()));
@@ -110,11 +110,14 @@ public class TaskExecutorMapper {
                 userService.findById(dto.getExecutor().getId()));
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
         if(dto.getCreatedAt()!=null) {
-            model.setPlanedDate(LocalDateTime.parse(dto.getCreatedAt(), dtf));
+            model.setCreateTime(LocalDateTime.parse(dto.getCreatedAt(), dtf));
         }else{
-            model.setPlanedDate(LocalDateTime.now());
+            model.setCreateTime(LocalDateTime.now());
         }
-        if (dto.getDateOfCompletion()!=null && !dto.getCreatedAt().isEmpty()) {
+        if (dto.getPlanedDate()!=null && !dto.getPlanedDate().isEmpty()) {
+            model.setPlanedDate(LocalDateTime.parse(dto.getPlanedDate(), dtf));
+        }
+        if (dto.getDateOfCompletion()!=null && !dto.getDateOfCompletion().isEmpty()) {
             model.setDateOfComletion(LocalDateTime.parse(dto.getDateOfCompletion(), dtf));
         }
         model.setComment(dto.getComment());
