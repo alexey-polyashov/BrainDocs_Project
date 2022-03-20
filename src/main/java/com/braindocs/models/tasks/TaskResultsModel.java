@@ -21,6 +21,9 @@ public class TaskResultsModel {
     @Column(name = "resultname")
     private String resultName;
 
+    @Column(name = "result_type")
+    private Integer resultType;//1-positive, 2-withComments, 3-negative, 4-other
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

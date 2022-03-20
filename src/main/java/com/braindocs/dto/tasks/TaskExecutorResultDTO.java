@@ -9,11 +9,11 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaskResultDTO {
+public class TaskExecutorResultDTO {
 
-    private Long id;
-    private String resultName;
-    private Integer resultType;//1-positive, 2-withComments, 3-negative, 4-other
-    private Boolean marked;
+    private Long resultId;
+    private String resultComment;
+    private Long executor;
+    private String executeDate;
 
 }

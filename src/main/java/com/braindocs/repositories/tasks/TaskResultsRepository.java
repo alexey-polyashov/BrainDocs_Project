@@ -10,5 +10,6 @@ import java.util.List;
 public interface TaskResultsRepository extends JpaRepository<TaskResultsModel, Long> {
 
     List<TaskResultsModel> findByMarked(Boolean marked);
+    List<TaskResultsModel> findByTaskTypeId(Long taskTypeId);
 
 }

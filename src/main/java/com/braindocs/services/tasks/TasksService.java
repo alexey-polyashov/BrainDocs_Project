@@ -4,10 +4,7 @@ import com.braindocs.common.MarkedRequestValue;
 import com.braindocs.common.Options;
 import com.braindocs.common.Utils;
 import com.braindocs.dto.SearchCriteriaDTO;
-import com.braindocs.dto.tasks.TaskCommentDTO;
-import com.braindocs.dto.tasks.TaskDTO;
-import com.braindocs.dto.tasks.TaskExecutorDTO;
-import com.braindocs.dto.tasks.TaskExecutorDtoExt;
+import com.braindocs.dto.tasks.*;
 import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.tasks.TaskCommentModel;
@@ -18,11 +15,13 @@ import com.braindocs.repositories.specifications.TaskExecutorSpecificationBuilde
 import com.braindocs.repositories.specifications.TaskSpecificationBuilder;
 import com.braindocs.repositories.tasks.TaskCommentsRepository;
 import com.braindocs.repositories.tasks.TaskExecutorsRepository;
+import com.braindocs.repositories.tasks.TaskResultsRepository;
 import com.braindocs.repositories.tasks.TasksRepository;
 import com.braindocs.services.OrganisationService;
 import com.braindocs.services.mappers.TaskCommentMapper;
 import com.braindocs.services.mappers.TaskExecutorMapper;
 import com.braindocs.services.mappers.TaskMapper;
+import com.braindocs.services.mappers.TaskResultMapper;
 import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,6 +52,8 @@ public class TasksService {
     private final OrganisationService organisationService;
     private final TaskExecutorMapper taskExecutorMapper;
     private final TaskCommentMapper taskCommentMapper;
+    private final TaskResultMapper taskResultMapper;
+    private final TaskResultsRepository taskResultsRepository;
 
     @Transactional
     public Page<TaskModel> getTasksByFields(int pageNumber, int pageSize, List<SearchCriteriaDTO> filter) {
@@ -84,21 +86,6 @@ public class TasksService {
 
     @Transactional
     public Page<TaskExecutorModel> getExecutorsByFields(int pageNumber, int pageSize, List<SearchCriteriaDTO> filter) {
-
-//        List<SearchCriteriaDTO> markedCriteria = filter.stream()
-//                .filter(p->p.getKey().equals("marked"))
-//                .collect(Collectors.toList());
-//
-//        if(markedCriteria.isEmpty()){
-//            filter.add(new SearchCriteriaDTO("marked", ":", "OFF"));
-//        }else{
-//            if(!Utils.isValidEnum(MarkedRequestValue.class,
-//                    markedCriteria.get(0)
-//                            .getValue()
-//                            .toUpperCase(Locale.ROOT))){
-//                throw new BadRequestException("Недопустимое значение параметра marked");
-//            }
-//        }
 
         TaskExecutorSpecificationBuilder builder = new TaskExecutorSpecificationBuilder(userService, organisationService, taskTypesService, options);
         for (SearchCriteriaDTO creteriaDTO : filter) {
@@ -241,4 +228,26 @@ public class TasksService {
         taskExecutorsRepository.deleteByTaskAndId(task, exId);
     }
 
+    public List<TaskResultDTO> getResultListForTaskType(Long typeId) {
+        return taskResultsRepository.findByTaskTypeId(typeId)
+                .stream()
+                .map(taskResultMapper::toDTO)
+                .collect(Collectors.toList());
+
+    }
+
+    public TaskExecutorModel executeTask(Long taskId, Long execotorId, TaskExecutorResultDTO executorResult) {
+        TaskExecutorModel tem = taskExecutorsRepository.findById(execotorId)
+                .orElseThrow(()->new ResourceNotFoundException("Не найдена запись исполнителя по id - '" + execotorId + "'"));
+        if(executorResult)
+        tem.setDateOfComletion(LocalDateTime.parse(source.getDateOfCompletion(), dtf));
+        receiver.setComment(source.getComment());
+        Long resId = source.getResult().getId();
+        Optional<TaskResultsModel> taskResult = taskResultsRepository.findById(resId);
+        receiver.setResult(taskResult.orElseThrow(
+                () -> new ResourceNotFoundException("Не найден результат выполнения задачи с id '" + resId + "'"))
+        );
+        receiver.setStatus(source.getStatus());
+//        return null;
+    }
 }

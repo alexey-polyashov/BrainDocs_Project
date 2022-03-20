@@ -55,6 +55,7 @@ public class TaskExecutorMapper {
         dto.setResult(new TaskResultDTO(
                 taskResult.getId(),
                 taskResult.getResultName(),
+                taskResult.getResultType(),
                 taskResult.getMarked()
         ));
         dto.setStatus(model.getStatus());
@@ -76,6 +77,7 @@ public class TaskExecutorMapper {
             dto.setResult(new TaskResultDTO(
                     taskResult.getId(),
                     taskResult.getResultName(),
+                    taskResult.getResultType(),
                     taskResult.getMarked()
             ));
         }
@@ -112,14 +114,14 @@ public class TaskExecutorMapper {
                 userService.findById(source.getExecutor().getId()));
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
         receiver.setPlanedDate(LocalDateTime.parse(source.getCreatedAt(), dtf));
-        receiver.setDateOfComletion(LocalDateTime.parse(source.getDateOfCompletion(), dtf));
-        receiver.setComment(source.getComment());
-        Long resId = source.getResult().getId();
-        Optional<TaskResultsModel> taskResult = taskResultsRepository.findById(resId);
-        receiver.setResult(taskResult.orElseThrow(
-                () -> new ResourceNotFoundException("Не найден результат выполнения задачи с id '" + resId + "'"))
-        );
-        receiver.setStatus(source.getStatus());
+//        receiver.setDateOfComletion(LocalDateTime.parse(source.getDateOfCompletion(), dtf));
+//        receiver.setComment(source.getComment());
+//        Long resId = source.getResult().getId();
+//        Optional<TaskResultsModel> taskResult = taskResultsRepository.findById(resId);
+//        receiver.setResult(taskResult.orElseThrow(
+//                () -> new ResourceNotFoundException("Не найден результат выполнения задачи с id '" + resId + "'"))
+//        );
+//        receiver.setStatus(source.getStatus());
         return receiver;
     }
 

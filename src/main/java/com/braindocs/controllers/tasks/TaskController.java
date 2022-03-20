@@ -84,6 +84,12 @@ public class TaskController {
         }};
     }
 
+    @GetMapping(value = "/types/{typeId}/results")
+    public List<TaskResultDTO> getResultListForTaskType(@PathVariable(name = "typeId") Long id) {
+        log.info("TaskController: getStatuslist ");
+        return tasksService.getResultListForTaskType(id);
+    }
+
     @GetMapping(value = "/types")
     public List<TaskTypeDTO> getTypesList(
             @RequestParam(name = "marked", defaultValue = "off", required = false) String marked) {
@@ -184,7 +190,7 @@ public class TaskController {
         tasksService.deleteTask(taskId);
     }
 
-    @GetMapping(value = "{taskId}/executors")
+    @GetMapping(value = "/{taskId}/executors")
     public List<TaskExecutorDTO> getExecutors(@PathVariable("taskId") Long taskId) {
         log.info("TaskController: getExecutors");
         List<TaskExecutorModel> executors = tasksService.getExecutors(taskId);
@@ -194,7 +200,7 @@ public class TaskController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping(value = "{taskId}/executors/{exId}")
+    @GetMapping(value = "/{taskId}/executors/{exId}")
     public TaskExecutorDTO getExecutor(@PathVariable("taskId") Long taskId,
                                        @PathVariable("exId") Long exId) {
         log.info("TaskController: getExecutor");
@@ -203,7 +209,17 @@ public class TaskController {
         return taskExecutorMapper.toDTO(executor);
     }
 
-    @GetMapping(value = "{taskId}/comments")
+    @PostMapping(value = "/{taskId}/executors/{exId}/results/")
+    public Long executeTask(@PathVariable("exId") Long id,
+                                       @PathVariable("taskId") Long taskId,
+                                       @RequestBody TaskExecutorResultDTO executorResult) {
+        log.info("TaskController: executeTask");
+        TaskExecutorModel executor = tasksService.executeTask(taskId, id, executorResult);
+        log.info("TaskController: executeTask (return id {})", executor.getId());
+        return taskExecutorMapper.toDTO(executor);
+    }
+
+    @GetMapping(value = "/{taskId}/comments")
     public List<TaskCommentDTO> getComments(@PathVariable("taskId") Long taskId) {
         log.info("TaskController: addComments");
         List<TaskCommentModel> comments = tasksService.getComments(taskId);
@@ -292,7 +308,7 @@ public class TaskController {
         tasksService.deleteComment(taskId, commentId);
     }
 
-    @DeleteMapping(value = "{taskId}/executors/{exId}")
+    @DeleteMapping(value = "/{taskId}/executors/{exId}")
     public void deleteExecutor(@PathVariable("taskId") Long taskId,
                                @PathVariable("exId") Long exId) {
         log.info("TaskController: deleteExecutor, taskId - {}, exId - {}", taskId, exId);
