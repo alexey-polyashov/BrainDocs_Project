@@ -84,6 +84,18 @@ public class TaskController {
         }};
     }
 
+    @GetMapping(value = "/executors/statuses")
+    public Map<Integer, String> getExecutorsStatusList() {
+        log.info("TaskController: getExecutorsStatusList ");
+        return new HashMap<Integer, String>() {{
+            put(1, "Ожидает выполнения");
+            put(2, "В работе");
+            put(3, "Выполнена");
+            put(4, "Отменена");
+            put(5, "Уточнение");
+        }};
+    }
+
     @GetMapping(value = "/types")
     public List<TaskTypeDTO> getTypesList(
             @RequestParam(name = "marked", defaultValue = "off", required = false) String marked) {
