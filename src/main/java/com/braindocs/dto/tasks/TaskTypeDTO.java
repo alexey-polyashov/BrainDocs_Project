@@ -10,7 +10,7 @@ import lombok.Setter;
 public class TaskTypeDTO {
 
     private Long id;
-    private String name;
+    private String typeName;
     private Boolean marked;
 
 }

@@ -12,7 +12,7 @@ import lombok.Setter;
 public class TaskResultDTO {
 
     private Long id;
-    private String name;
+    private String resultName;
     private Boolean marked;
 
 }
