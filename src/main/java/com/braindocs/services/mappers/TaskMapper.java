@@ -52,7 +52,8 @@ public class TaskMapper {
 
         TaskModel model = new TaskModel();
         model.setId(dto.getId());
-        if(dto.getCreateTime().isEmpty()){
+        if(dto.getCreateTime()==null
+                || dto.getCreateTime().isEmpty()){
             model.setCreateTime(LocalDateTime.now());
         }else{
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
