@@ -47,16 +47,26 @@ public class TaskExecutorMapper {
         dto.setExecutor(new UserNameDTO(model.getExecutor()));
         dto.setTaskId(model.getTask().getId());
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        dto.setCreatedAt(dateFormatter.format(model.getCreateTime()));
-        dto.setPlanedDate(dateFormatter.format(model.getPlanedDate()));
-        dto.setDateOfCompletion(dateFormatter.format(model.getDateOfComletion()));
-        dto.setComment(model.getComment());
+        if(model.getCreateTime()!=null) {
+            dto.setCreatedAt(dateFormatter.format(model.getCreateTime()));
+        }
+        if(model.getPlanedDate()!=null) {
+            dto.setCreatedAt(dateFormatter.format(model.getPlanedDate()));
+        }
+        if(model.getDateOfComletion()!=null) {
+            dto.setCreatedAt(dateFormatter.format(model.getDateOfComletion()));
+        }
+        if(model.getComment()!=null) {
+            dto.setComment(model.getComment());
+        }
         TaskResultsModel taskResult = model.getResult();
-        dto.setResult(new TaskResultDTO(
-                taskResult.getId(),
-                taskResult.getResultName(),
-                taskResult.getMarked()
-        ));
+        if(taskResult!=null) {
+            dto.setResult(new TaskResultDTO(
+                    taskResult.getId(),
+                    taskResult.getResultName(),
+                    taskResult.getMarked()
+            ));
+        }
         dto.setStatus(model.getStatus());
         return dto;
     }
@@ -67,12 +77,18 @@ public class TaskExecutorMapper {
         dto.setExecutor(new UserNameDTO(model.getExecutor()));
         dto.setTask(taskMapper.toDTO(model.getTask()));
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        dto.setCreatedAt(dateFormatter.format(model.getCreateTime()));
-        dto.setPlanedDate(dateFormatter.format(model.getPlanedDate()));
+        if(model.getCreateTime()!=null) {
+            dto.setCreatedAt(dateFormatter.format(model.getCreateTime()));
+        }
+        if(model.getPlanedDate()!=null) {
+            dto.setCreatedAt(dateFormatter.format(model.getPlanedDate()));
+        }
         if(model.getDateOfComletion()!=null) {
             dto.setDateOfCompletion(dateFormatter.format(model.getDateOfComletion()));
         }
-        dto.setComment(model.getComment());
+        if(model.getComment()!=null) {
+            dto.setComment(model.getComment());
+        }
         TaskResultsModel taskResult = model.getResult();
         if (taskResult != null) {
             dto.setResult(new TaskResultDTO(
@@ -93,8 +109,12 @@ public class TaskExecutorMapper {
         model.setExecutor(
                 userService.findById(dto.getExecutor().getId()));
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        model.setPlanedDate(LocalDateTime.parse(dto.getCreatedAt(), dtf));
-        if (!dto.getCreatedAt().isEmpty()) {
+        if(dto.getCreatedAt()!=null) {
+            model.setPlanedDate(LocalDateTime.parse(dto.getCreatedAt(), dtf));
+        }else{
+            model.setPlanedDate(LocalDateTime.now());
+        }
+        if (dto.getDateOfCompletion()!=null && !dto.getCreatedAt().isEmpty()) {
             model.setDateOfComletion(LocalDateTime.parse(dto.getDateOfCompletion(), dtf));
         }
         model.setComment(dto.getComment());
@@ -113,15 +133,17 @@ public class TaskExecutorMapper {
         receiver.setExecutor(
                 userService.findById(source.getExecutor().getId()));
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        receiver.setPlanedDate(LocalDateTime.parse(source.getCreatedAt(), dtf));
-        receiver.setDateOfComletion(LocalDateTime.parse(source.getDateOfCompletion(), dtf));
-        receiver.setComment(source.getComment());
-        Long resId = source.getResult().getId();
-        Optional<TaskResultsModel> taskResult = taskResultsRepository.findById(resId);
-        receiver.setResult(taskResult.orElseThrow(
-                () -> new ResourceNotFoundException("Не найден результат выполнения задачи с id '" + resId + "'"))
-        );
-        receiver.setStatus(source.getStatus());
+        if (source.getDateOfCompletion()!=null && !source.getCreatedAt().isEmpty()) {
+            receiver.setPlanedDate(LocalDateTime.parse(source.getCreatedAt(), dtf));
+        }
+        //receiver.setDateOfComletion(LocalDateTime.parse(source.getDateOfCompletion(), dtf));
+//        receiver.setComment(source.getComment());
+//        Long resId = source.getResult().getId();
+//        Optional<TaskResultsModel> taskResult = taskResultsRepository.findById(resId);
+//        receiver.setResult(taskResult.orElseThrow(
+//                () -> new ResourceNotFoundException("Не найден результат выполнения задачи с id '" + resId + "'"))
+//        );
+//        receiver.setStatus(source.getStatus());
         return receiver;
     }
 
