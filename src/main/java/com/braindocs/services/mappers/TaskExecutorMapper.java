@@ -1,5 +1,6 @@
 package com.braindocs.services.mappers;
 
+import com.braindocs.common.Options;
 import com.braindocs.dto.tasks.TaskExecutorDTO;
 import com.braindocs.dto.tasks.TaskExecutorDtoExt;
 import com.braindocs.dto.tasks.TaskResultDTO;
@@ -8,34 +9,31 @@ import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.tasks.TaskExecutorModel;
 import com.braindocs.models.tasks.TaskResultsModel;
 import com.braindocs.repositories.tasks.TaskResultsRepository;
-import com.braindocs.services.OptionService;
 import com.braindocs.services.tasks.TasksService;
 import com.braindocs.services.users.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 @Service
 public class TaskExecutorMapper {
 
     private final UserService userService;
-    private final OptionService optionService;
+    private final Options options;
     private final TasksService tasksService;
     private final TaskResultsRepository taskResultsRepository;
     private final TaskMapper taskMapper;
 
     @Autowired
     public TaskExecutorMapper(UserService userService,
-                              OptionService optionService,
+                              Options options,
                               TaskResultsRepository taskResultsRepository,
                               TaskMapper taskMapper,
                               @Lazy TasksService tasksService) {
         this.userService = userService;
-        this.optionService = optionService;
+        this.options = options;
         this.tasksService = tasksService;
         this.taskResultsRepository = taskResultsRepository;
         this.taskMapper = taskMapper;
@@ -46,16 +44,9 @@ public class TaskExecutorMapper {
         dto.setId(model.getId());
         dto.setExecutor(new UserNameDTO(model.getExecutor()));
         dto.setTaskId(model.getTask().getId());
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        if(model.getCreateTime()!=null) {
-            dto.setCreatedAt(dateFormatter.format(model.getCreateTime()));
-        }
-        if(model.getPlanedDate()!=null) {
-            dto.setCreatedAt(dateFormatter.format(model.getPlanedDate()));
-        }
-        if(model.getDateOfComletion()!=null) {
-            dto.setCreatedAt(dateFormatter.format(model.getDateOfComletion()));
-        }
+        dto.setCreatedAt(options.converDateTimeToString(model.getCreateTime()));
+        dto.setPlanedDate(options.converDateTimeToString(model.getPlanedDate()));
+        dto.setDateOfCompletion(options.converDateTimeToString(model.getDateOfComletion()));
         if(model.getComment()!=null) {
             dto.setComment(model.getComment());
         }
@@ -82,16 +73,9 @@ public class TaskExecutorMapper {
         dto.setId(model.getId());
         dto.setExecutor(new UserNameDTO(model.getExecutor()));
         dto.setTask(taskMapper.toDTO(model.getTask()));
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        if(model.getCreateTime()!=null) {
-            dto.setCreatedAt(dateFormatter.format(model.getCreateTime()));
-        }
-        if(model.getPlanedDate()!=null) {
-            dto.setPlanedDate(dateFormatter.format(model.getPlanedDate()));
-        }
-        if(model.getDateOfComletion()!=null) {
-            dto.setDateOfCompletion(dateFormatter.format(model.getDateOfComletion()));
-        }
+        dto.setCreatedAt(options.converDateTimeToString(model.getCreateTime()));
+        dto.setPlanedDate(options.converDateTimeToString(model.getPlanedDate()));
+        dto.setDateOfCompletion(options.converDateTimeToString(model.getDateOfComletion()));
         if(model.getComment()!=null) {
             dto.setComment(model.getComment());
         }
@@ -120,18 +104,9 @@ public class TaskExecutorMapper {
                 tasksService.findById(dto.getTaskId()));
         model.setExecutor(
                 userService.findById(dto.getExecutor().getId()));
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        if(dto.getCreatedAt()!=null) {
-            model.setCreateTime(LocalDateTime.parse(dto.getCreatedAt(), dtf));
-        }else{
-            model.setCreateTime(LocalDateTime.now());
-        }
-        if (dto.getPlanedDate()!=null && !dto.getPlanedDate().isEmpty()) {
-            model.setPlanedDate(LocalDateTime.parse(dto.getPlanedDate(), dtf));
-        }
-        if (dto.getDateOfCompletion()!=null && !dto.getDateOfCompletion().isEmpty()) {
-            model.setDateOfComletion(LocalDateTime.parse(dto.getDateOfCompletion(), dtf));
-        }
+        model.setCreateTime(options.converStringtToDateTime(dto.getCreatedAt()));
+        model.setPlanedDate(options.converStringtToDateTime(dto.getPlanedDate()));
+        model.setDateOfComletion(options.converStringtToDateTime(dto.getDateOfCompletion()));
         model.setComment(dto.getComment());
         if (dto.getResult() != null) {
             Long resId = dto.getResult().getId();
@@ -147,10 +122,7 @@ public class TaskExecutorMapper {
     public TaskExecutorModel moveChanges(TaskExecutorModel receiver, TaskExecutorDTO source) {
         receiver.setExecutor(
                 userService.findById(source.getExecutor().getId()));
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        if (source.getDateOfCompletion()!=null && !source.getCreatedAt().isEmpty()) {
-            receiver.setPlanedDate(LocalDateTime.parse(source.getCreatedAt(), dtf));
-        }
+        receiver.setPlanedDate(options.converStringtToDateTime(source.getPlanedDate()));
         //receiver.setDateOfComletion(LocalDateTime.parse(source.getDateOfCompletion(), dtf));
 //        receiver.setComment(source.getComment());
 //        Long resId = source.getResult().getId();

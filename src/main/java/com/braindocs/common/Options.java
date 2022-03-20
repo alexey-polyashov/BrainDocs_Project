@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
@@ -19,11 +20,17 @@ public class Options {
 
     private Integer fileStorageType = 1;
     private String dateFormat;
+    private String dateTimeFormat;
 
     public DateTimeFormatter getDateTimeFormatter() {
         return dateTimeFormatter;
     }
 
+    public DateTimeFormatter getDateFormatter() {
+        return dateFormatter;
+    }
+
+    private DateTimeFormatter dateFormatter;
     private DateTimeFormatter dateTimeFormatter;
 
     @Autowired
@@ -33,8 +40,16 @@ public class Options {
             OptionModel opt = options.get();
             this.fileStorageType = opt.getFileStorageType();
             this.dateFormat = optionService.getDateFormat();
-            this.dateTimeFormatter = DateTimeFormatter.ofPattern(dateFormat);
+            this.dateTimeFormat = optionService.getDateTimeFormat();
+            this.dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
+            this.dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat);
+        }else{
+            this.fileStorageType = 1;
+            this.dateFormat = optionService.getDateFormat();
+            this.dateTimeFormat = optionService.getDateTimeFormat();
         }
+        this.dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
+        this.dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat);
     }
 
     @PostConstruct
@@ -48,6 +63,23 @@ public class Options {
 
     public String getDateFormat() {
         return dateFormat;
+    }
+
+    public LocalDateTime converStringtToDateTime(String dateTime){
+        if(dateTime==null || dateTime.isEmpty()){
+            return LocalDateTime.now();
+        }
+        if(dateTime.indexOf("T")>=0){
+            dateTime = dateTime.replace("T", " ");
+        }
+        return LocalDateTime.parse(dateTime, this.dateTimeFormatter);
+    }
+
+    public String converDateTimeToString(LocalDateTime dateTime){
+        if(dateTime==null){
+            return "";
+        }
+        return this.dateTimeFormatter.format(dateTime);
     }
 
 }

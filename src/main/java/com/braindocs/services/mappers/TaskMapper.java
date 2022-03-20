@@ -1,19 +1,17 @@
 package com.braindocs.services.mappers;
 
+import com.braindocs.common.Options;
 import com.braindocs.common.Utils;
 import com.braindocs.dto.tasks.TaskDTO;
 import com.braindocs.dto.users.UserNameDTO;
 import com.braindocs.models.tasks.TaskModel;
 import com.braindocs.models.users.UserModel;
-import com.braindocs.services.OptionService;
 import com.braindocs.services.documents.DocumentsService;
 import com.braindocs.services.tasks.TaskTypesService;
 import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
 
@@ -26,14 +24,13 @@ public class TaskMapper {
     private final DocumentMapper documentMapper;
     private final DocumentsService documentsService;
     private final UserService userService;
-    private final OptionService optionService;
+    private final Options options;
 
     public TaskDTO toDTO(TaskModel model) {
 
         TaskDTO dto = new TaskDTO();
         dto.setId(model.getId());
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        dto.setCreateTime(dtf.format(model.getCreateTime()));
+        dto.setCreateTime(options.converDateTimeToString(model.getCreateTime()));
         dto.setTaskType(taskTypeMapper.toDTO(model.getType()));
         dto.setHeading(model.getHeading());
         dto.setContent(model.getContent());
@@ -52,13 +49,7 @@ public class TaskMapper {
 
         TaskModel model = new TaskModel();
         model.setId(dto.getId());
-        if(dto.getCreateTime()==null
-                || dto.getCreateTime().isEmpty()){
-            model.setCreateTime(LocalDateTime.now());
-        }else{
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-            model.setCreateTime(LocalDateTime.parse(dto.getCreateTime(), dtf));
-        }
+        model.setCreateTime(options.converStringtToDateTime(dto.getCreateTime()));
         model.setType(
                 taskTypesService.findById(dto.getTaskType().getId()));
         model.setHeading(dto.getHeading());
@@ -78,8 +69,7 @@ public class TaskMapper {
     }
 
     public TaskModel moveChanges(TaskModel receiver, TaskDTO source) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        receiver.setCreateTime(LocalDateTime.parse(source.getCreateTime(), dtf));
+        receiver.setCreateTime(options.converStringtToDateTime(source.getCreateTime()));
         receiver.setType(
                 taskTypesService.findById(source.getTaskType().getId()));
         receiver.setHeading(source.getHeading());
