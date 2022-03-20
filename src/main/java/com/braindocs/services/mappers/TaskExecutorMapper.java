@@ -66,6 +66,12 @@ public class TaskExecutorMapper {
                     taskResult.getResultName(),
                     taskResult.getMarked()
             ));
+        }else{
+            dto.setResult(new TaskResultDTO(
+                    0L,
+                    "В работе",
+                    false
+            ));
         }
         dto.setStatus(model.getStatus());
         return dto;
@@ -95,6 +101,12 @@ public class TaskExecutorMapper {
                     taskResult.getId(),
                     taskResult.getResultName(),
                     taskResult.getMarked()
+            ));
+        }else{
+            dto.setResult(new TaskResultDTO(
+                    0L,
+                    "В работе",
+                    false
             ));
         }
         dto.setStatus(model.getStatus());
