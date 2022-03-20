@@ -52,8 +52,12 @@ public class TaskMapper {
 
         TaskModel model = new TaskModel();
         model.setId(dto.getId());
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        model.setCreateTime(LocalDateTime.parse(dto.getCreateTime(), dtf));
+        if(dto.getCreateTime().isEmpty()){
+            model.setCreateTime(LocalDateTime.now());
+        }else{
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
+            model.setCreateTime(LocalDateTime.parse(dto.getCreateTime(), dtf));
+        }
         model.setType(
                 taskTypesService.findById(dto.getTaskType().getId()));
         model.setHeading(dto.getHeading());
