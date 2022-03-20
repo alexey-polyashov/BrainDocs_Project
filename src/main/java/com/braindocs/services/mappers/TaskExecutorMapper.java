@@ -69,7 +69,9 @@ public class TaskExecutorMapper {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
         dto.setCreatedAt(dateFormatter.format(model.getCreateTime()));
         dto.setPlanedDate(dateFormatter.format(model.getPlanedDate()));
-        dto.setDateOfCompletion(dateFormatter.format(model.getDateOfComletion()));
+        if(model.getDateOfComletion()!=null) {
+            dto.setDateOfCompletion(dateFormatter.format(model.getDateOfComletion()));
+        }
         dto.setComment(model.getComment());
         TaskResultsModel taskResult = model.getResult();
         if (taskResult != null) {
