@@ -63,7 +63,7 @@ public class TaskMapper {
                 taskTypesService.findById(dto.getTaskType().getId()));
         model.setHeading(dto.getHeading());
         model.setContent(dto.getContent());
-        model.setStatus(dto.getStatus());
+        model.setStatus(1L);
         UserModel userModel = userService.findById(dto.getAuthor().getId());
         model.setAuthor(userModel);
         model.setMarked(false);
