@@ -48,8 +48,12 @@ public class TaskCommentMapper {
                 tasksService.findById(dto.getTaskId()));
         model.setAuthor(
                 userService.findById(dto.getAuthor().getId()));
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
-        model.setCreateTime(LocalDateTime.parse(dto.getCreateTime(), dtf));
+        if(dto.getCreateTime()==null) {
+            model.setCreateTime(LocalDateTime.now());
+        }else {
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern(optionService.getDateTimeFormat());
+            model.setCreateTime(LocalDateTime.parse(dto.getCreateTime(), dtf));
+        }
         model.setComment(dto.getComment());
         return model;
     }
