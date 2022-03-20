@@ -70,9 +70,6 @@ public class Options {
         if(dateTime==null || dateTime.isEmpty()){
             return ldt;
         }
-        if(dateTime.indexOf("T")>=0){
-            dateTime = dateTime.replace("T", " ");
-        }
         try {
             //допускается универсальный формат
             ldt = LocalDateTime.parse(dateTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
