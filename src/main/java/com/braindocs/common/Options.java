@@ -66,13 +66,21 @@ public class Options {
     }
 
     public LocalDateTime converStringtToDateTime(String dateTime){
+        LocalDateTime ldt = LocalDateTime.now();
         if(dateTime==null || dateTime.isEmpty()){
-            return LocalDateTime.now();
+            return ldt;
         }
         if(dateTime.indexOf("T")>=0){
             dateTime = dateTime.replace("T", " ");
         }
-        return LocalDateTime.parse(dateTime, this.dateTimeFormatter);
+        try {
+            //допускается универсальный формат
+            ldt = LocalDateTime.parse(dateTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        }catch (Exception e) {
+            //пробуем наш формат
+            ldt = LocalDateTime.parse(dateTime, this.dateTimeFormatter);
+        }
+        return ldt;
     }
 
     public String converDateTimeToString(LocalDateTime dateTime){
