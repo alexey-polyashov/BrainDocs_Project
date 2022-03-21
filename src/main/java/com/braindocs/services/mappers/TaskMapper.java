@@ -4,6 +4,7 @@ import com.braindocs.common.Options;
 import com.braindocs.common.Utils;
 import com.braindocs.dto.tasks.TaskDTO;
 import com.braindocs.dto.users.UserNameDTO;
+import com.braindocs.models.files.FileModel;
 import com.braindocs.models.tasks.TaskModel;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.services.documents.DocumentsService;
@@ -12,6 +13,7 @@ import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.stream.Collectors;
 
 
@@ -25,6 +27,7 @@ public class TaskMapper {
     private final DocumentsService documentsService;
     private final UserService userService;
     private final Options options;
+    private final FileMapper fileMapper;
 
     public TaskDTO toDTO(TaskModel model) {
 
@@ -41,6 +44,9 @@ public class TaskMapper {
                 .stream()
                 .map(documentMapper::toSubjectDTO)
                 .collect(Collectors.toSet()));
+
+        dto.setFiles(model.getFiles().stream().map(fileMapper::toDTO).collect(Collectors.toList()));
+
         return dto;
 
     }
@@ -63,6 +69,7 @@ public class TaskMapper {
                 .stream()
                 .map(p -> documentsService.getDocument(p.getId()))
                 .collect(Collectors.toSet()));
+        model.setFiles(new HashSet<FileModel>());
 
         return model;
 

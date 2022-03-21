@@ -1,5 +1,6 @@
 package com.braindocs.dto.tasks;
 
+import com.braindocs.dto.files.FileDTO;
 import com.braindocs.dto.users.UserNameDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -27,4 +29,5 @@ public class TaskDTO {
     private Set<TaskSubjectDTO> subjects;
     private Boolean marked;
 
+    private List<FileDTO> files;
 }

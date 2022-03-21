@@ -1,6 +1,7 @@
 package com.braindocs.models.tasks;
 
 import com.braindocs.models.documents.DocumentModel;
+import com.braindocs.models.files.FileModel;
 import com.braindocs.models.users.UserModel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,6 +43,12 @@ public class TaskModel {
             joinColumns = @JoinColumn(name = "task_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "subject_id"))
     private Set<DocumentModel> subjects;
+
+    @ManyToMany
+    @JoinTable(name = "tasks_files",
+            joinColumns = @JoinColumn(name = "ownerid", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "fileid"))
+    private Set<FileModel> files;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

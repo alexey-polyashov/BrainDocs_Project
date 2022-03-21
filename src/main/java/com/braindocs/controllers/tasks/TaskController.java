@@ -328,100 +328,100 @@ public class TaskController {
 
 
 
-//    @PostMapping(value = "/{taskId}/files/upload",
-//            consumes = {"multipart/form-data"})
-//    public FileDTO uploadFile(@PathVariable("taskId") Long id, @RequestPart("fileDescribe") String jsonDescribe,
-//                              @RequestPart("file") MultipartFile fileData) throws IOException {
-//        log.info("TaskController: uploadfile");
-//        NewFileDTO fileDescribe = new ObjectMapper().readValue(jsonDescribe, NewFileDTO.class);
-//        if (fileData.isEmpty()) {
-//            log.info("Нет данных файла");
-//            throw new BadRequestException("Нет данных файла");
-//        }
-//        FileModel fileModel;
-//        try {
-//            fileModel = fileMapper.toModel(fileDescribe, fileData);
-//        } catch (IOException e) {
-//            log.error("Ошибка получения данных файла\n" + e.getMessage() + "\n" + e.getCause());
-//            throw new ServiceError("Ошибка получения данных файла");
-//        }
-//        FileDTO fileDTO = tasksService.addFile(id, fileModel, fileData);
-//        setLinkToFile(fileDTO, id);
-//        return fileDTO;
-//    }
-//
-//    @PostMapping(value = "/{taskid}/files/{fileid}",
-//            consumes = {"multipart/form-data"})
-//    public FileDTO changeFile(@PathVariable("taskid") Long id, @PathVariable("fileid") Long fileId, @RequestPart("fileDescribe") String jsonDescribe,
-//                              @RequestPart(name = "file", required = false) MultipartFile fileData) throws IOException {
-//        log.info("TaskController: changeFile, docid-{}, fileDescribe{}", id, jsonDescribe);
-//        if (fileId == 0) {
-//            throw new BadRequestException("id файла не должен быть пустым");
-//        }
-//        NewFileDTO fileDescribe = new ObjectMapper().readValue(jsonDescribe, NewFileDTO.class);
-//        FileModel fileModel;
-//        try {
-//            fileModel = fileMapper.toModel(fileDescribe, fileData);
-//        } catch (IOException e) {
-//            log.error("Ошибка получения данных файла\n{}\n{}", e.getMessage(), e.getCause());
-//            throw new ServiceError("Ошибка получения данных файла");
-//        }
-//        fileModel.setId(fileId);
-//        FileDTO fileDTO = tasksService.changeFile(id, fileModel, fileData);
-//        setLinkToFile(fileDTO, id);
-//        log.info("TaskController: changeFile - changed, docid-{}, fileDescribe - {}, fileId-{}", id, fileDTO.getId(), jsonDescribe);
-//        return fileDTO;
-//    }
-//
-//    @GetMapping(value = {"/{taskid}/files/{fileid}/download", "/{taskid}/files/{fileid}/download/{filename}"},
-//            produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-//    @ResponseBody
-//    public ResponseEntity<byte[]> getFileDataForDownload(@PathVariable("taskid") Long id, @PathVariable(name = "filename", required = false) Optional<String> reqFilename,
-//                                                         @PathVariable(name = "fileid") Long fileid) {
-//        log.info("TaskController: getFileDataForDownload");
-//        FileDataDTO fileData = tasksService.getFileData(id, fileid);
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-//        String fileName = reqFilename.orElse(fileData.getName()) + "." + fileData.getFileType();
-//        httpHeaders.set("Content-Disposition", "attachment; filename=" + fileName);
-//        return ResponseEntity.ok().headers(httpHeaders).body(fileData.getFileData());
-//    }
-//
-//    @GetMapping(value = "/{taskid}/files/{fileid}/data")
-//    @ResponseBody
-//    public ResponseEntity<byte[]> getFileData(@PathVariable("taskid") Long id, @PathVariable("fileid") Long fileid) {
-//        log.info("TaskController: getFileData");
-//        FileDataDTO fileData = tasksService.getFileData(id, fileid);
-//        MediaType mt = MediaType.valueOf(fileData.getContentType());
-//        return ResponseEntity.ok().contentType(mt).body(fileData.getFileData());
-//    }
-//
-//    @GetMapping(value = "/{taskid}/files")
-//    public Set<FileDTO> getFiles(@PathVariable("taskid") Long id) {
-//        log.info("TaskController: getFileslist");
-//        return tasksService.getFilesDTOList(id, this::setLinkToFile);
-//    }
-//
-//    @GetMapping(value = "/{taskid}/files/{fileid}")
-//    public FileDTO getFileDescribe(@PathVariable("taskid") Long id, @PathVariable("fileid") Long fileid) {
-//        log.info("TaskController: getFileDescribe, docid-{}, fileid{}", id, fileid);
-//        return tasksService.getFileDTODescribe(
-//                id, fileid, this::setLinkToFile);
-//    }
-//
-//    @DeleteMapping(value = "/{taskid}/files/{fileid}")
-//    public void deleteFile(@PathVariable("taskid") Long id, @PathVariable("fileid") Long fileid) {
-//        log.info("TaskController: deleteFile, docid-{}, fileid{}", id, fileid);
-//        tasksService.deleteFile(id, fileid);
-//        log.info("DocumentController: deleteFile - deleted, docid-{}, fileid{}", id, fileid);
-//    }
-//
-//    @DeleteMapping(value = "/{taskid}/files/clear")
-//    public void clearFiles(@PathVariable("taskid") Long id) {
-//        log.info("TaskController: clearFiles, docid-{}", id);
-//        tasksService.clearFiles(id);
-//        log.info("DocumentController: clearFiles - done, docid-{}", id);
-//    }
+    @PostMapping(value = "/{taskId}/files/upload",
+            consumes = {"multipart/form-data"})
+    public FileDTO uploadFile(@PathVariable("taskId") Long id, @RequestPart("fileDescribe") String jsonDescribe,
+                              @RequestPart("file") MultipartFile fileData) throws IOException {
+        log.info("TaskController: uploadfile");
+        NewFileDTO fileDescribe = new ObjectMapper().readValue(jsonDescribe, NewFileDTO.class);
+        if (fileData.isEmpty()) {
+            log.info("Нет данных файла");
+            throw new BadRequestException("Нет данных файла");
+        }
+        FileModel fileModel;
+        try {
+            fileModel = fileMapper.toModel(fileDescribe, fileData);
+        } catch (IOException e) {
+            log.error("Ошибка получения данных файла\n" + e.getMessage() + "\n" + e.getCause());
+            throw new ServiceError("Ошибка получения данных файла");
+        }
+        FileDTO fileDTO = tasksService.addFile(id, fileModel, fileData);
+        setLinkToFile(fileDTO, id);
+        return fileDTO;
+    }
+
+    @PostMapping(value = "/{taskid}/files/{fileid}",
+            consumes = {"multipart/form-data"})
+    public FileDTO changeFile(@PathVariable("taskid") Long id, @PathVariable("fileid") Long fileId, @RequestPart("fileDescribe") String jsonDescribe,
+                              @RequestPart(name = "file", required = false) MultipartFile fileData) throws IOException {
+        log.info("TaskController: changeFile, docid-{}, fileDescribe{}", id, jsonDescribe);
+        if (fileId == 0) {
+            throw new BadRequestException("id файла не должен быть пустым");
+        }
+        NewFileDTO fileDescribe = new ObjectMapper().readValue(jsonDescribe, NewFileDTO.class);
+        FileModel fileModel;
+        try {
+            fileModel = fileMapper.toModel(fileDescribe, fileData);
+        } catch (IOException e) {
+            log.error("Ошибка получения данных файла\n{}\n{}", e.getMessage(), e.getCause());
+            throw new ServiceError("Ошибка получения данных файла");
+        }
+        fileModel.setId(fileId);
+        FileDTO fileDTO = tasksService.changeFile(id, fileModel, fileData);
+        setLinkToFile(fileDTO, id);
+        log.info("TaskController: changeFile - changed, docid-{}, fileDescribe - {}, fileId-{}", id, fileDTO.getId(), jsonDescribe);
+        return fileDTO;
+    }
+
+    @GetMapping(value = {"/{taskid}/files/{fileid}/download", "/{taskid}/files/{fileid}/download/{filename}"},
+            produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    @ResponseBody
+    public ResponseEntity<byte[]> getFileDataForDownload(@PathVariable("taskid") Long id, @PathVariable(name = "filename", required = false) Optional<String> reqFilename,
+                                                         @PathVariable(name = "fileid") Long fileid) {
+        log.info("TaskController: getFileDataForDownload");
+        FileDataDTO fileData = tasksService.getFileData(id, fileid);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        String fileName = reqFilename.orElse(fileData.getName()) + "." + fileData.getFileType();
+        httpHeaders.set("Content-Disposition", "attachment; filename=" + fileName);
+        return ResponseEntity.ok().headers(httpHeaders).body(fileData.getFileData());
+    }
+
+    @GetMapping(value = "/{taskid}/files/{fileid}/data")
+    @ResponseBody
+    public ResponseEntity<byte[]> getFileData(@PathVariable("taskid") Long id, @PathVariable("fileid") Long fileid) {
+        log.info("TaskController: getFileData");
+        FileDataDTO fileData = tasksService.getFileData(id, fileid);
+        MediaType mt = MediaType.valueOf(fileData.getContentType());
+        return ResponseEntity.ok().contentType(mt).body(fileData.getFileData());
+    }
+
+    @GetMapping(value = "/{taskid}/files")
+    public Set<FileDTO> getFiles(@PathVariable("taskid") Long id) {
+        log.info("TaskController: getFileslist");
+        return tasksService.getFilesDTOList(id, this::setLinkToFile);
+    }
+
+    @GetMapping(value = "/{taskid}/files/{fileid}")
+    public FileDTO getFileDescribe(@PathVariable("taskid") Long id, @PathVariable("fileid") Long fileid) {
+        log.info("TaskController: getFileDescribe, docid-{}, fileid{}", id, fileid);
+        return tasksService.getFileDTODescribe(
+                id, fileid, this::setLinkToFile);
+    }
+
+    @DeleteMapping(value = "/{taskid}/files/{fileid}")
+    public void deleteFile(@PathVariable("taskid") Long id, @PathVariable("fileid") Long fileid) {
+        log.info("TaskController: deleteFile, docid-{}, fileid{}", id, fileid);
+        tasksService.deleteFile(id, fileid);
+        log.info("DocumentController: deleteFile - deleted, docid-{}, fileid{}", id, fileid);
+    }
+
+    @DeleteMapping(value = "/{taskid}/files/clear")
+    public void clearFiles(@PathVariable("taskid") Long id) {
+        log.info("TaskController: clearFiles, docid-{}", id);
+        tasksService.clearFiles(id);
+        log.info("DocumentController: clearFiles - done, docid-{}", id);
+    }
 
 
 }
