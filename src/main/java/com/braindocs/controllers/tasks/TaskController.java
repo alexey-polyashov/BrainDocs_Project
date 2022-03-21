@@ -242,9 +242,9 @@ public class TaskController {
                                        @PathVariable("taskId") Long taskId,
                                        @RequestBody TaskExecutorResultDTO executorResult) {
         log.info("TaskController: executeTask");
-        TaskExecutorModel executor = tasksService.executeTask(taskId, id, executorResult);
-        log.info("TaskController: executeTask (return id {})", executor.getId());
-        return taskExecutorMapper.toDTO(executor);
+        Long executorId = tasksService.executeTask(taskId, id, executorResult);
+        log.info("TaskController: executeTask (return id {})", executorId);
+        return executorId;
     }
 
     @GetMapping(value = "/{taskId}/comments")

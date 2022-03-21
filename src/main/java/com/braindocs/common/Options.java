@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -65,7 +66,27 @@ public class Options {
         return dateFormat;
     }
 
-    public LocalDateTime converStringtToDateTime(String dateTime){
+    public LocalDateTime convertStringToDateTime(String dateTime){
+        return parseStringtToDate(dateTime, this.dateTimeFormatter);
+    }
+
+    public String convertDateTimeToString(LocalDateTime dateTime){
+        return convertDateToString(dateTime, this.dateTimeFormatter);
+    }
+
+    public Date convertStringToDate(String dateTime){
+        return Date.valueOf(
+                parseStringtToDate(dateTime, this.dateFormatter).toLocalDate());
+    }
+
+    public String convertDateToString(LocalDateTime dateTime){
+        return this.dateFormatter.format(dateTime);
+    }
+    public String convertDateToString(Date dateTime){
+        return this.dateFormatter.format(dateTime.toLocalDate());
+    }
+
+    private LocalDateTime parseStringtToDate(String dateTime, DateTimeFormatter formater){
         LocalDateTime ldt = LocalDateTime.now();
         if(dateTime==null || dateTime.isEmpty()){
             return ldt;
@@ -78,16 +99,16 @@ public class Options {
             ldt = LocalDateTime.parse(dateTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         }catch (Exception e) {
             //пробуем наш формат
-            ldt = LocalDateTime.parse(dateTime, this.dateTimeFormatter);
+            ldt = LocalDateTime.parse(dateTime, formater);
         }
         return ldt;
     }
 
-    public String converDateTimeToString(LocalDateTime dateTime){
+    private String convertDateToString(LocalDateTime dateTime, DateTimeFormatter formater){
         if(dateTime==null){
             return "";
         }
-        return this.dateTimeFormatter.format(dateTime);
+        return formater.format(dateTime);
     }
 
 }

@@ -32,7 +32,7 @@ public class TaskCommentMapper {
         dto.setId(model.getId());
         dto.setTaskId(model.getTask().getId());
         dto.setAuthor(new UserNameDTO(model.getAuthor()));
-        dto.setCreateTime(options.converDateTimeToString(model.getCreateTime()));
+        dto.setCreateTime(options.convertDateTimeToString(model.getCreateTime()));
         dto.setComment(model.getComment());
         return dto;
     }
@@ -44,7 +44,7 @@ public class TaskCommentMapper {
                 tasksService.findById(dto.getTaskId()));
         model.setAuthor(
                 userService.findById(dto.getAuthor().getId()));
-        model.setCreateTime(options.converStringtToDateTime(dto.getCreateTime()));
+        model.setCreateTime(options.convertStringToDateTime(dto.getCreateTime()));
         model.setComment(dto.getComment());
         return model;
     }

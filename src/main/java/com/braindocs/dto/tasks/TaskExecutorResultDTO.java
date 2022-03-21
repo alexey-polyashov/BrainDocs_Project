@@ -14,6 +14,6 @@ public class TaskExecutorResultDTO {
     private Long resultId;
     private String resultComment;
     private Long executor;
-    private String executeDate;
+    private String executeDateTime;
 
 }

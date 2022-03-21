@@ -1,15 +1,9 @@
 package com.braindocs.services.mappers;
 
-import com.braindocs.dto.tasks.TaskExecutorDTO;
 import com.braindocs.dto.tasks.TaskResultDTO;
-import com.braindocs.exceptions.ResourceNotFoundException;
-import com.braindocs.models.tasks.TaskExecutorModel;
 import com.braindocs.models.tasks.TaskResultsModel;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 @Service
 public class TaskResultMapper {

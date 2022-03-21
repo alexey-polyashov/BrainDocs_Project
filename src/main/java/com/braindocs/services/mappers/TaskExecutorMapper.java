@@ -44,9 +44,9 @@ public class TaskExecutorMapper {
         dto.setId(model.getId());
         dto.setExecutor(new UserNameDTO(model.getExecutor()));
         dto.setTaskId(model.getTask().getId());
-        dto.setCreatedAt(options.converDateTimeToString(model.getCreateTime()));
-        dto.setPlanedDate(options.converDateTimeToString(model.getPlanedDate()));
-        dto.setDateOfCompletion(options.converDateTimeToString(model.getDateOfComletion()));
+        dto.setCreatedAt(options.convertDateTimeToString(model.getCreateTime()));
+        dto.setPlanedDate(options.convertDateTimeToString(model.getPlanedDate()));
+        dto.setDateOfCompletion(options.convertDateTimeToString(model.getDateOfComletion()));
         if(model.getComment()!=null) {
             dto.setComment(model.getComment());
         }
@@ -62,6 +62,7 @@ public class TaskExecutorMapper {
             dto.setResult(new TaskResultDTO(
                     0L,
                     "В работе",
+                    4,
                     false
             ));
         }
@@ -74,9 +75,9 @@ public class TaskExecutorMapper {
         dto.setId(model.getId());
         dto.setExecutor(new UserNameDTO(model.getExecutor()));
         dto.setTask(taskMapper.toDTO(model.getTask()));
-        dto.setCreatedAt(options.converDateTimeToString(model.getCreateTime()));
-        dto.setPlanedDate(options.converDateTimeToString(model.getPlanedDate()));
-        dto.setDateOfCompletion(options.converDateTimeToString(model.getDateOfComletion()));
+        dto.setCreatedAt(options.convertDateTimeToString(model.getCreateTime()));
+        dto.setPlanedDate(options.convertDateTimeToString(model.getPlanedDate()));
+        dto.setDateOfCompletion(options.convertDateTimeToString(model.getDateOfComletion()));
         if(model.getComment()!=null) {
             dto.setComment(model.getComment());
         }
@@ -92,6 +93,7 @@ public class TaskExecutorMapper {
             dto.setResult(new TaskResultDTO(
                     0L,
                     "В работе",
+                    4,
                     false
             ));
         }
@@ -106,9 +108,9 @@ public class TaskExecutorMapper {
                 tasksService.findById(dto.getTaskId()));
         model.setExecutor(
                 userService.findById(dto.getExecutor().getId()));
-        model.setCreateTime(options.converStringtToDateTime(dto.getCreatedAt()));
-        model.setPlanedDate(options.converStringtToDateTime(dto.getPlanedDate()));
-        model.setDateOfComletion(options.converStringtToDateTime(dto.getDateOfCompletion()));
+        model.setCreateTime(options.convertStringToDateTime(dto.getCreatedAt()));
+        model.setPlanedDate(options.convertStringToDateTime(dto.getPlanedDate()));
+        model.setDateOfComletion(options.convertStringToDateTime(dto.getDateOfCompletion()));
         model.setComment(dto.getComment());
         if (dto.getResult() != null) {
             Long resId = dto.getResult().getId();
@@ -124,15 +126,7 @@ public class TaskExecutorMapper {
     public TaskExecutorModel moveChanges(TaskExecutorModel receiver, TaskExecutorDTO source) {
         receiver.setExecutor(
                 userService.findById(source.getExecutor().getId()));
-        receiver.setPlanedDate(options.converStringtToDateTime(source.getPlanedDate()));
-        //receiver.setDateOfComletion(LocalDateTime.parse(source.getDateOfCompletion(), dtf));
-//        receiver.setComment(source.getComment());
-//        Long resId = source.getResult().getId();
-//        Optional<TaskResultsModel> taskResult = taskResultsRepository.findById(resId);
-//        receiver.setResult(taskResult.orElseThrow(
-//                () -> new ResourceNotFoundException("Не найден результат выполнения задачи с id '" + resId + "'"))
-//        );
-//        receiver.setStatus(source.getStatus());
+        receiver.setPlanedDate(options.convertStringToDateTime(source.getPlanedDate()));
         return receiver;
     }
 
