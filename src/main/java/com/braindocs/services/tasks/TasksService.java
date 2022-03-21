@@ -4,24 +4,31 @@ import com.braindocs.common.MarkedRequestValue;
 import com.braindocs.common.Options;
 import com.braindocs.common.Utils;
 import com.braindocs.dto.SearchCriteriaDTO;
-import com.braindocs.dto.tasks.*;
+import com.braindocs.dto.tasks.TaskCommentDTO;
+import com.braindocs.dto.tasks.TaskDTO;
+import com.braindocs.dto.tasks.TaskExecutorDTO;
+import com.braindocs.dto.tasks.TaskExecutorDtoExt;
 import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ResourceNotFoundException;
+import com.braindocs.models.documents.DocumentModel;
+import com.braindocs.models.files.FileModel;
 import com.braindocs.models.tasks.TaskCommentModel;
 import com.braindocs.models.tasks.TaskExecutorModel;
 import com.braindocs.models.tasks.TaskModel;
 import com.braindocs.models.users.UserModel;
+import com.braindocs.repositories.FilesRepository;
 import com.braindocs.repositories.specifications.TaskExecutorSpecificationBuilder;
 import com.braindocs.repositories.specifications.TaskSpecificationBuilder;
 import com.braindocs.repositories.tasks.TaskCommentsRepository;
 import com.braindocs.repositories.tasks.TaskExecutorsRepository;
 import com.braindocs.repositories.tasks.TaskResultsRepository;
 import com.braindocs.repositories.tasks.TasksRepository;
+import com.braindocs.services.FilesService;
 import com.braindocs.services.OrganisationService;
+import com.braindocs.services.mappers.FileMapper;
 import com.braindocs.services.mappers.TaskCommentMapper;
 import com.braindocs.services.mappers.TaskExecutorMapper;
 import com.braindocs.services.mappers.TaskMapper;
-import com.braindocs.services.mappers.TaskResultMapper;
 import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,11 +37,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,6 +65,14 @@ public class TasksService {
     private final TaskCommentMapper taskCommentMapper;
     private final TaskResultMapper taskResultMapper;
     private final TaskResultsRepository taskResultsRepository;
+    private final FilesService filesService;
+    private final FileMapper fileMapper;
+
+    //получение документа по id
+    public TaskModel getTask(Long taskId) {
+        return tasksRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Задача с id-'" + taskId + "' не найдена"));
+    }
 
     @Transactional
     public Page<TaskModel> getTasksByFields(int pageNumber, int pageSize, List<SearchCriteriaDTO> filter) {
@@ -86,6 +105,21 @@ public class TasksService {
 
     @Transactional
     public Page<TaskExecutorModel> getExecutorsByFields(int pageNumber, int pageSize, List<SearchCriteriaDTO> filter) {
+
+//        List<SearchCriteriaDTO> markedCriteria = filter.stream()
+//                .filter(p->p.getKey().equals("marked"))
+//                .collect(Collectors.toList());
+//
+//        if(markedCriteria.isEmpty()){
+//            filter.add(new SearchCriteriaDTO("marked", ":", "OFF"));
+//        }else{
+//            if(!Utils.isValidEnum(MarkedRequestValue.class,
+//                    markedCriteria.get(0)
+//                            .getValue()
+//                            .toUpperCase(Locale.ROOT))){
+//                throw new BadRequestException("Недопустимое значение параметра marked");
+//            }
+//        }
 
         TaskExecutorSpecificationBuilder builder = new TaskExecutorSpecificationBuilder(userService, organisationService, taskTypesService, options);
         for (SearchCriteriaDTO creteriaDTO : filter) {
@@ -123,8 +157,7 @@ public class TasksService {
     }
 
     public TaskModel findById(Long taskId) {
-        return tasksRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
+        return getTask(taskId);
     }
 
     public Long saveTask(TaskDTO taskDTO) {
@@ -195,38 +228,144 @@ public class TasksService {
 
     @Transactional
     public void deleteTask(Long taskId) {
-        TaskModel task = tasksRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
+        TaskModel task = getTask(taskId);
         tasksRepository.delete(task);
     }
 
     @Transactional
     public void markTask(Long taskId) {
-        TaskModel task = tasksRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
+        TaskModel task = getTask(taskId);
         task.setMarked(true);
     }
 
     @Transactional
     public void unMarkTask(Long taskId) {
-        TaskModel task = tasksRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
+        TaskModel task = getTask(taskId);
         task.setMarked(false);
     }
 
     @Transactional
     public void deleteComment(Long taskId, Long commentId) {
-        TaskModel task = tasksRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Не найден задача по id '" + taskId + "'"));
+        TaskModel task = getTask(taskId);
         taskCommentsRepository.deleteByTaskAndId(task, commentId);
     }
 
     @Transactional
     public void deleteExecutor(Long taskId, Long exId) {
-        TaskModel task = tasksRepository.findById(taskId)
-                .orElseThrow(() -> new ResourceNotFoundException("Не найдена задача по id '" + taskId + "'"));
+        TaskModel task = getTask(taskId);
         taskExecutorsRepository.deleteByTaskAndId(task, exId);
     }
+
+    //получение файла по id
+    @Transactional
+    public FileModel getTaskFile(Long taskId, Long fileId) {
+        TaskModel taskModel = getTask(taskId);
+        FileModel fileModel = null;
+        for (FileModel file : taskModel.getFiles()) {
+            if (file.getId().equals(fileId)) {
+                fileModel = file;
+                break;
+            }
+        }
+        if (fileModel == null) {
+            throw new ResourceNotFoundException("Файл с id-'" + fileId + "' не принадлежит задаче с id-'" + taskId + "'");
+        }
+        return fileModel;
+    }
+
+    //добавление одного файла
+    @Transactional
+    public FileDTO addFile(Long taskId, FileModel file, MultipartFile fileData) throws IOException {
+        if (file.getId() != 0) {
+            log.error("file id is not empty");
+            throw new BadRequestException("Id файла должен быть пустым");
+        }
+        TaskModel taskModel = getTask(taskId);
+        FileModel fileModel = filesService.add(file, fileData);
+        taskModel.getFiles().add(fileModel);
+        tasksRepository.save(taskModel);
+        return fileMapper.toDTO(fileModel);
+    }
+
+    @Transactional
+    public Set<FileModel> getFilesList(Long taskId) {
+        TaskModel taskModel = getTask(taskId);
+        return taskModel.getFiles();
+    }
+
+    @Transactional
+    public Set<FileDTO> getFilesDTOList(Long taskId, BiConsumer<FileDTO, Long> setLink) {
+        TaskModel taskModel = getTask(taskId);
+        return taskModel.getFiles().stream().map(
+                p -> {
+                    FileDTO res = fileMapper.toDTO(p);
+                    setLink.accept(res, taskId);
+                    return res;
+                }
+        ).collect(Collectors.toSet());
+    }
+
+    //получение описания файла по id
+    @Transactional
+    public FileModel getFileDescribe(Long taskId, Long fileId) {
+        getTaskFile(taskId, fileId);
+        return filesService.findById(fileId);
+    }
+
+    @Transactional
+    public FileDTO getFileDTODescribe(Long docId, Long fileId, BiConsumer<FileDTO, Long> setLink) {
+        FileDTO fDTO = fileMapper.toDTO(filesService.findById(fileId));
+        setLink.accept(fDTO, docId);
+        return fDTO;
+    }
+
+    //получение данных файла по id
+    @Transactional
+    public FileDataDTO getFileData(Long taskId, Long fileId) {
+        getTaskFile(taskId, fileId);
+        return fileMapper.toDTOwithData(
+                filesService.getFileData(fileId)
+        );
+    }
+
+    //добавление одного файла
+    @Transactional
+    public FileDTO changeFile(Long taskId, FileModel file, MultipartFile fileData) throws IOException {
+        if (file.getId() == null || file.getId() == 0) {
+            log.error("file 'id' is empty");
+            throw new BadRequestException("Не определен 'id' изменяемого файла");
+        }
+        getTaskFile(taskId, file.getId()); //проверка существования файла
+        FileModel fileModel = null;
+        if (fileData == null || fileData.isEmpty()) {
+            fileModel = filesService.saveOnlyDescribe(file);
+        } else {
+            fileModel = filesService.saveWithAllData(file, fileData);
+        }
+        return fileMapper.toDTO(fileModel);
+    }
+
+    //удаление файла по id
+    @Transactional
+    public void deleteFile(Long taskId, Long fileId) {
+        TaskModel taskModel = getTask(taskId);
+        FileModel fileModel = getTaskFile(taskId, fileId);
+        filesService.delete(fileId);
+        taskModel.getFiles().remove(fileModel);
+        tasksRepository.save(taskModel);
+    }
+
+    //удаление всех файлов
+    @Transactional
+    public void clearFiles(Long taskId) {
+        TaskModel taskModel = getTask(taskId);
+        for (FileModel file : taskModel.getFiles()) {
+            filesService.delete(file.getId());
+        }
+        taskModel.getFiles().clear();
+        tasksRepository.save(taskModel);
+    }
+
 
     public List<TaskResultDTO> getResultListForTaskType(Long typeId) {
         return taskResultsRepository.findByTaskTypeId(typeId)
