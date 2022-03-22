@@ -33,7 +33,7 @@ public class TaskMapper {
 
         TaskDTO dto = new TaskDTO();
         dto.setId(model.getId());
-        dto.setCreateTime(options.converDateTimeToString(model.getCreateTime()));
+        dto.setCreateTime(options.convertDateTimeToString(model.getCreateTime()));
         dto.setTaskType(taskTypeMapper.toDTO(model.getType()));
         dto.setHeading(model.getHeading());
         dto.setContent(model.getContent());
@@ -55,7 +55,7 @@ public class TaskMapper {
 
         TaskModel model = new TaskModel();
         model.setId(dto.getId());
-        model.setCreateTime(options.converStringtToDateTime(dto.getCreateTime()));
+        model.setCreateTime(options.convertStringToDateTime(dto.getCreateTime()));
         model.setType(
                 taskTypesService.findById(dto.getTaskType().getId()));
         model.setHeading(dto.getHeading());
@@ -76,7 +76,7 @@ public class TaskMapper {
     }
 
     public TaskModel moveChanges(TaskModel receiver, TaskDTO source) {
-        receiver.setCreateTime(options.converStringtToDateTime(source.getCreateTime()));
+        receiver.setCreateTime(options.convertStringToDateTime(source.getCreateTime()));
         receiver.setType(
                 taskTypesService.findById(source.getTaskType().getId()));
         receiver.setHeading(source.getHeading());

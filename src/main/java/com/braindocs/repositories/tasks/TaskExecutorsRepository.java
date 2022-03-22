@@ -4,6 +4,7 @@ import com.braindocs.models.tasks.TaskExecutorModel;
 import com.braindocs.models.tasks.TaskModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,4 +19,8 @@ public interface TaskExecutorsRepository extends JpaRepository<TaskExecutorModel
     Optional<TaskExecutorModel> findByTaskAndId(TaskModel task, Long exId);
 
     void deleteByTaskAndId(TaskModel task, Long exId);
+
+    @Query("SELECT ex FROM TaskExecutorModel ex WHERE ex.task = ?1 AND ex.status IN('1', '2', '5')")
+    List<TaskExecutorModel> findActiveExecutorsInTask(TaskModel task);
+
 }
