@@ -1,6 +1,7 @@
 package com.braindocs.repositories.tasks;
 
 import com.braindocs.models.tasks.TaskResultsModel;
+import com.braindocs.models.tasks.TaskTypeModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +13,6 @@ public interface TaskResultsRepository extends JpaRepository<TaskResultsModel, L
 
     List<TaskResultsModel> findByMarked(Boolean marked);
     List<TaskResultsModel> findByTaskTypeId(Long taskTypeId);
-    Optional<TaskResultsModel> findByIdAndTaskTypeId(Long id, Long typeId);
+    Optional<TaskResultsModel> findByIdAndTaskType(Long resultId, TaskTypeModel taskType);
 
 }

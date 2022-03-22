@@ -237,13 +237,30 @@ public class TaskController {
         return taskExecutorMapper.toDTO(executor);
     }
 
-    @PostMapping(value = "/{taskId}/executors/{exId}/results/")
+    @PostMapping(value = "/{taskId}/executors/{exId}/result")
     public Long executeTask(@PathVariable("exId") Long id,
                                        @PathVariable("taskId") Long taskId,
                                        @RequestBody TaskExecutorResultDTO executorResult) {
         log.info("TaskController: executeTask");
         Long executorId = tasksService.executeTask(taskId, id, executorResult);
         log.info("TaskController: executeTask (return id {})", executorId);
+        return executorId;
+    }
+
+    @PostMapping(value = "/{taskId}/executors")
+    public Long addExecutor(@PathVariable("taskId") Long taskId,
+                            @Valid @RequestBody TaskExecutorDTO executorDTO) {
+        log.info("TaskController: addExecutor");
+        if (executorDTO.getId() != null && (executorDTO.getId() != 0)) {
+            throw new BadRequestException("При добавлении нового объекта id должен быть пустым");
+        }
+        executorDTO.setTaskId(taskId);
+        executorDTO.setComment("");
+        executorDTO.setDateOfCompletion("");
+        executorDTO.setResult(null);
+        TaskExecutorModel taskExecutorModel = taskExecutorMapper.toModel(executorDTO);
+        Long executorId = tasksService.addExecutor(taskExecutorModel);
+        log.info("TaskController: addExecutor (return id {})", executorId);
         return executorId;
     }
 
@@ -264,23 +281,6 @@ public class TaskController {
         TaskCommentModel comment = tasksService.getComment(taskId, commentId);
         log.info("TaskController: getComment (return id {})", comment.getId());
         return taskCommentMapper.toDTO(comment);
-    }
-
-    @PostMapping(value = "/{taskId}/executors")
-    public Long addExecutor(@PathVariable("taskId") Long taskId,
-                            @Valid @RequestBody TaskExecutorDTO executorDTO) {
-        log.info("TaskController: addExecutor");
-        if (executorDTO.getId() != null && (executorDTO.getId() != 0)) {
-            throw new BadRequestException("При добавлении нового объекта id должен быть пустым");
-        }
-        executorDTO.setTaskId(taskId);
-        executorDTO.setComment("");
-        executorDTO.setDateOfCompletion("");
-        executorDTO.setResult(null);
-        TaskExecutorModel taskExecutorModel = taskExecutorMapper.toModel(executorDTO);
-        Long executorId = tasksService.addExecutor(taskExecutorModel);
-        log.info("TaskController: addExecutor (return id {})", executorId);
-        return executorId;
     }
 
     @PostMapping(value = "/{taskId}/executors/{exId}")

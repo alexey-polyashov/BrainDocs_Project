@@ -16,7 +16,7 @@ public class TaskResultsModel {
 
     @ManyToOne
     @JoinColumn(name = "task_type_id")
-    private TaskTypeModel taskTypeId;
+    private TaskTypeModel taskType;
 
     @Column(name = "resultname")
     private String resultName;

@@ -10,10 +10,7 @@ import com.braindocs.dto.tasks.*;
 import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ResourceNotFoundException;
 import com.braindocs.models.files.FileModel;
-import com.braindocs.models.tasks.TaskCommentModel;
-import com.braindocs.models.tasks.TaskExecutorModel;
-import com.braindocs.models.tasks.TaskModel;
-import com.braindocs.models.tasks.TaskResultsModel;
+import com.braindocs.models.tasks.*;
 import com.braindocs.models.users.UserModel;
 import com.braindocs.repositories.specifications.TaskExecutorSpecificationBuilder;
 import com.braindocs.repositories.specifications.TaskSpecificationBuilder;
@@ -146,11 +143,6 @@ public class TasksService {
         return taskModel.getId();
     }
 
-    public Long addExecutor(TaskExecutorModel taskExecutorModel) {
-        taskExecutorModel = taskExecutorsRepository.save(taskExecutorModel);
-        return taskExecutorModel.getId();
-    }
-
     @Transactional
     public Long saveExecutor(TaskExecutorDTO taskExecutorDTO) {
         Long entId = taskExecutorDTO.getId();
@@ -158,6 +150,8 @@ public class TasksService {
                         entId)
                 .orElseThrow(() -> new ResourceNotFoundException("Не найден исполнитель по id '" + entId + "'"));
         taskExecutorMapper.moveChanges(executor, taskExecutorDTO);
+        taskExecutorsRepository.save(executor);
+        setTaskStatusByActiveExecutors(taskExecutorDTO.getTaskId());
         return executor.getId();
     }
 
@@ -172,38 +166,6 @@ public class TasksService {
         }
         taskCommentModel = taskCommentsRepository.save(taskCommentModel);
         return taskCommentModel.getId();
-    }
-
-    @Transactional
-    public Long saveComment(TaskCommentDTO taskCommentDTO) {
-        Long entId = taskCommentDTO.getId();
-        TaskCommentModel taskComment = taskCommentsRepository.findById(
-                        entId)
-                .orElseThrow(() -> new ResourceNotFoundException("Комментарий не найден по id '" + entId + "'"));
-        taskCommentMapper.moveChanges(taskComment, taskCommentDTO);
-        return taskComment.getId();
-    }
-
-    public List<TaskExecutorModel> getExecutors(Long taskId) {
-        TaskModel task = findById(taskId);
-        return taskExecutorsRepository.findByTask(task);
-    }
-
-    public TaskExecutorModel getExecutor(Long taskId, Long exId) {
-        TaskModel task = findById(taskId);
-        return taskExecutorsRepository.findByTaskAndId(task, exId)
-                .orElseThrow(() -> new ResourceNotFoundException("Исполнитель по id '" + exId + "' не найден"));
-    }
-
-    public List<TaskCommentModel> getComments(Long taskId) {
-        TaskModel task = findById(taskId);
-        return taskCommentsRepository.findByTask(task);
-    }
-
-    public TaskCommentModel getComment(Long taskId, Long commentId) {
-        TaskModel task = findById(taskId);
-        return taskCommentsRepository.findByTaskAndId(task, commentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Комментарий по id '" + commentId + "' не найден"));
     }
 
     @Transactional
@@ -224,16 +186,87 @@ public class TasksService {
         task.setMarked(false);
     }
 
-    @Transactional
-    public void deleteComment(Long taskId, Long commentId) {
-        TaskModel task = getTask(taskId);
-        taskCommentsRepository.deleteByTaskAndId(task, commentId);
+    public List<TaskExecutorModel> getExecutors(Long taskId) {
+        TaskModel task = findById(taskId);
+        return taskExecutorsRepository.findByTask(task);
+    }
+
+    public Long addExecutor(TaskExecutorModel taskExecutorModel) {
+        taskExecutorModel.setStatus(1L);
+        taskExecutorModel = taskExecutorsRepository.save(taskExecutorModel);
+        setTaskStatusByActiveExecutors(taskExecutorModel.getTask().getId());
+        return taskExecutorModel.getId();
+    }
+
+    public TaskExecutorModel getExecutor(Long taskId, Long exId) {
+        TaskModel task = findById(taskId);
+        return taskExecutorsRepository.findByTaskAndId(task, exId)
+                .orElseThrow(() -> new ResourceNotFoundException("Исполнитель по id '" + exId + "' не найден"));
     }
 
     @Transactional
     public void deleteExecutor(Long taskId, Long exId) {
         TaskModel task = getTask(taskId);
         taskExecutorsRepository.deleteByTaskAndId(task, exId);
+        setTaskStatusByActiveExecutors(taskId);
+    }
+
+    @Transactional
+    public Long executeTask(Long taskId, Long execotorId, TaskExecutorResultDTO executorResult) {
+        TaskExecutorModel tem = taskExecutorsRepository.findById(execotorId)
+                .orElseThrow(()->new ResourceNotFoundException("Не найдена задача исполнителя по id - '" + execotorId + "'"));
+        Long resId = executorResult.getResultId();
+        Long taskTypeId = tem.getTask().getType().getId();
+        //проверка доступности указанного результата выполнения для задачи
+        TaskResultsModel trm = getResulByIdtForTaskType(
+                resId,
+                taskTypeId
+        ).orElseThrow(()->new ResourceNotFoundException("Не найден результат с id '" + resId + "' для типа задач с id '" + taskTypeId + "'"));
+        tem.setDateOfComletion(options.convertStringToDateTime(executorResult.getExecuteDateTime()));
+        tem.setComment(executorResult.getResultComment());
+        tem.setStatus(3L);
+        tem.setResult(trm);
+        taskExecutorsRepository.save(tem);
+        setTaskStatusByActiveExecutors(taskId);
+        return tem.getId();
+    }
+
+    @Transactional
+    public Long canselTask(Long taskId, Long execotorId) {
+        TaskExecutorModel tem = taskExecutorsRepository.findById(execotorId)
+                .orElseThrow(()->new ResourceNotFoundException("Не найдена задача исполнителя по id - '" + execotorId + "'"));
+        tem.setStatus(4L);
+        taskExecutorsRepository.save(tem);
+        //установка конечного статуса у задачи - выполнена, если нет больше исполнителей
+        setTaskStatusByActiveExecutors(taskId);
+        return tem.getId();
+    }
+
+    public List<TaskCommentModel> getComments(Long taskId) {
+        TaskModel task = findById(taskId);
+        return taskCommentsRepository.findByTask(task);
+    }
+
+    @Transactional
+    public Long saveComment(TaskCommentDTO taskCommentDTO) {
+        Long entId = taskCommentDTO.getId();
+        TaskCommentModel taskComment = taskCommentsRepository.findById(
+                        entId)
+                .orElseThrow(() -> new ResourceNotFoundException("Комментарий не найден по id '" + entId + "'"));
+        taskCommentMapper.moveChanges(taskComment, taskCommentDTO);
+        return taskComment.getId();
+    }
+
+    public TaskCommentModel getComment(Long taskId, Long commentId) {
+        TaskModel task = findById(taskId);
+        return taskCommentsRepository.findByTaskAndId(task, commentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Комментарий по id '" + commentId + "' не найден"));
+    }
+
+    @Transactional
+    public void deleteComment(Long taskId, Long commentId) {
+        TaskModel task = getTask(taskId);
+        taskCommentsRepository.deleteByTaskAndId(task, commentId);
     }
 
     //получение файла по id
@@ -355,22 +388,20 @@ public class TasksService {
     }
 
     private Optional<TaskResultsModel> getResulByIdtForTaskType(Long id, Long typeId) {
-        return taskResultsRepository.findByIdAndTaskTypeId(id, typeId);
+        TaskTypeModel ttm = taskTypesService.findById(typeId);
+        return taskResultsRepository.findByIdAndTaskType(id, ttm);
     }
 
-    @Transactional
-    public Long executeTask(Long taskId, Long execotorId, TaskExecutorResultDTO executorResult) {
-        TaskExecutorModel tem = taskExecutorsRepository.findById(execotorId)
-                .orElseThrow(()->new ResourceNotFoundException("Не найдена задача исполнителя по id - '" + execotorId + "'"));
-        Long resId = executorResult.getResultId();
-        Long taskTypeId = tem.getTask().getType().getId();
-        //проверка доступности указанного результата выполнения для задачи
-        getResulByIdtForTaskType(
-                    resId,
-                    taskTypeId
-                ).orElseThrow(()->new ResourceNotFoundException("Не найден результат с id '" + resId + "' для типа задач с id '" + taskTypeId + "'"));
-        tem.setDateOfComletion(options.convertStringToDateTime(executorResult.getExecuteDateTime()));
-        tem.setComment(executorResult.getResultComment());
-        return tem.getId();
+    private void setTaskStatusByActiveExecutors(Long taskId){
+        //установка конечного статуса у задачи - выполнена, если нет больше исполнителей
+        TaskModel task = tasksRepository.getById(taskId);
+        List<TaskExecutorModel> taskExecutors = taskExecutorsRepository.findActiveExecutorsInTask(task);
+        if(taskExecutors.isEmpty()){
+            task.setStatus(2L);
+        }else{
+            task.setStatus(1L);
+        }
+        tasksRepository.save(task);
     }
+
 }
