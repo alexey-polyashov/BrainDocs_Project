@@ -134,7 +134,7 @@ public class TaskController {
     @GetMapping(value = "/{taskId}")
     public TaskDTO getTask(@PathVariable("taskId") Long taskId) {
         log.info("TaskController: getTask, taskId - {} ", taskId);
-        return taskMapper.toDTO(tasksService.findById(taskId));
+        return tasksService.findDTOById(taskId);
     }
 
     @PostMapping(value = "/search")

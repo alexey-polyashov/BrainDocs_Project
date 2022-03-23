@@ -41,5 +41,4 @@ public class BraindocsApplication {
         return factory.createMultipartConfig();
     }
 
-
 }

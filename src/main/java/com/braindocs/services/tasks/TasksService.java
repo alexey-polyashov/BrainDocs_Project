@@ -1,5 +1,6 @@
 package com.braindocs.services.tasks;
 
+import com.braindocs.common.MailService;
 import com.braindocs.common.MarkedRequestValue;
 import com.braindocs.common.Options;
 import com.braindocs.common.Utils;
@@ -9,6 +10,7 @@ import com.braindocs.dto.files.FileDataDTO;
 import com.braindocs.dto.tasks.*;
 import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ResourceNotFoundException;
+import com.braindocs.models.documents.DocumentModel;
 import com.braindocs.models.files.FileModel;
 import com.braindocs.models.tasks.*;
 import com.braindocs.models.users.UserModel;
@@ -59,11 +61,43 @@ public class TasksService {
     private final TaskResultsRepository taskResultsRepository;
     private final FilesService filesService;
     private final FileMapper fileMapper;
+    private final MailService mailService;
 
     //получение документа по id
     public TaskModel getTask(Long taskId) {
         return tasksRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Задача с id-'" + taskId + "' не найдена"));
+    }
+
+    private void setTextAboutExecutorTask(StringBuilder mailText, TaskExecutorModel executor) {
+        TaskModel task = executor.getTask();
+        String header = task.getHeading();
+        String content = task.getContent();
+        Set<DocumentModel> subjects = task.getSubjects();
+        List<TaskExecutorModel> taskExecutors = taskExecutorsRepository.findByTask(task);
+        String planedDate = options.convertDateTimeToString(executor.getPlanedDate());
+        mailText.append("<b>Задача: </b>").append("(").append(task.getId()).append(")").append(header).append("<br/>");
+        mailText.append("<b>Описание задачи: </b>").append(content).append("<br/>");
+        mailText.append("<b>Планируемое время выполнения: </b>").append(planedDate).append("<br/>");
+        mailText.append("<b>Автор задачи: </b>").append(task.getAuthor().getShortname()).append("<br/><br/>");
+        mailText.append("<b>Предметы задачи: </b>").append("<br/><ul>");
+        subjects.stream()
+                .forEach(p->mailText.append("<li>").append(p.getHeading()).append("</li>"));
+        mailText.append("</ul>");
+        mailText.append("<b>Назначены исполнители: </b>").append("<br/><ul>");
+        taskExecutors.stream()
+                .forEach(p->mailText.append("<li>").append(p.getExecutor().getShortname()).append("</li>"));
+        mailText.append("</ul>");
+    }
+
+    private void setTextAboutComment(StringBuilder mailText, TaskCommentModel comment) {
+        TaskModel task = comment.getTask();
+        String header = task.getHeading();
+        String content = task.getContent();
+        mailText.append("<b>Добавлен комментарий к задаче: </b>").append("(").append(task.getId()).append(")").append(header).append("<br/>");
+        mailText.append("<br/><br/>");
+        mailText.append("<b><span style =\"color:#585ed6\">").append(comment.getAuthor().getShortname()).append("</span></b> написал <b>").append(options.convertDateTimeToString(comment.getCreateTime())).append("</b><br/>");
+        mailText.append(comment.getComment()).append("<br/>");
     }
 
     @Transactional
@@ -137,6 +171,11 @@ public class TasksService {
         return getTask(taskId);
     }
 
+    @Transactional
+    public TaskDTO findDTOById(Long taskId) {
+        return taskMapper.toDTO(findById(taskId));
+    }
+
     public Long saveTask(TaskDTO taskDTO) {
         TaskModel taskModel = findById(taskDTO.getId());
         taskMapper.moveChanges(taskModel, taskDTO);
@@ -145,6 +184,7 @@ public class TasksService {
 
     @Transactional
     public Long saveExecutor(TaskExecutorDTO taskExecutorDTO) {
+
         Long entId = taskExecutorDTO.getId();
         TaskExecutorModel executor = taskExecutorsRepository.findById(
                         entId)
@@ -152,20 +192,15 @@ public class TasksService {
         taskExecutorMapper.moveChanges(executor, taskExecutorDTO);
         taskExecutorsRepository.save(executor);
         setTaskStatusByActiveExecutors(taskExecutorDTO.getTaskId());
-        return executor.getId();
-    }
 
-    public Long addComment(TaskCommentModel taskCommentModel, Principal author) {
-        if (taskCommentModel.getAuthor() == null) {
-            if (author == null) {
-                throw new BadRequestException("Автор комментария не может быть определен");
-            }
-            UserModel user = userService.findByUsername(
-                    author.getName()).orElseThrow(() -> new ResourceNotFoundException("Пользователь по имени '" + author.getName() + "' не определен"));
-            taskCommentModel.setAuthor(user);
-        }
-        taskCommentModel = taskCommentsRepository.save(taskCommentModel);
-        return taskCommentModel.getId();
+        StringBuilder mailText = new StringBuilder("");
+        setTextAboutExecutorTask(mailText, executor);
+        mailService.sendHTMLEmail(executor.getExecutor().getEmail(),
+                mailText,
+                "Task changed");
+
+        return executor.getId();
+
     }
 
     @Transactional
@@ -192,10 +227,19 @@ public class TasksService {
     }
 
     public Long addExecutor(TaskExecutorModel taskExecutorModel) {
+
         taskExecutorModel.setStatus(1L);
         taskExecutorModel = taskExecutorsRepository.save(taskExecutorModel);
         setTaskStatusByActiveExecutors(taskExecutorModel.getTask().getId());
+
+        StringBuilder mailText = new StringBuilder("");
+        setTextAboutExecutorTask(mailText, taskExecutorModel);
+        mailService.sendHTMLEmail(taskExecutorModel.getExecutor().getEmail(),
+                mailText,
+                "New task");
+
         return taskExecutorModel.getId();
+
     }
 
     public TaskExecutorModel getExecutor(Long taskId, Long exId) {
@@ -245,6 +289,27 @@ public class TasksService {
     public List<TaskCommentModel> getComments(Long taskId) {
         TaskModel task = findById(taskId);
         return taskCommentsRepository.findByTask(task);
+    }
+
+    @Transactional
+    public Long addComment(TaskCommentModel taskCommentModel, Principal author) {
+        if (taskCommentModel.getAuthor() == null) {
+            if (author == null) {
+                throw new BadRequestException("Автор комментария не может быть определен");
+            }
+            UserModel user = userService.findByUsername(
+                    author.getName()).orElseThrow(() -> new ResourceNotFoundException("Пользователь по имени '" + author.getName() + "' не определен"));
+            taskCommentModel.setAuthor(user);
+        }
+        taskCommentModel = taskCommentsRepository.save(taskCommentModel);
+
+        StringBuilder mailText = new StringBuilder("");
+        setTextAboutComment(mailText, taskCommentModel);
+        mailService.sendHTMLEmail(taskCommentModel.getTask().getAuthor().getEmail(),
+                mailText,
+                "New comment");
+
+        return taskCommentModel.getId();
     }
 
     @Transactional
