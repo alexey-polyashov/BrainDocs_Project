@@ -19,9 +19,19 @@ public class Options {
     private ServletContext servletContext;
     private String contextPath;
 
+    private OptionService optionService;
+
     private Integer fileStorageType = 1;
     private String dateFormat;
     private String dateTimeFormat;
+
+    private String mail_smtpHost;
+    private String mail_smtpPort;
+    private String mail_login;
+    private String mail_password;
+    private String mail_serviceEmail;
+    private Boolean mail_sslUsed;
+    private Boolean mail_needAuthentication;
 
     public DateTimeFormatter getDateTimeFormatter() {
         return dateTimeFormatter;
@@ -36,6 +46,12 @@ public class Options {
 
     @Autowired
     public Options(OptionService optionService) {
+        this.optionService = optionService;
+        init();
+    }
+
+    public void init(){
+
         Optional<OptionModel> options = optionService.readOptions();
         if (options.isPresent()) {
             OptionModel opt = options.get();
@@ -44,6 +60,15 @@ public class Options {
             this.dateTimeFormat = optionService.getDateTimeFormat();
             this.dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
             this.dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat);
+            //mail
+            this.mail_smtpHost = opt.getMail_smtpHost();
+            this.mail_smtpPort = opt.getMail_smtpPort();
+            this.mail_login = opt.getMail_login();
+            this.mail_password = opt.getMail_password();
+            this.mail_serviceEmail = opt.getMail_serviceEmail();
+            this.mail_sslUsed = opt.getMail_sslUsed();
+            this.mail_needAuthentication = opt.getMail_needAuthentication();
+            //--
         }else{
             this.fileStorageType = 1;
             this.dateFormat = optionService.getDateFormat();
@@ -51,6 +76,7 @@ public class Options {
         }
         this.dateFormatter = DateTimeFormatter.ofPattern(dateFormat);
         this.dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat);
+
     }
 
     @PostConstruct
@@ -111,4 +137,31 @@ public class Options {
         return formater.format(dateTime);
     }
 
+    public String getMail_smtpHost() {
+        return mail_smtpHost;
+    }
+
+    public String getMail_smtpPort() {
+        return mail_smtpPort;
+    }
+
+    public String getMail_login() {
+        return mail_login;
+    }
+
+    public String getMail_password() {
+        return mail_password;
+    }
+
+    public String getMail_serviceEmail() {
+        return mail_serviceEmail;
+    }
+
+    public Boolean getMail_sslUsed() {
+        return mail_sslUsed;
+    }
+
+    public Boolean getMail_needAuthentication() {
+        return mail_needAuthentication;
+    }
 }
