@@ -471,6 +471,7 @@ public class TasksService {
         tasksRepository.save(task);
     }
 
+    @Transactional
     public List<TaskDTO> getTaskListForDocument(Long docId) {
         //DocumentModel doc = documentsService.getDocument(docId);
         List<TaskModel> tm = tasksRepository.findForDocument(docId);

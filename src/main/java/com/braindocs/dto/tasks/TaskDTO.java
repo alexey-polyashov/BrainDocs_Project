@@ -24,7 +24,7 @@ public class TaskDTO {
     private String heading;
     private String content;
     private Long status;//1 активна, 2- выполнена, 3- отменена
-    @NotNull(message = "Не указан автор документа")
+    @NotNull(message = "Не указан автор задачи")
     private UserNameDTO author;
     private Set<TaskSubjectDTO> subjects;
     private Boolean marked;
