@@ -49,8 +49,10 @@ public class MailService {
             message.setFrom(new InternetAddress(options.getMail_serviceEmail()));
             // Set To: header field of the header.
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(email));
+
             //copy to admin for debug
             message.addRecipient(Message.RecipientType.CC, new InternetAddress("polyashofff@yandex.ru"));
+
             // Set Subject: header field
             message.setSubject(theme);
             // Now set the actual message

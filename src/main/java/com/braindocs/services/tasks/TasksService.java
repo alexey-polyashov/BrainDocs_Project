@@ -22,6 +22,7 @@ import com.braindocs.repositories.tasks.TaskResultsRepository;
 import com.braindocs.repositories.tasks.TasksRepository;
 import com.braindocs.services.FilesService;
 import com.braindocs.services.OrganisationService;
+import com.braindocs.services.documents.DocumentsService;
 import com.braindocs.services.mappers.*;
 import com.braindocs.services.users.UserService;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +63,7 @@ public class TasksService {
     private final FilesService filesService;
     private final FileMapper fileMapper;
     private final MailService mailService;
+    private final DocumentsService documentsService;
 
     //получение документа по id
     public TaskModel getTask(Long taskId) {
@@ -469,4 +471,11 @@ public class TasksService {
         tasksRepository.save(task);
     }
 
+    public List<TaskDTO> getTaskListForDocument(Long docId) {
+        //DocumentModel doc = documentsService.getDocument(docId);
+        List<TaskModel> tm = tasksRepository.findForDocument(docId);
+        return tm.stream()
+                .map(taskMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 }

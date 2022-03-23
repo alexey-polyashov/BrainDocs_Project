@@ -12,6 +12,7 @@ import com.braindocs.dto.documents.DocumentDTO;
 import com.braindocs.dto.files.FileDTO;
 import com.braindocs.dto.files.FileDataDTO;
 import com.braindocs.dto.files.NewFileDTO;
+import com.braindocs.dto.tasks.TaskDTO;
 import com.braindocs.exceptions.BadRequestException;
 import com.braindocs.exceptions.ServiceError;
 import com.braindocs.models.documents.DocumentModel;
@@ -19,6 +20,7 @@ import com.braindocs.models.files.FileModel;
 import com.braindocs.services.documents.DocumentsService;
 import com.braindocs.services.mappers.DocumentMapper;
 import com.braindocs.services.mappers.FileMapper;
+import com.braindocs.services.tasks.TasksService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +52,7 @@ public class DocumentController {
     private final DocumentsService documentsService;
     private final DocumentMapper documentMapper;
     private final FileMapper fileMapper;
+    private final TasksService tasksService;
 
     private void setLinkToFile(FileDTO fileDTO, Long docId) {
         fileDTO.setLink("/api/v1/documents/" + docId + "/files/" + fileDTO.getId() + "/data");
@@ -148,6 +151,15 @@ public class DocumentController {
         }
         log.info("DocumentController: getDocumentById - ok");
         return docDTO;
+    }
+
+
+    @GetMapping(value = "/{id}/tasks")
+    public List<TaskDTO> getTasksByDocumentId(@PathVariable("id") Long id) {
+        log.info("DocumentController: getTasksByDocumentId");
+        List<TaskDTO> taskDTOs = tasksService.getTaskListForDocument(id);
+        log.info("DocumentController: getTasksByDocumentId - ok");
+        return taskDTOs;
     }
 
     @PostMapping(value = "/search")
