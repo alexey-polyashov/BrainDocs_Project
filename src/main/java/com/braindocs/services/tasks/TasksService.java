@@ -92,6 +92,33 @@ public class TasksService {
         mailText.append("</ul>");
     }
 
+    private void setTextAboutExecuteTask(StringBuilder mailText, TaskExecutorModel executor) {
+        TaskModel task = executor.getTask();
+        String header = task.getHeading();
+        String content = task.getContent();
+        Set<DocumentModel> subjects = task.getSubjects();
+        List<TaskExecutorModel> taskExecutors = taskExecutorsRepository.findByTask(task);
+        String planedDate = options.convertDateTimeToString(executor.getPlanedDate());
+        mailText.append("<b>Задача: </b>").append("(").append(task.getId()).append(")").append(header).append("<br/>");
+        mailText.append("<b>Описание задачи: </b>").append(content).append("<br/>");
+        mailText.append("<b>Планируемое время выполнения: </b>").append(planedDate).append("<br/>");
+        mailText.append("<b>Предметы задачи: </b>").append("<br/><ul>");
+        subjects.stream()
+                .forEach(p->mailText.append("<li>").append(p.getHeading()).append("</li>"));
+        mailText.append("</ul>");
+        String resultColor = "color:#585ed6";
+        if(executor.getResult().getResultType()==1){
+            resultColor = "color:green";
+        }else if(executor.getResult().getResultType()==2){
+            resultColor = "color:red";
+        }else if(executor.getResult().getResultType()==3){
+            resultColor = "color:darkorange";
+        }
+        mailText.append("Выполнена исполнителем ").append("<b style =\"color:#585ed6\">")
+                .append(executor.getExecutor().getShortname()).append("</b> с результатом: <b style =\""+resultColor + "\">").append(executor.getResult().getResultName()).append("</b><br/>");
+        mailText.append("Комментарии к выполнению: ").append(executor.getComment());
+    }
+
     private void setTextAboutComment(StringBuilder mailText, TaskCommentModel comment) {
         TaskModel task = comment.getTask();
         String header = task.getHeading();
@@ -274,6 +301,11 @@ public class TasksService {
         tem.setResult(trm);
         taskExecutorsRepository.save(tem);
         setTaskStatusByActiveExecutors(taskId);
+        StringBuilder mailText = new StringBuilder("");
+        setTextAboutExecuteTask(mailText, tem);
+        mailService.sendHTMLEmail(tem.getTask().getAuthor().getEmail(),
+                mailText,
+                "Execute task");
         return tem.getId();
     }
 
