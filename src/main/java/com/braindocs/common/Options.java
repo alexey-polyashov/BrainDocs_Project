@@ -125,7 +125,8 @@ public class Options {
             ldt = LocalDateTime.parse(dateTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         }catch (Exception e) {
             //пробуем наш формат
-            ldt = LocalDateTime.parse(dateTime, formater);
+            //ldt = LocalDateTime.parse(dateTime, formater);
+            ldt = LocalDateTime.parse(dateTime + " 00:00:00", getDateTimeFormatter());
         }
         return ldt;
     }
