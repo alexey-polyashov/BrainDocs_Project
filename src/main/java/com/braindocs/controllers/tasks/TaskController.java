@@ -254,7 +254,7 @@ public class TaskController {
     }
 
     @PostMapping(value = "/{taskId}/executors")
-    @Transactional
+    @Transactional //временно
     public Long addExecutor(@PathVariable("taskId") Long taskId,
                             @Valid @RequestBody TaskExecutorDTO executorDTO) {
         log.info("TaskController: addExecutor");
