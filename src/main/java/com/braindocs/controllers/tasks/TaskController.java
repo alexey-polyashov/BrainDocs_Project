@@ -29,6 +29,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -138,6 +139,7 @@ public class TaskController {
     }
 
     @PostMapping(value = "/search")
+    @Transactional
     public Page<TaskDTO> getTaskList(@RequestBody SearchCriteriaListDTO requestDTO) {
         log.info("TaskController: getTaskList");
         List<SearchCriteriaDTO> filter = requestDTO.getFilter();
@@ -153,6 +155,7 @@ public class TaskController {
     }
 
     @PostMapping(value = "/executors/search")
+    @Transactional
     public Page<TaskExecutorDtoExt> searchExecutors(@RequestBody SearchCriteriaListDTO requestDTO) {
         log.info("TaskController: getTaskList");
         List<SearchCriteriaDTO> filter = requestDTO.getFilter();
