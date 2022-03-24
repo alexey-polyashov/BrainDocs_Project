@@ -171,6 +171,7 @@ public class TaskController {
     }
 
     @PostMapping(value = "")
+    @Transactional
     public Long addTask(@Valid @RequestBody TaskDTO taskDTO, Principal principal) {
         log.info("TaskController: addTask");
         if (taskDTO.getId() != null && (taskDTO.getId() != 0)) {
@@ -232,6 +233,7 @@ public class TaskController {
     }
 
     @GetMapping(value = "/{taskId}/executors/{exId}")
+    @Transactional
     public TaskExecutorDTO getExecutor(@PathVariable("taskId") Long taskId,
                                        @PathVariable("exId") Long exId) {
         log.info("TaskController: getExecutor");
@@ -241,6 +243,7 @@ public class TaskController {
     }
 
     @PostMapping(value = "/{taskId}/executors/{exId}/result")
+    @Transactional
     public Long executeTask(@PathVariable("exId") Long id,
                                        @PathVariable("taskId") Long taskId,
                                        @RequestBody TaskExecutorResultDTO executorResult) {
@@ -251,6 +254,7 @@ public class TaskController {
     }
 
     @PostMapping(value = "/{taskId}/executors")
+    @Transactional
     public Long addExecutor(@PathVariable("taskId") Long taskId,
                             @Valid @RequestBody TaskExecutorDTO executorDTO) {
         log.info("TaskController: addExecutor");
