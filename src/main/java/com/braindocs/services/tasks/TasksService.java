@@ -183,6 +183,7 @@ public class TasksService {
         return executors.map(taskExecutorMapper::toDtoExt);
     }
 
+    @Transactional
     public Long add(TaskModel taskModel, Principal author) {
         if (taskModel.getAuthor() == null) {
             if (author == null) {
@@ -255,6 +256,7 @@ public class TasksService {
         return taskExecutorsRepository.findByTask(task);
     }
 
+    @Transactional
     public Long addExecutor(TaskExecutorModel taskExecutorModel) {
 
         taskExecutorModel.setStatus(1L);
@@ -271,10 +273,16 @@ public class TasksService {
 
     }
 
+    @Transactional
     public TaskExecutorModel getExecutor(Long taskId, Long exId) {
         TaskModel task = findById(taskId);
         return taskExecutorsRepository.findByTaskAndId(task, exId)
                 .orElseThrow(() -> new ResourceNotFoundException("Исполнитель по id '" + exId + "' не найден"));
+    }
+
+    @Transactional
+    public TaskExecutorDTO getExecutorDTO(Long taskId, Long exId) {
+        return taskExecutorMapper.toDTO(getExecutor(taskId, exId));
     }
 
     @Transactional
