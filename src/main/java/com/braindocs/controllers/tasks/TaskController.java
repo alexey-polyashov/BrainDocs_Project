@@ -139,7 +139,6 @@ public class TaskController {
     }
 
     @PostMapping(value = "/search")
-    @Transactional
     public Page<TaskDTO> getTaskList(@RequestBody SearchCriteriaListDTO requestDTO) {
         log.info("TaskController: getTaskList");
         List<SearchCriteriaDTO> filter = requestDTO.getFilter();
