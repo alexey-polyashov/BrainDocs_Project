@@ -178,6 +178,7 @@ public class TasksService {
         return tasks.map(taskMapper::toDTO);
     }
 
+    @Transactional
     public Page<TaskExecutorDtoExt> getExecutorsDTOByFields(Integer page, Integer recordsOnPage, List<SearchCriteriaDTO> filter) {
         Page<TaskExecutorModel> executors = getExecutorsByFields(page, recordsOnPage, filter);
         return executors.map(taskExecutorMapper::toDtoExt);
