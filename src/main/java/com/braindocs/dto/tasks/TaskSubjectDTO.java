@@ -14,5 +14,6 @@ public class TaskSubjectDTO {
     private String date;
     private String name;
     private Long id;
+    private UserNameDTO author;
 
 }
