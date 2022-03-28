@@ -3,6 +3,7 @@ package com.braindocs.dto.tasks;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.braindocs.dto.users.UserNameDTO;
 
 @Getter
 @Setter
