@@ -100,7 +100,8 @@ public class DocumentMapper {
         dto.setNumber(docModel.getNumber());
         dto.setDate(options.convertDateToString(docModel.getDocumentDate()));
         dto.setName(docModel.getHeading());
-
+        dto.setAuthor(new UserNameDTO(docModel.getAuthor()));
+        
         return dto;
     }
 
