@@ -13,7 +13,7 @@ public class TaskSubjectDTO {
     private String subjectType;
     private String number;
     private String date;
-    private String name;
+    private String heading;
     private Long id;
     private UserNameDTO author;
 
