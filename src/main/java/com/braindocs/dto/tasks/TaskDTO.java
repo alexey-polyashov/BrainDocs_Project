@@ -23,7 +23,7 @@ public class TaskDTO {
     @NotNull(message = "Не указан заголовок задачи")
     private String heading;
     private String content;
-    @Positive(message = "Не верный статус задачи")
+    //@Positive(message = "Не верный статус задачи")
     private Long status;//1 активна, 2- выполнена, 3- отменена
     @NotNull(message = "Не указан автор задачи")
     private UserNameDTO author;
