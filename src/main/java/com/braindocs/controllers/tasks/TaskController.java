@@ -85,7 +85,7 @@ public class TaskController {
         log.info("TaskController: getFields");
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
         fieldsSet.add(new FieldsListDTO("Комментарий", "comment", null, Arrays.asList(":"), STRING_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Статус", "status", SelectableType.taskStatuses, Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Статус", "status", SelectableType.taskExecutorStatuses, Arrays.asList(":"), LONG_TYPE, false));
         fieldsSet.add(new FieldsListDTO("Исполнитель", "executor", SelectableType.users, Arrays.asList(":"), LONG_TYPE, true));
         log.info("TaskController: getFields return {} elements", fieldsSet.size());
         return fieldsSet;
