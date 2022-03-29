@@ -14,6 +14,7 @@ public class UserDTO {
     private String fullname;
     private OrganisationNameDTO organisation;
     private String shortname;
+    private String name; //поле добавлено для совместимости
     private String male; // list of: 'female', 'male'
     private String birthday;
     private List<UserContactDTO> contacts;

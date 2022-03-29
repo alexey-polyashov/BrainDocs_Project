@@ -86,19 +86,21 @@ public class TaskController {
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
         fieldsSet.add(new FieldsListDTO("Комментарий", "comment", null, Arrays.asList(":"), STRING_TYPE, false));
         fieldsSet.add(new FieldsListDTO("Статус", "status", SelectableType.taskStatuses, Arrays.asList(":"), LONG_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Исполнитель", "executor", SelectableType.users, Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Исполнитель", "executor", SelectableType.users, Arrays.asList(":"), LONG_TYPE, true));
         log.info("TaskController: getFields return {} elements", fieldsSet.size());
         return fieldsSet;
     }
 
     @GetMapping(value = "/statuses")
-    public Map<Integer, String> getStatusList() {
+    public List<TaskStatusDTO> getStatusList() {
         log.info("TaskController: getStatuslist ");
-        return new HashMap<Integer, String>() {{
-            put(1, "Активна");
-            put(2, "Выполнена");
-            put(3, "Отменена");
-        }};
+
+        List<TaskStatusDTO> taskStatusDTOS = new ArrayList<>();
+        taskStatusDTOS.add(new TaskStatusDTO("Активна", 1L));
+        taskStatusDTOS.add(new TaskStatusDTO("Выполнена", 2L));
+        taskStatusDTOS.add(new TaskStatusDTO("Отменена", 3L));
+
+        return taskStatusDTOS;
     }
 
     @GetMapping(value = "/types/{typeId}/results")
@@ -108,15 +110,18 @@ public class TaskController {
     }
 
     @GetMapping(value = "/executors/statuses")
-    public Map<Integer, String> getExecutorsStatusList() {
+    public List<TaskStatusDTO> getExecutorsStatusList() {
         log.info("TaskController: getExecutorsStatusList ");
-        return new HashMap<Integer, String>() {{
-            put(1, "Ожидает выполнения");
-            put(2, "В работе");
-            put(3, "Выполнена");
-            put(4, "Отменена");
-            put(5, "Уточнение");
-        }};
+
+        List<TaskStatusDTO> taskStatusDTOS = new ArrayList<>();
+        taskStatusDTOS.add(new TaskStatusDTO("Ожидает выполнения", 1L));
+        taskStatusDTOS.add(new TaskStatusDTO("В работе", 2L));
+        taskStatusDTOS.add(new TaskStatusDTO("Выполнена", 3L));
+        taskStatusDTOS.add(new TaskStatusDTO("Отменена", 4L));
+        taskStatusDTOS.add(new TaskStatusDTO("Уточнение", 5L));
+
+        return taskStatusDTOS;
+
     }
 
     @GetMapping(value = "/types")

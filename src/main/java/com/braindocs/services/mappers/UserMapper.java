@@ -43,6 +43,7 @@ public class UserMapper {
             userDTO.setRoles(new ArrayList<RoleDTO>());
         }
         userDTO.setShortname(userModel.getShortname());
+        userDTO.setName(userModel.getShortname());
         userDTO.setMale(userModel.getMale());
         if (userModel.getBirthday() != null) {
             DateFormat dateFormat = new SimpleDateFormat(optionService.getDateFormat());
