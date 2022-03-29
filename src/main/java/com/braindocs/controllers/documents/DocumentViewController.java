@@ -49,11 +49,11 @@ public class DocumentViewController {
     @GetMapping(value = "/fields")
     //возвращает список доступных полей и операций с ними
     //операции: ">" (больше или равно), "<" (меньше или равно), ":" (для строковых полей модели - содержит, для других = )
-    //типы полей могут быть любыми - это просто описание типа для правильного построения интерфейса
+    //типы полей могут быть любыми - это просто описание типа для правильного построения иsнтерфейса
     public Set<FieldsListDTO> getFields() {
         log.info("DocumentViewController: getFields");
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
-        fieldsSet.add(new FieldsListDTO("Наименование", "name", "", Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Наименование", "name", null, Arrays.asList(":"), STRING_TYPE, false));
         log.info("DocumentController: getFields return {} elements", fieldsSet.size());
         return fieldsSet;
     }

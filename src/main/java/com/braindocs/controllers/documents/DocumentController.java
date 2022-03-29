@@ -1,5 +1,6 @@
 package com.braindocs.controllers.documents;
 
+import com.braindocs.common.SelectableType;
 import com.braindocs.common.history.DoNotTrackHistory;
 import com.braindocs.common.history.HistoryOperationType;
 import com.braindocs.common.MarkedRequestValue;
@@ -65,13 +66,13 @@ public class DocumentController {
     public Set<FieldsListDTO> getFields() {
         log.info("DocumentController: getFields");
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
-        fieldsSet.add(new FieldsListDTO("Номер", "number", "", Arrays.asList(":"), STRING_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Дата", "documentDate", "", Arrays.asList("<", ">"), DATE_TYPE, true));
-        fieldsSet.add(new FieldsListDTO("Заголовок", "heading", "", Arrays.asList(":"), STRING_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Содержание", "content", "", Arrays.asList(":"), STRING_TYPE, true));
-        fieldsSet.add(new FieldsListDTO("Автор", "author", "users", Arrays.asList(":"), LONG_TYPE, true));
-        fieldsSet.add(new FieldsListDTO("Ответственный", "responsible", "users", Arrays.asList(":"), LONG_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Организация", "organisation", "organisations", Arrays.asList(":"), LONG_TYPE, true));
+        fieldsSet.add(new FieldsListDTO("Номер", "number", null, Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Дата", "documentDate", null, Arrays.asList("<", ">"), DATE_TYPE, true));
+        fieldsSet.add(new FieldsListDTO("Заголовок", "heading", null, Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Содержание", "content", null, Arrays.asList(":"), STRING_TYPE, true));
+        fieldsSet.add(new FieldsListDTO("Автор", "author", SelectableType.users, Arrays.asList(":"), LONG_TYPE, true));
+        fieldsSet.add(new FieldsListDTO("Ответственный", "responsible", SelectableType.users, Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Организация", "organisation", SelectableType.orgs, Arrays.asList(":"), LONG_TYPE, true));
         log.info("DocumentController: getFields return {} elements", fieldsSet.size());
         return fieldsSet;
     }

@@ -1,6 +1,7 @@
 package com.braindocs.controllers.organisation;
 
 import com.braindocs.common.MarkedRequestValue;
+import com.braindocs.common.SelectableType;
 import com.braindocs.common.Utils;
 import com.braindocs.dto.FieldsListDTO;
 import com.braindocs.dto.SearchCriteriaDTO;
@@ -39,10 +40,10 @@ public class OrganisationController {
     public Set<FieldsListDTO> getFields() {
         log.info("OrganisqtionController: getFields");
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
-        fieldsSet.add(new FieldsListDTO("Наименование", "name", "", Arrays.asList(":"), STRING_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("ИНН", "inn", "", Arrays.asList(":"), STRING_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("КПП", "kpp", "", Arrays.asList(":"), STRING_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Руководитель", "manager", "users", Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Наименование", "name", null, Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("ИНН", "inn", null, Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("КПП", "kpp", null, Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Руководитель", "manager", SelectableType.users, Arrays.asList(":"), LONG_TYPE, false));
         log.info("OrganisqtionController: getFields return {} elements", fieldsSet.size());
         return fieldsSet;
     }

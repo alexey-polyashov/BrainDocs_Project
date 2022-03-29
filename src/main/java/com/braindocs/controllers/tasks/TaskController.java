@@ -2,6 +2,7 @@ package com.braindocs.controllers.tasks;
 
 import com.braindocs.common.MarkedRequestValue;
 import com.braindocs.common.Options;
+import com.braindocs.common.SelectableType;
 import com.braindocs.common.Utils;
 import com.braindocs.dto.FieldsListDTO;
 import com.braindocs.dto.SearchCriteriaDTO;
@@ -67,11 +68,11 @@ public class TaskController {
     public Set<FieldsListDTO> getFields() {
         log.info("TaskController: getFields");
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
-        fieldsSet.add(new FieldsListDTO("Вид задачи", "type", "tasks/types", Arrays.asList(":"), LONG_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Заголовок", "heading", "", Arrays.asList(":"), STRING_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Содержание", "content", "", Arrays.asList(":"), STRING_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Статус", "status", "tasks/statuses", Arrays.asList(":"), LONG_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Автор", "author", "users", Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Вид задачи", "type", SelectableType.taskTypes, Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Заголовок", "heading", null, Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Содержание", "content", null, Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Статус", "status", SelectableType.taskStatuses, Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Автор", "author", SelectableType.users, Arrays.asList(":"), LONG_TYPE, false));
         log.info("TaskController: getFields return {} elements", fieldsSet.size());
         return fieldsSet;
     }
@@ -83,9 +84,9 @@ public class TaskController {
     public Set<FieldsListDTO> getExecutorFields() {
         log.info("TaskController: getFields");
         Set<FieldsListDTO> fieldsSet = new HashSet<>();
-        fieldsSet.add(new FieldsListDTO("Комментарий", "comment", "", Arrays.asList(":"), STRING_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Статус", "status", "tasks/statuses", Arrays.asList(":"), LONG_TYPE, false));
-        fieldsSet.add(new FieldsListDTO("Исполнитель", "executor", "users", Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Комментарий", "comment", null, Arrays.asList(":"), STRING_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Статус", "status", SelectableType.taskStatuses, Arrays.asList(":"), LONG_TYPE, false));
+        fieldsSet.add(new FieldsListDTO("Исполнитель", "executor", SelectableType.users, Arrays.asList(":"), LONG_TYPE, false));
         log.info("TaskController: getFields return {} elements", fieldsSet.size());
         return fieldsSet;
     }
