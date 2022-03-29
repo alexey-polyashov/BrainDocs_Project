@@ -119,7 +119,7 @@ public class TaskController {
         }};
     }
 
-    @GetMapping(value = "/statuses2")
+    @GetMapping(value = "/statuses/names")
     public List<TaskStatusDTO> getStatusListDTO() {
         log.info("TaskController: getStatusListDTO ");
 
@@ -132,7 +132,7 @@ public class TaskController {
     }
 
 
-    @GetMapping(value = "/executors/statuses2")
+    @GetMapping(value = "/executors/statuses/names")
     public List<TaskStatusDTO> getExecutorsStatusListDTO() {
         log.info("TaskController: getExecutorsStatusListDTO ");
 
