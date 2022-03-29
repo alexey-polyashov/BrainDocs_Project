@@ -19,6 +19,7 @@ public class TaskDTO {
     private Long id;
     private String createTime;
     @NotNull(message = "Не указан вид задачи")
+    @NotEmpty(message = "Не указан вид задачи")
     private TaskTypeDTO taskType;
     @NotEmpty(message = "Не указан заголовок задачи")
     private String heading;
