@@ -307,6 +307,9 @@ public class TasksService {
                 .orElseThrow(()->new ResourceNotFoundException("Не найдена задача исполнителя по id - '" + execotorId + "'"));
         Long resId = executorResult.getResultId();
         Long taskTypeId = tem.getTask().getType().getId();
+
+        UserModel executor = userService.findById(executorResult.getExecutor());
+
         //проверка доступности указанного результата выполнения для задачи
         TaskResultsModel trm = getResulByIdtForTaskType(
                 resId,
@@ -316,6 +319,7 @@ public class TasksService {
         tem.setComment(executorResult.getResultComment());
         tem.setStatus(3L);
         tem.setResult(trm);
+        tem.setExecutor(executor);
         taskExecutorsRepository.save(tem);
         setTaskStatusByActiveExecutors(taskId);
         StringBuilder mailText = new StringBuilder("");
