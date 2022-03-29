@@ -198,6 +198,13 @@ public class TasksService {
         return taskModel.getId();
     }
 
+    @Transactional
+    public Long addDTO(TaskDTO taskDTO, Principal author) {
+        TaskModel taskModel = taskMapper.toModel(taskDTO);
+        return add(taskModel, author);
+    }
+
+
     public TaskModel findById(Long taskId) {
         return getTask(taskId);
     }

@@ -204,8 +204,7 @@ public class TaskController {
         if (taskDTO.getId() != null && (taskDTO.getId() != 0)) {
             throw new BadRequestException("При добавлении нового объекта id должен быть пустым");
         }
-        TaskModel taskModel = taskMapper.toModel(taskDTO);
-        Long taskId = tasksService.add(taskModel, principal);
+        Long taskId = tasksService.addDTO(taskDTO, principal);
         log.info("TaskController: addTask (return id {})", taskId);
         return taskId;
     }
