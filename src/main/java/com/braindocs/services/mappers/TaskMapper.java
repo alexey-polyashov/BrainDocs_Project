@@ -81,7 +81,7 @@ public class TaskMapper {
                 taskTypesService.findById(source.getTaskType().getId()));
         receiver.setHeading(source.getHeading());
         receiver.setContent(source.getContent());
-        receiver.setStatus(source.getStatus());
+        //receiver.setStatus(source.getStatus());
         UserModel userModel = userService.findById(source.getAuthor().getId());
         receiver.setAuthor(userModel);
         return receiver;
