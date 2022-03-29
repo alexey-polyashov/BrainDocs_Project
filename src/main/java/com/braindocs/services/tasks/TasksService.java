@@ -207,6 +207,7 @@ public class TasksService {
         return taskMapper.toDTO(findById(taskId));
     }
 
+    @Transactional
     public Long saveTask(TaskDTO taskDTO) {
         TaskModel taskModel = findById(taskDTO.getId());
         taskMapper.moveChanges(taskModel, taskDTO);
