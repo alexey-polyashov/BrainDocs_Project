@@ -92,15 +92,13 @@ public class TaskController {
     }
 
     @GetMapping(value = "/statuses")
-    public List<TaskStatusDTO> getStatusList() {
+    public Map<Integer, String> getStatusList() {
         log.info("TaskController: getStatuslist ");
-
-        List<TaskStatusDTO> taskStatusDTOS = new ArrayList<>();
-        taskStatusDTOS.add(new TaskStatusDTO("Активна", 1L));
-        taskStatusDTOS.add(new TaskStatusDTO("Выполнена", 2L));
-        taskStatusDTOS.add(new TaskStatusDTO("Отменена", 3L));
-
-        return taskStatusDTOS;
+        return new HashMap<Integer, String>() {{
+            put(1, "Активна");
+            put(2, "Выполнена");
+            put(3, "Отменена");
+        }};
     }
 
     @GetMapping(value = "/types/{typeId}/results")
@@ -110,8 +108,33 @@ public class TaskController {
     }
 
     @GetMapping(value = "/executors/statuses")
-    public List<TaskStatusDTO> getExecutorsStatusList() {
+    public Map<Integer, String> getExecutorsStatusList() {
         log.info("TaskController: getExecutorsStatusList ");
+        return new HashMap<Integer, String>() {{
+            put(1, "Ожидает выполнения");
+            put(2, "В работе");
+            put(3, "Выполнена");
+            put(4, "Отменена");
+            put(5, "Уточнение");
+        }};
+    }
+
+    @GetMapping(value = "/statuses2")
+    public List<TaskStatusDTO> getStatusListDTO() {
+        log.info("TaskController: getStatusListDTO ");
+
+        List<TaskStatusDTO> taskStatusDTOS = new ArrayList<>();
+        taskStatusDTOS.add(new TaskStatusDTO("Активна", 1L));
+        taskStatusDTOS.add(new TaskStatusDTO("Выполнена", 2L));
+        taskStatusDTOS.add(new TaskStatusDTO("Отменена", 3L));
+
+        return taskStatusDTOS;
+    }
+
+
+    @GetMapping(value = "/executors/statuses2")
+    public List<TaskStatusDTO> getExecutorsStatusListDTO() {
+        log.info("TaskController: getExecutorsStatusListDTO ");
 
         List<TaskStatusDTO> taskStatusDTOS = new ArrayList<>();
         taskStatusDTOS.add(new TaskStatusDTO("Ожидает выполнения", 1L));
@@ -123,6 +146,8 @@ public class TaskController {
         return taskStatusDTOS;
 
     }
+
+
 
     @GetMapping(value = "/types")
     public List<TaskTypeDTO> getTypesList(
