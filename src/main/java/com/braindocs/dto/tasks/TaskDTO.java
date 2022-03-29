@@ -19,7 +19,7 @@ public class TaskDTO {
     private String createTime;
     @NotNull(message = "Не указан вид задачи")
     private TaskTypeDTO taskType;
-    @NotEmpty(message = "Не указан заголовок задачи")
+    @NotNull(message = "Не указан заголовок задачи")
     private String heading;
     private String content;
     private Long status;//1 активна, 2- выполнена, 3- отменена
