@@ -12,6 +12,8 @@
 - Упрощение заполнения формализованных документов по шаблонам
 - Возможность отправки документов по почте
 
+[Видео презентация](https://disk.yandex.ru/i/yczE4gDZdMgwCA)
+
 [Работающее приложение](https://angry-noether-64357b.netlify.app/search-doc)
 
 [Описание API](https://brain-docs.herokuapp.com/)
