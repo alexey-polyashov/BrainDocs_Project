@@ -19,12 +19,11 @@ public class FilesService {
     private final Options options;
 
     public FileModel add(FileModel file, MultipartFile fileData) throws IOException {
-        int storageType= options.getFileStorageType();
-        if(storageType==1) {
+        int storageType = options.getFileStorageType();
+        if (storageType == 1) {
             file.setFileData(fileData.getBytes());
             return filesRepository.save(file);
-        }
-        else{
+        } else {
             //1.сохранить сначала на диск
             //2.получить путь
             //3.очистить в модели данные файла
@@ -33,50 +32,54 @@ public class FilesService {
         }
     }
 
-    public Long saveWithAllData(FileModel file){
-        int storageType= options.getFileStorageType();
-        if(storageType==1) {
-            Optional<FileModel> oldFile = filesRepository.findById(file.getId());
-            oldFile.orElseThrow(() -> new ResourceNotFoundException("Файл с id - '" + file.getId() + "' не найден"));
-            filesRepository.save(file);
-            return file.getId();
-        }
-        else{
+    public FileModel saveWithAllData(FileModel file, MultipartFile fileData) throws IOException {
+        int storageType = options.getFileStorageType();
+        if (storageType == 1) {
+            Optional<FileModel> optOldFile = filesRepository.findById(file.getId());
+            FileModel oldFile = optOldFile.orElseThrow(() -> new ResourceNotFoundException("Файл с id - '" + file.getId() + "' не найден"));
+            oldFile.setDescription(file.getDescription());
+            oldFile.setAuthor(file.getAuthor());
+            oldFile.setName(file.getName());
+            oldFile.setFileData(fileData.getBytes());
+            oldFile.setContentType(fileData.getContentType());
+            filesRepository.save(oldFile);
+            return file;
+        } else {
             //1.найти файл на диске
             //2.перезаписать файл на диске
             //3.получить путь
             //4.очистить в модели данные файла
             //5.записать в базу модель
-            return 0L;
+            return null;
         }
     }
 
-    public Long saveOnlyDescribe(FileModel file){
+    public FileModel saveOnlyDescribe(FileModel file) {
         Optional<FileModel> oldFile = filesRepository.findById(file.getId());
-        FileModel fileModel = oldFile.orElseThrow(()->new ResourceNotFoundException("Файл с id - '" + file.getId() + "' не найден"));
+        FileModel fileModel = oldFile.orElseThrow(() -> new ResourceNotFoundException("Файл с id - '" + file.getId() + "' не найден"));
         fileModel.setDescription(file.getDescription());
         fileModel.setAuthor(file.getAuthor());
         fileModel.setName(file.getName());
         filesRepository.save(fileModel);
-        return file.getId();
+        return file;
     }
 
-    public FileModel findById(Long id){
+    public FileModel findById(Long id) {
         Optional<FileModel> file = filesRepository.findById(id);
-        return file.orElseThrow(()->new ResourceNotFoundException("Файл с id - '" + id + "' не найден"));
+        return file.orElseThrow(() -> new ResourceNotFoundException("Файл с id - '" + id + "' не найден"));
     }
 
-    public FileModel getFileData(Long id){
+    public FileModel getFileData(Long id) {
         Optional<FileModel> file = filesRepository.findById(id);
-        int storageType= options.getFileStorageType();
-        if(storageType==2) {
+        int storageType = options.getFileStorageType();
+        if (storageType == 2) {
             //если файлы хранятся на диске
             //1.найти файл на диске
             //2.прочитать файл в данные модели
             return null;
-        }else{
+        } else {
             //если файлы хранятся в базе
-            return file.orElseThrow(()->new ResourceNotFoundException("Файл с id - '" + id + "' не найден"));
+            return file.orElseThrow(() -> new ResourceNotFoundException("Файл с id - '" + id + "' не найден"));
         }
     }
 

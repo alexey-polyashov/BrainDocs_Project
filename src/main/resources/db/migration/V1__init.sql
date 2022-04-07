@@ -4,7 +4,7 @@
 CREATE TABLE IF NOT EXISTS contacts_types
 (
     id bigserial,
-    name text  NOT NULL,
+    name varchar NOT NULL,
     marked boolean,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
@@ -18,7 +18,7 @@ VALUES ('Телефон'),
 CREATE TABLE IF NOT EXISTS organisations
 (
     id bigserial,
-    name text,
+    name varchar,
     inn character varying(12) NOT NULL,
     kpp character varying(9),
     manager bigint,
@@ -34,8 +34,7 @@ CREATE TABLE IF NOT EXISTS organisation_contacts
     id bigserial,
     organisation bigint NOT NULL,
     type bigint NOT NULL,
-    present text NOT NULL,
-    marked boolean,
+    present varchar NOT NULL,
     CONSTRAINT organisation_contacts_pkey PRIMARY KEY (id),
     CONSTRAINT fk_organisation_id FOREIGN KEY (organisation)
         REFERENCES organisations (id)
@@ -59,10 +58,10 @@ VALUES (1, 2,'Москва, Пушкино, дом 7, офис 11'),
 CREATE TABLE IF NOT EXISTS users
 (
     id bigserial,
-    login text NOT NULL,
-    email text NOT NULL,
-    fullname text,
-    shortname text NOT NULL,
+    login varchar NOT NULL,
+    email varchar NOT NULL,
+    fullname varchar,
+    shortname varchar NOT NULL,
     organisation bigint,
     male character varying(6),
     birthday date,
@@ -81,21 +80,20 @@ VALUES ('user', '$2a$04$Fx/SX9.BAvtPlMyIIqqFx.hLY2Xp8nnhpzvEEVINvVpwIPbA3v/.i', 
 CREATE TABLE IF NOT EXISTS user_contacts
 (
     id bigserial,
-    user_id bigint NOT NULL,
+    userid bigint NOT NULL,
     type bigint NOT NULL,
-    present text NOT NULL,
-    marked boolean,
+    present varchar NOT NULL,
     CONSTRAINT user_contacts_pkey PRIMARY KEY (id),
     CONSTRAINT fk_type_id FOREIGN KEY (type)
         REFERENCES contacts_types (id)
         ON UPDATE NO ACTION
         ON DELETE NO ACTION,
-    CONSTRAINT fk_user_id FOREIGN KEY (user_id)
+    CONSTRAINT fk_userid_id FOREIGN KEY (userid)
         REFERENCES users (id)
         ON UPDATE NO ACTION
         ON DELETE CASCADE
 );
-INSERT INTO user_contacts (user_id, type, present)
+INSERT INTO user_contacts (userid, type, present)
 VALUES (3, 1,'222-22-22'),
        (1, 1,'8(495) 137-83-90'),
        (2, 1,'8(926) 401-90-90');
@@ -133,7 +131,7 @@ VALUES (1, 1),
 CREATE TABLE IF NOT EXISTS documents_types
 (
     id bigserial,
-    name text NOT NULL,
+    name varchar NOT NULL,
     marked boolean,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
@@ -151,8 +149,8 @@ CREATE TABLE IF NOT EXISTS documents
     type bigint NOT NULL,
     number character varying(50),
     document_date date,
-    heading text,
-    content text,
+    heading varchar,
+    content varchar,
     author bigint,
     responsible bigint,
     organisation bigint,

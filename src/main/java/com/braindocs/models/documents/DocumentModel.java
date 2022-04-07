@@ -5,6 +5,7 @@ import com.braindocs.models.organisations.OrganisationModel;
 import com.braindocs.models.users.UserModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
-@Table(name="documents")
+@Table(name = "documents")
 @Data
 @NoArgsConstructor
 public class DocumentModel {
@@ -23,34 +24,34 @@ public class DocumentModel {
     @JoinColumn(name = "type")
     private DocumentTypeModel documentType;
 
-    @Column(name="number")
+    @Column(name = "number")
     private String number;
 
-    @Column(name="document_date")
+    @Column(name = "document_date")
     private Date documentDate;
 
-    @Column(name="heading")
+    @Column(name = "heading")
     private String heading;
 
-    @Column(name="content")
+    @Column(name = "content")
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="author")
+    @JoinColumn(name = "author")
     private UserModel author;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="responsible")
+    @JoinColumn(name = "responsible")
     private UserModel responsible;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="organisation")
+    @JoinColumn(name = "organisation")
     private OrganisationModel organisation;
 
     @ManyToMany
-    @JoinTable(name ="documents_files",
+    @JoinTable(name = "documents_files",
             joinColumns = @JoinColumn(name = "ownerid", referencedColumnName = "id"),
-            inverseJoinColumns =  @JoinColumn(name="fileid"))
+            inverseJoinColumns = @JoinColumn(name = "fileid"))
     private Set<FileModel> files;
 
     @Id
@@ -58,12 +59,13 @@ public class DocumentModel {
     private Long id;
 
     @Column(name = "marked")
+    @ColumnDefault("false")
     private Boolean marked;
     @CreationTimestamp
-    @Column(name="created_at")
+    @Column(name = "created_at")
     private LocalDateTime createTime;
     @UpdateTimestamp
-    @Column(name="updated_at")
+    @Column(name = "updated_at")
     private LocalDateTime updateTime;
 
 }

@@ -19,7 +19,7 @@ public class UniqueUniqEmailValidator implements ConstraintValidator<UniqUserEma
 
     @Override
     public boolean isValid(String checkValue, ConstraintValidatorContext ctx) {
-        return usersService.findByEmail(checkValue).isPresent();
+        return !usersService.findByEmail(checkValue).isPresent();
     }
 
 }

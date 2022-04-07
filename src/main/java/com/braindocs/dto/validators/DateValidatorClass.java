@@ -19,7 +19,7 @@ public class DateValidatorClass implements ConstraintValidator<DateValidator, St
         try {
             format.parse(checkValue);
             return true;
-        }catch (ParseException e) {
+        } catch (ParseException e) {
             return false;
         }
     }

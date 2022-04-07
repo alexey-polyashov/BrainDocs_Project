@@ -6,9 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Past;
 import javax.validation.constraints.Pattern;
-import java.time.LocalDate;
 
 @NoArgsConstructor
 @Data
@@ -16,7 +14,10 @@ public class NewUserDTO {
 
     @NotBlank(message = "Не указан логин")
     @UniqUserName
-    private String username;
+    private String login;
+
+    @NotBlank(message = "Не указан пароль")
+    private String password;
 
     @NotBlank(message = "Не указан email")
     @Pattern(
@@ -26,21 +27,27 @@ public class NewUserDTO {
     @UniqUserEmail
     private String email;
 
-    private String address;
-    @Pattern(
-            regexp = "^\\+\\d{1}\\(\\d{3}\\)\\d{3}-\\d{2}-\\d{2}$",
-            message = "Не корректный номер телефона"
-    )
-    private String phone;
+    private String fullname;
+
+    private Long organisationId;
 
     @NotBlank(message = "Не указано имя")
-    private String firstname;
+    private String shortname;
 
-    private String lastname;
-    @Past(message = "Дата рождения не может быть позже текущей даты")
-    private LocalDate birthday;
+    private String male;
 
-    @NotBlank(message = "Не указан пароль")
-    private String password;
+    //    @Past(message = "Дата рождения не может быть позже текущей даты")
+    @Pattern(
+            regexp = "^\\d{4}-\\d{2}-\\d{2}$",
+            message = "Не корректная дата"
+    )
+    private String birthday;
+
+//    private String address;
+//    @Pattern(
+//            regexp = "^\\+\\d{1}\\(\\d{3}\\)\\d{3}-\\d{2}-\\d{2}$",
+//            message = "Не корректный номер телефона"
+//    )
+//    private String phone;
 
 }

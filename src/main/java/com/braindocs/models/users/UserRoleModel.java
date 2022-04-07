@@ -2,6 +2,7 @@ package com.braindocs.models.users;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 
 
 @Entity
-@Table(name="roles")
+@Table(name = "roles")
 @Data
 @NoArgsConstructor
 public class UserRoleModel {
@@ -23,11 +24,12 @@ public class UserRoleModel {
     @Column(name = "id")
     private Long id;
     @Column(name = "marked")
-    private Boolean marked;
+    @ColumnDefault("false")
+    private Boolean marked = false;
     @CreationTimestamp
-    @Column(name="created_at")
+    @Column(name = "created_at")
     private LocalDateTime createTime;
     @UpdateTimestamp
-    @Column(name="updated_at")
+    @Column(name = "updated_at")
     private LocalDateTime updateTime;
 }

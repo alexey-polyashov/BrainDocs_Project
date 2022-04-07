@@ -9,8 +9,7 @@ public class UserContactDTO {
     private Long userId;
     private String userName;
     private Long typeId;
-    private String typeNAme;
+    private String typeName;
     private String present;
     private Long id;
-    private Boolean marked;
 }
