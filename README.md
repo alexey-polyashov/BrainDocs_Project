@@ -15,6 +15,7 @@
 [Видео презентация](https://disk.yandex.ru/i/yczE4gDZdMgwCA)
 
 Проект опубликован на порталах heroku(бэк) и netlify(фронт)
+
 [Работающее приложение](https://angry-noether-64357b.netlify.app/search-doc)
 
 [Описание API](https://brain-docs.herokuapp.com/)
