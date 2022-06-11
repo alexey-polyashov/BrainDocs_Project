@@ -14,7 +14,7 @@
 
 [Видео презентация](https://disk.yandex.ru/i/yczE4gDZdMgwCA)
 
-Проект опубликован на порталах heroku(бэк) и netlify(фронт)
+Проект опубликован на порталах heroku(бэк) и netify(фронт)
 
 [Работающее приложение](https://angry-noether-64357b.netlify.app/search-doc)
 
